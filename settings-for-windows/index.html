@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Settings for Windows - Windows by somov</title> <!-- Title will be updated by JS -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:200,300,400,500,600&display=swap" rel="stylesheet">  <link rel="stylesheet" href="/css/style.css">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4RBN0G8775"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-4RBN0G8775');
+</script>
+<script>
+  // IIFE to set language class on <html> tag before content loads, to prevent FOUC
+  (function() {
+    const savedLang = localStorage.getItem('siteLanguage');    // Determine language: 1. localStorage, 2. default 'en'
+    const lang = savedLang || 'en';
+    document.documentElement.lang = lang;
+    // Set title based on language
+    if (lang === 'ru') {
+      document.documentElement.classList.add('lang-ru-active');
+    } else {
+      document.documentElement.classList.add('lang-en-active');
+    }
+  })();
+</script>
+</head>
+<body>
+  <div class="main-wrapper">
+    <header class="settings-header">
+      <div class="header-title-container">
+        <a href="/" class="site-title">WINDOWS BY SOMOV</a>
+        <div class="lang-switcher">
+          <a href="#" class="lang-switch-btn" data-lang="en">ENG</a>
+          <span>/</span>
+          <a href="#" class="lang-switch-btn" data-lang="ru">RUS</a>
+        </div>
+      </div>      <div class="header-social-icons">
+          <a href="https://t.me/windows_by_somov" target="_blank" aria-label="Telegram">Telegram</a><span class="social-separator">/</span><a href="mailto:me@somov.org" aria-label="Email">me@somov.org</a>
+        </div>
+    </header>
+    <main>
+      <a href="/" class="return-link"><span class="lang-en"><b>Return to Home</b></span><span class="lang-ru"><b>Вернуться на главную</b></span></a>
+      <section class="card">
+        <div class="card-left">
+            <div class="card-details">
+              <span class="lang-en">Windows Activation/Office Activation<br></span>
+              <span class="lang-ru">Активация Windows/Office:<br></span>
+              PowerShell:<br>
+            </div>
+            <br><a href="https://github.com/massgravel/Microsoft-Activation-Scripts?tab=readme-ov-file#method-1---powershell-windows-8-and-later-%EF%B8%8F" class="card-link"  target="_blank">irm https://get.activated.win | iex</a>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/MAS_AIO.cmd"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-left">
+            <div class="card-details">
+              <div class="card-text"><span class="lang-en"><b>MSEdgeRedirect</b> stops Windows 10/11 from forcing system links into Microsoft Edge. It runs in the background to automatically route them to your actual default browser, like Chrome or Firefox. It can also replace the system's default Bing search with Google or another engine. / <a href="https://github.com/rcmaehl/MSEdgeRedirect" class="card-link" target="_blank">Github</a></span><span class="lang-ru">Утилита <b>MSEdgeRedirect</b> не дает Windows 10/11 принудительно открывать системные ссылки в Microsoft Edge. Она работает в фоне и перенаправляет их в ваш настоящий браузер по умолчанию. Также позволяет заменить системный поиск с Bing на Google или другой. / <a href="https://github.com/rcmaehl/MSEdgeRedirect" class="card-link" target="_blank">Github</a> / <a href="https://www.comss.ru/page.php?id=9848" class="card-link" target="_blank">Описание на русском</a></span></div>
+          </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/MSEdgeRedirect.exe"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-left">
+            <div class="card-details">
+              <div class="card-text"><span class="lang-en"><b>Visual C++ Redistributable Runtime All-in-One</b> is a set of libraries required to run programs built with Visual C++. It installs everything needed to prevent errors caused by missing components.</span><span class="lang-ru"><b>Visual C++ Redistributable Runtime All-in-One</b> — это набор библиотек для запуска программ, созданных на Visual C++. Устанавливает всё необходимое, чтобы избежать ошибок из-за отсутствующих компонентов.</span></div>
+          </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/Visual-C-Runtimes-All-in-One-May-2023.rar"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-left">
+            <div class="card-details">
+              <div class="card-text"><span class="lang-en"><b>DirectX Web Setup</b> is a Microsoft tool that installs the latest DirectX components needed for games and multimedia apps. It helps avoid errors related to missing graphics or sound features.</span><span class="lang-ru"><b>DirectX Web Setup</b> — это инструмент от Microsoft, который устанавливает последние компоненты DirectX для игр и мультимедиа. Помогает избежать ошибок, связанных с графикой и звуком.</span></div>
+          </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/dxwebsetup.exe"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-left">
+            <div class="card-details">
+              <span class="lang-en">
+                <b>Disable_security_warning.bat</b> disables the “Open File – Security Warning” prompt when launching certain programs in Windows.
+                <ol>
+                  <li>Download file.</li>
+                  <li>Run the file as Administrator.</li>
+                  <li>A system restart or logging out and back in may be required for the changes to take effect.</li>
+                </ol>
+              </span>
+              <span class="lang-ru">
+              <b>Disable_security_warning.bat</b> позволяет отключить “Открыть файл – предупреждение системы безопасности” при запуске некоторых программ в Windows.
+                <ol>
+                  <li>Скачайте файл.</li>
+                  <li>Запустите файл от имени администратора.</li>
+                  <li>Может потребоваться перезагрузка ПК или выход из системы и повторный вход.</li>
+                </ol>
+              </span>
+            </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/Disable_security_warning.bat"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-left">
+            <div class="card-details">
+              <div class="card-text"><span class="lang-en"><b>qBittorrent</b> is a fast, cross-platform BitTorrent client, similar to the familiar uTorrent, but without the ad clutter.</span><span class="lang-ru"><b>qBittorrent</b> — это быстрый кроссплатформенный BitTorrent-клиент, похожий на знакомый многим uTorrent, но без навязчивой рекламы.</span></div>
+          </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/qbittorrent_5.1.2_x64_setup.exe"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-left">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en"><b>Adobe Acrobat Reader</b> is a software application used for reading, printing, and commenting on PDF files.</span><span class="lang-ru"><b>Adobe Acrobat Reader</b> программа для чтения, печати и рецензирования файлов PDF.</span></div>
+            </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/Adobe.Acrobat.Reader.v2025.001.20643.zip"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-left">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en"><b>WinRAR</b> is a popular archiver supporting many formats, encryption, high compression, multimedia algorithm, and multi-volume archives.</span><span class="lang-ru"><b>WinRAR</b> — популярный архиватор с поддержкой множества форматов, шифрованием, высоким сжатием, мультимедиа-алгоритмом и многотомными архивами.</span></div>
+            </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/WinRAR-7.13.exe"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-left">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en"><b>Windows Super God Mode</b> is a script that creates a folder with shortcuts to all Windows system settings, including hidden and advanced ones. / <a href="https://github.com/ThioJoe/Windows-Super-God-Mode" class="card-link" target="_blank">Github</a> / <a href="https://github.com/ThioJoe/Windows-Super-God-Mode?tab=readme-ov-file#how-to-run" class="card-link" target="_blank">How to use</a> / <a href="https://www.youtube.com/watch?v=CnATL9kJPn8" class="card-link"target="_blank">Video instruction</a></span><span class="lang-ru"><b>Windows Super God Mode</b> — это скрипт, который создает папку с ярлыками ко всем системным настройкам Windows, включая скрытые и продвинутые. / <a href="https://github.com/ThioJoe/Windows-Super-God-Mode" class="card-link" target="_blank">Github</a> / <a href="https://www.comss.ru/page.php?id=14513" class="card-link" target="_blank">О Super God Mode на русском + Инструкция</a></span></div>
+            </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/Windows Super God Mode 1.2.2.rar"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-left">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en"><b>StartAllBack</b> is a familiar program that restores the fully functional Start menu button in Windows 8.1/10/11. It significantly enhances desktop usability and organizes the new interface for maximum convenience.</span><span class="lang-ru"><b>StartAllBack</b> — привычная для нас программа, которая возвращает в Windows 8.1/10/11 полнофункциональную кнопку запуска меню Пуск. StartAllBack существенно улучшает удобство использования рабочего стола и делает новый экран упорядоченным, наиболее удобным.</span></div>
+            </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/StartAllBack.v3.9.14.exe"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+          </div>
+        </div>
+      </section>
+      
+      <section class="card">
+        <div class="card-left">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en"><b>Revo Uninstaller Pro</b> is a program for completely uninstalling applications on Windows. I use it myself and now recommend it to you!</span><span class="lang-ru"><b>Revo Uninstaller Pro</b> — это программа для полного удаления приложений на Windows. Пользуюсь сам и теперь рекомендую вам!</span></div>
+            </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/Revo.Uninstaller.Pro.v5.4.0.rar"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+          </div>
+        </div>
+      </section>
+      
+      <section class="card">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en">I’ve gathered the top browsers for you to download.</span><span class="lang-ru">Собрал для вас главные браузеры для скачивания.</span></div>
+            <div class="card-text"><a href="https://dl.somov.org/ChromeSetup.exe" class="card-link">Google Chrome</a><br><a href="https://dl.somov.org/Yandex.exe" class="card-link">Yandex Browser</a><br><a href="https://dl.somov.org/OperaSetup.exe" class="card-link">Opera</a><br><a href="https://dl.somov.org/Firefox%20Installer.exe" class="card-link">Mozilla Firefox</a></div>
+            </div>
+      </section>
+      
+      <section class="card">
+        <div class="card-left">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en">A very simple tool to clean all the temporary files. Don’t forget to run them as admin, otherwise, nothing is going to work.</span><span class="lang-ru">Очень простой инструмент для очистки всех временных файлов. Не забудьте запускать его от имени администратора, иначе ничего не произойдет.</span></div>
+            </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/Clear(Run%20As%20Admin).bat"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-left">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en">Miner Search — This program is designed to find and destroy hidden miners. It is an auxiliary tool for searching suspicious files, directories, processes, etc. and is NOT an antivirus. / <a href="https://github.com/BlendLog/MinerSearch" class="card-link"  target="_blank">Github</a> / <a href="https://github.com/BlendLog/MinerSearch?tab=readme-ov-file#how-to-use" class="card-link"  target="_blank">How to use</a> / <a href="https://t.me/MinerSearch_blog" class="card-link"  target="_blank">Get help via Telegram channel</a></span><span class="lang-ru">Miner Search — Настоящая программа разработанная для поиска и уничтожения скрытых майнеров. Является вспомогательным инструментом для поиска подозрительных файлов, каталогов, процессов и тд. и НЕ является антивирусом. / <a href="https://github.com/BlendLog/MinerSearch" class="card-link"  target="_blank">Github</a> / <a href="https://github.com/BlendLog/MinerSearch?tab=readme-ov-file#%D0%BA%D0%B0%D0%BA-%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D1%8C%D1%81%D1%8F" class="card-link"  target="_blank">Как пользоваться</a> / <a href="https://t.me/MinerSearch_blog" class="card-link"  target="_blank">Получить помощь в Telegram-канале</a></span></div>
+            </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/MinerSearch_v1.4.8.0.zip"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en">Windows keyboard shortcuts that everyone should know:<br>Win + period «.» — the ability to insert emojis anywhere;<br>Win + H — voice typing;<br>Win + Alt + R — screen recording;<br>Win + E — open File Explorer;<br>Win + M — minimize all windows.</span><span class="lang-ru">Горячие клавиши Windows, о которых должен знать каждый:<br>Win + точка «.» — возможность поставить эмодзи куда угодно;<br>Win + H — голосовой ввод текста;<br>Win + Alt + R — запись экрана;<br>Win + E — открытие проводника;<br>Win + M — свертывание всех окон.</span></div>
+            </div>
+      </section>
+      
+      <section class="card">
+        <div class="card-left">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en">The best driver installer in history: <a href="https://sdi-tool.org/download/?lang=en" class="card-link"  target="_blank"><b>Snappy Driver Installer</b></a> (in my personal experience). It supports offline and online installation, provides a complete driver database, allows version selection, works with all versions of Windows, and doesn’t require installation on your computer.</span><span class="lang-ru">Лучший установщик драйверов в истории: <a href="https://sdi-tool.org/download/?lang=ru" class="card-link"  target="_blank"><b>Snappy Driver Installer</b></a> (“лучший” — опираясь на мой опыт). Поддерживает установку как в офлайн-режиме, так и с подключением к интернету, предоставляет полную базу драйверов, позволяет выбирать версии, работает с любыми версиями Windows и не требует установки на компьютер.</span></div>
+            </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/SDI_1.25.3.7z"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-left">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en"><b>DoNotSpy11</b>. One of the ways to disable telemetry (spying/advertisement) after installing Windows 10 and 11 / <a href="https://pxc-coding.com/donotspy11/donotspy-11-download/" class="card-link"  target="_blank">Site</a> / <a href="https://www.youtube.com/watch?v=uc_ouoPYFzE" class="card-link"  target="_blank">Guide</a></span><span class="lang-ru"><b>DoNotSpy11</b>. Один из способов отключения телеметрии (слежки/рекламы) после инсталляции Windows 10 и 11 / <a href="https://pxc-coding.com/donotspy11/donotspy-11-download/" class="card-link"  target="_blank">Сайт</a> / <a href="https://www.youtube.com/watch?v=uc_ouoPYFzE" class="card-link"  target="_blank">Инструкция</a></span></div>
+            </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/DoNotSpy11-1.2.1.0-Setup.exe"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en"><b>Censor Tracker</b> is a free browser extension developed by <a href="https://roskomsvoboda.org/en/" class="card-link"  target="_blank">Roskomsvoboda</a> that helps bypass internet censorship using proxy servers and alerts users about websites sharing data with government authorities / <a href="https://censortracker.org/en.html" class="card-link"  target="_blank">Install</a> / <a href="https://www.youtube.com/watch?v=Sq8g9tu5BdM" class="card-link"  target="_blank">Guide</a> / <a href="https://t.me/CensorTracker_feedback" class="card-link"  target="_blank">Get help via Telegram</a></span><span class="lang-ru"><b>Censor Tracker</b> — это бесплатное расширение для браузеров от <a href="https://roskomsvoboda.org/ru/" class="card-link"  target="_blank">Роскомсвобода</a>, которое помогает обходить интернет-цензуру с помощью прокси-серверов и уведомляет о сайтах, передающих данные государственным органам / <a href="https://censortracker.org" class="card-link"  target="_blank">Установить</a> / <a href="https://www.youtube.com/watch?v=Sq8g9tu5BdM" class="card-link"  target="_blank">Инструкция</a> / <a href="https://t.me/CensorTracker_feedback" class="card-link"  target="_blank">Получить помощь в Телеграм канале</a></span></div>
+            </div>
+      </section>
+
+      <section class="card">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en">Hey there, have you defragged your drive lately?<br><a href="https://www.ccleaner.com/defraggler/download" class="card-link"  target="_blank">Defraggler</a> / <a href="https://www.iobit.com/en/iobitsmartdefrag.php" class="card-link"  target="_blank">Smart Defrag</a> / <a href="https://www.auslogics.com/en/software/disk-defrag/" class="card-link"  target="_blank">Auslogics Disk Defrag</a> (defragment only a HDD).</span><span class="lang-ru">А ты сделал дефрагментацию диска?<br><a href="https://www.ccleaner.com/defraggler/download" class="card-link"  target="_blank">Defraggler</a> / <a href="https://ru.iobit.com/iobitsmartdefrag.php" class="card-link"  target="_blank">Smart Defrag</a> / <a href="https://www.auslogics.com/ru/software/disk-defrag/" class="card-link"  target="_blank">Auslogics Disk Defrag</a> (дефрагментируйте только HDD).</span></div>
+            </div>
+      </section>
+      
+      <section class="card">
+        <div class="card-left">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en"><b>For Windows 11:</b><br>Disabling tabs in File Explorer.<br>Relevant for old/low-performance computers<br>(requires a restart after applying).</span><span class="lang-ru"><b>Для Windows 11:</b><br>Отключение вкладок в Проводнике.<br>Актуально для старых/слабых компьютеров<br>(необходима перезагрузка после применения).</span></div>
+            </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/DisableExplorersTabs.reg"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-left">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en"><b>For Windows 11:</b><br>Using the old context menu as in Windows 10<br>(requires a restart after applying).</span><span class="lang-ru"><b>Для Windows 11:</b><br>Использование старого контекстного меню, как в Windows 10<br>(необходима перезагрузка после применения).</span></div>
+            </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/OldContextMenu.reg"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en">Microsoft 365 (Access, Excel, Lync, OneNote, Outlook, PowerPoint, Publisher, Word, OneDrive)</span><span class="lang-ru">Microsoft 365 (Access, Excel, Lync, OneNote, Outlook, PowerPoint, Publisher, Word, OneDrive)</span></div>
+            <div class="card-text"><span class="lang-en">• <a href="https://dl.somov.org/en-us/O365ProPlusRetail.img" class="card-link">Download Microsoft 365 (English)</a><br>• <a href="https://dl.somov.org/ru-ru/O365ProPlusRetail.img" class="card-link">Download Microsoft 365 (Russian)</a></span><span class="lang-ru">• <a href="https://dl.somov.org/en-us/O365ProPlusRetail.img" class="card-link">Скачать Microsoft 365 (Английский)</a><br>• <a href="https://dl.somov.org/ru-ru/O365ProPlusRetail.img" class="card-link">Скачать Microsoft 365 (Русский)</a></span></div>
+            <div class="card-text"><span class="lang-en">Activation using this <a href="https://t.me/windows_by_somov/3" class="card-link"  target="_blank">script</a>.<br>Run it → Wait until it loads → Press number 2 (Ohook) → Wait until it loads again → Done.</span><span class="lang-ru">Активация с помощью этого <a href="https://t.me/windows_by_somov/3" class="card-link"  target="_blank">скрипта</a>.<br>Запустите → Подождите пока прогрузиться → Нажмите цифру 2 (Ohook) → Подождите пока прогрузиться → Готово.</span></div>
+          </div>
+      </section>
+
+      <section class="card">
+        <div class="card-left">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en"><b>Adguard</b> — Ad blocker for the entire Windows system / <a href="https://adguard.com/en/adguard-windows/overview.html" class="card-link"  target="_blank">Source</a> / For installation and activation, read the README.txt</span><span class="lang-ru"><b>Adguard</b> — Блокировщик рекламы для всей Windows / <a href="https://adguard.com/ru/adguard-windows/overview.html" class="card-link"  target="_blank">Источник</a> / Для установки и активации читайте README.txt</span></div>
+            </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/Adguard 7.21.0.zip"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-left">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en">Installing apps from Microsoft Store without using the Microsoft Store / <a href="https://www.youtube.com/watch?v=ayIilTc-6u4" class="card-link"  target="_blank">Guide</a> / <a href="https://github.com/mjishnu/alt-app-installer/releases" class="card-link"  target="_blank">Github</a></span><span class="lang-ru">Установка программ из Microsoft Store без участия самого Microsoft Store / <a href="https://www.youtube.com/watch?v=ayIilTc-6u4" class="card-link"  target="_blank">Инструкция</a> / <a href="https://github.com/mjishnu/alt-app-installer/releases" class="card-link"  target="_blank">Github</a></span></div>
+            </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/altappinstaller.exe"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+            <div class="card-details">
+            <div class="card-text">• <a href="https://dl2.somov.org/Adobe%20After%20Effects%202025%2025.4.0.86%20RePack%20by%20KpoJIuK.exe" class="card-link">Adobe After Effects 2025 25.4.0.86</a><br>
+              • <a href="https://dl2.somov.org/Adobe%20Illustrator%202025%2029.7.1.8%20RePack%20by%20KpoJIuK.exe" class="card-link">Adobe Illustrator 2025 29.7.1.8</a><br>
+              • <a href="https://dl2.somov.org/Adobe%20Media%20Encoder%202025%2025.4.1.1%20RePack%20by%20KpoJIuK.exe" class="card-link">Adobe Media Encoder 2025 25.4.1.1</a><br>
+              • <a href="https://dl2.somov.org/Adobe%20Photoshop%202025%2026.10.0.7%20RePack%20by%20KpoJIuK.exe" class="card-link">Adobe Photoshop 2025 26.10.0.7</a><br>
+              • <a href="https://dl2.somov.org/Adobe%20Premiere%20Pro%202025%2025.4.1.3%20RePack%20by%20KpoJIuK.exe" class="card-link">Adobe Premiere Pro 2025 25.4.1.3</a><br>
+              • <a href="https://dl2.somov.org/Adobe%20Photoshop%20Lightroom%20Classic%202024%2014.5.1.1%20RePack%20by%20KpoJIuK.exe" class="card-link">Adobe Photoshop Lightroom Classic 2024 14.5.1.1</a><br>
+              • <a href="https://dl2.somov.org/Adobe%20Audition%202025%2025.3.0.71%20RePack%20by%20KpoJIuK.exe" class="card-link">Adobe Audition 2025 25.3.0.71</a></div>
+            <div class="card-text"><span class="lang-en">Maybe you need it. I am a Motion Designer, so I share.</span><span class="lang-ru">Может кому-то здесь нужно. Я Моушн Дизайнер, решил поделиться.</span></div>
+          </div>
+      </section>
+
+      <section class="card">
+        <div class="card-left">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en">Turn back classic notepad</span><span class="lang-ru">Возвращение классического блокнота</span></div>
+            </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/notepad.reg"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-left">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en">Turn back classic Windows Media Player</span><span class="lang-ru">Возвращение классического Windows Media Player</span></div>
+            </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/WinMediaPlayer.cmd"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en">• Optimizing the C: drive (SSD)</span><span class="lang-ru">• Оптимизация диска C: (SSD)</span><br>PowerShell:</div>
+            <div class="card-text"><i>Optimize-Volume -DriveLetter C -ReTrim -Verbose</i></div>
+            <div class="card-text"><span class="lang-en">Analyzing the D: drive (HDD)</span><span class="lang-ru">Анализ диска D: (HDD)</span><br>PowerShell:</div>
+            <div class="card-text"><i>Optimize-Volume -DriveLetter D -Analyze -Verbose</i></div>
+            <div class="card-text"><span class="lang-en">Defragmenting disk D: (HDD)</span><span class="lang-ru">Дефрагментация диска D: (HDD)</span><br>PowerShell:</div>
+            <div class="card-text"><i>Optimize-Volume -DriveLetter D -Defrag -Verbose</i></div>
+          </div>
+      </section>
+
+      <section class="card">
+        <div class="card-left">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en">Launch “RemoveMicrosoftEdge.bat” file and Microsoft Edge will be removed</span><span class="lang-ru">Запустите “RemoveMicrosoftEdge.bat” файл и Microsoft Edge будет удалён</span></div>
+            </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/RemoveMicrosoftEdge.bat"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en">Backup Drivers from PC</span><span class="lang-ru">Резервное копирование драйверов с компьютера</span><br>cmd/PowerShell:</div>
+            <div class="card-text"><i>Export-WindowsDriver -Online -Destination D:\your_folder</i></div>
+            <div class="card-text"><span class="lang-en">Restore Drivers to PC</span><span class="lang-ru">Восстановление драйверов на компьютере</span><br>cmd/PowerShell:</div>
+            <div class="card-text"><i>pnputil.exe /add-driver D:\your_folder*.inf /subdirs /install</i></div>
+          </div>
+      </section>
+
+      <section class="card">
+        <div class="card-left">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en">Turn Off Telemetry in Windows 10</span><span class="lang-ru">Выключить телеметрию в Windows 10</span></div>
+            </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/Turn%20Off%20Telemetry%20in%20Windows%2010.cmd"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-left">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en">At Windows startup, Num Lock is enabled by default</span><span class="lang-ru">При запуске Windows, Num Lock по умолчанию включен</span></div>
+          </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/NumLockOnDefault.reg"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-left">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en">Method № 2. Launch Add-Store.cmd:<br>Restore Microsoft Store</span><span class="lang-ru">Метод № 2. Запустите Add-Store.cmd:<br>Возвращение Microsoft Store</span></div>
+          </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/LTSC-Add-MicrosoftStore-master.rar"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-left">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en">Pause Windows Updates for 100 years. After using “PauseUpdate100Years.reg” file > Go “Settings” > “Update & Security” > Click “Pause updates for 7 days” > Go “Advanced Options” > Scroll “Pause until” to the date you wish, I prefer the last one</span><span class="lang-ru">Пауза обновлений Windows на 100 лет. После использования “PauseUpdate100Years.reg” файла > Перейдите в “Настройки” > “Обновление и безопасность” > Нажмите “Приостановить обновления на 7 дн.” > Перейдите в “Дополнительные параметры” > Прокрутите “Приостановить до” до нужной вам даты, я выбираю последнюю</span></div>
+          </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/PauseUpdate100Years.reg"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-left">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en">Complete turning off Windows Defender. <a href="https://github.com/ionuttbara/windows-defender-remover/releases" class="card-link"  target="_blank">Source code</a></span><span class="lang-ru">Полное отключение Защитника Windows. <a href="https://github.com/ionuttbara/windows-defender-remover/releases" class="card-link"  target="_blank">Исходный код</a></span></div>
+          </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/DefenderRemover.exe"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-left">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en">Russification Windows</span><span class="lang-ru">Русификация Системы</span></div>
+          </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/Russification.bat"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-left">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en">Method № 1: Restore Microsoft Store</span><span class="lang-ru">Метод № 1: Возвращение Microsoft Store</span></div>
+          </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/wsreset.bat"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-left">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en">Turn back classic Windows Photo Viewer</span><span class="lang-ru">Возвращение классического Windows Photo Viewer</span></div>
+          </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/WinPhotoViewer.reg"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+            <div class="card-details">
+            <div class="card-text"><span class="lang-en">Author’s telegram: </span><span class="lang-ru">Телеграм автора: </span><a href="https://t.me/windows_by_somov" class="card-link"  target="_blank">t.me/windows_by_somov</a></div>
+          </div>
+      </section>
+
+    </main>
+  </div>
+    <footer>
+      <div class="footer-menu">
+        <span class="lang-en">
+            <a href="https://ko-fi.com/somov" target="_blank">Buy me a coffee</a> /
+            <a href="https://yoomoney.ru/to/4100118200965581" target="_blank">Tips via YooMoney</a> /
+            <span class="copyable-footer-item" data-full-address="1Bf7A9JZHuDzu7yTzNqEL9q8KHHfgjMZgu" title="Click to copy">
+                <span class="btc-label">BTC:</span> <span class="btc-address">1Bf7A...gjMZgu</span>
+                <img src="/images/copy_icon.svg" alt="Copy" class="copy-icon">
+                <span class="copy-feedback">Copied!</span>
+            </span>
+        </span>
+        <span class="lang-ru">
+            <a href="https://ko-fi.com/somov" target="_blank">Купить кофе</a> /
+            <a href="https://yoomoney.ru/to/4100118200965581" target="_blank">Чаевые через ЮMoney</a> /
+            <span class="copyable-footer-item" data-full-address="1Bf7A9JZHuDzu7yTzNqEL9q8KHHfgjMZgu" title="Нажмите, чтобы скопировать">
+                <span class="btc-label">BTC:</span> <span class="btc-address">1Bf7A...gjMZgu</span>
+                <img src="/images/copy_icon.svg" alt="Копировать" class="copy-icon">
+                <span class="copy-feedback">Скопировано!</span>
+            </span>
+        </span>
+      </div>
+      <div class="footer-bottom">
+        <span class="footer-links">&copy; somov.org</span>
+      </div>
+    </footer>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const langSwitchers = document.querySelectorAll('.lang-switch-btn');
+
+    function setLanguage(lang) {
+        document.documentElement.lang = lang; // Update lang attribute on <html>
+        // Set title based on language
+        document.title = lang === 'ru' ? "Настройки для Windows - Windows by somov" : "Settings for Windows - Windows by somov";
+        if (lang === 'ru') {
+            document.documentElement.classList.add('lang-ru-active');
+            document.documentElement.classList.remove('lang-en-active');
+        } else {
+            document.documentElement.classList.add('lang-en-active');
+            document.documentElement.classList.remove('lang-ru-active');
+        }
+        localStorage.setItem('siteLanguage', lang); // Save user's choice
+        updateActiveButton(lang);
+    }
+
+    function updateActiveButton(lang) {
+        langSwitchers.forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.lang === lang) {
+                btn.classList.add('active');
+            }
+        });
+    }
+
+    langSwitchers.forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault(); // Prevent page jump
+            setLanguage(button.dataset.lang);
+        });
+    });
+
+    // On page load, set active button based on the class set by the head script
+    updateActiveButton(document.documentElement.lang);
+    
+    // --- Copy to Clipboard Logic ---
+    const copyTriggers = document.querySelectorAll('.copyable-footer-item');
+
+    copyTriggers.forEach(trigger => {
+        trigger.addEventListener('click', function() {
+            const textToCopy = this.dataset.fullAddress;
+            const feedbackElement = this.querySelector('.copy-feedback');
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                // Hide any other visible feedback messages
+                document.querySelectorAll('.copyable-footer-item .copy-feedback').forEach(fb => {
+                    fb.style.display = 'none';
+                });
+
+                // Show current feedback message
+                if (feedbackElement) {
+                    feedbackElement.style.display = 'block';
+                    setTimeout(() => {
+                        feedbackElement.style.display = 'none';
+                    }, 2000); // Hide after 2 seconds
+                }
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        });
+    });
+});
+</script>
+</body>
+</html>

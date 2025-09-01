@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en"> <!-- The 'lang' attribute will be dynamically updated by JavaScript -->
+<head>
+  <meta charset="UTF-8">
+  <title>Windows by somov</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:200,300,400,500,600&display=swap" rel="stylesheet">  <link rel="stylesheet" href="/css/style.css">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4RBN0G8775"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-4RBN0G8775');
+</script>
+<script>
+  // IIFE to set language class on <html> tag before content loads, to prevent FOUC
+  (function() {
+    const savedLang = localStorage.getItem('siteLanguage');    // Determine language: 1. localStorage, 2. default 'en'
+    const lang = savedLang || 'en';
+    document.documentElement.lang = lang;
+    if (lang === 'ru') {
+      document.documentElement.classList.add('lang-ru-active');
+    } else {
+      document.documentElement.classList.add('lang-en-active');
+    }
+  })();
+</script>
+</head>
+<body>
+  <div class="main-wrapper">
+    <header>
+      <div class="header-title-container">
+        <a href="/" class="site-title">WINDOWS BY SOMOV</a>
+        <div class="lang-switcher">
+          <a href="#" class="lang-switch-btn" data-lang="en">ENG</a>
+          <span>/</span>
+          <a href="#" class="lang-switch-btn" data-lang="ru">RUS</a>
+        </div>
+      </div>        <div class="header-social-icons">
+          <a href="https://t.me/windows_by_somov" target="_blank" aria-label="Telegram">Telegram</a><span class="social-separator">/</span><a href="mailto:me@somov.org" aria-label="Email">me@somov.org</a>
+        </div>
+      <div class="header-logo-center">
+        <img src="/images/logo.png" alt="Windows by Somov" />
+        <!-- Если нужна подпись под логотипом, раскомментируйте следующую строку -->
+        <!-- <div class="logo-caption">windows by somov</div> -->
+      </div>
+      <div class="header-desc">
+        <a href="settings-for-windows">
+            <span class="lang-en">Settings for Windows</span>
+            <span class="lang-ru">Настройки для Windows</span>
+        </a>      </div>
+    </header>
+
+    <main>
+      <section class="card">
+        <div class="card-left">
+          <div class="card-info">
+            <a href="/windows-11-en/" class="card-title">
+                <span class="lang-en">Windows 11 release information</span>
+                <span class="lang-ru">Сведения о выпуске Windows 11</span>
+            </a>
+            <div class="card-details">
+              <span class="lang-en">Language: English<br></span><span class="lang-ru">Язык: Английский<br></span>
+              <span class="lang-en">Update: 26100.4946 (August 2025)<br></span><span class="lang-ru">Обновление: 26100.4946 (Август 2025)<br></span>
+              <span class="lang-en">Edition: IoT Enterprise LTSC<br></span><span class="lang-ru">Издание: IoT Enterprise LTSC<br></span>
+              <span class="lang-en">Version: 24H2<br></span><span class="lang-ru">Версия: 24H2<br></span>
+              <span class="lang-en">Author: somov<br></span><span class="lang-ru">Автор: somov<br></span>
+              <a href="/windows-11-en/" class="card-link">
+                <span class="lang-en">More Details...</span>
+                <span class="lang-ru">Подробнее...</span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.4946_by_somov.iso"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+            <a class="torrent-link" href="https://dl.somov.org/en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.4946_by_somov.iso.torrent"><span class="lang-en">Download by torrent</span><span class="lang-ru">Скачать с помощью torrent</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-left">
+          <div class="card-info">
+            <a href="/windows-11-ru/" class="card-title">
+                <span class="lang-en">Windows 11 release information</span>
+                <span class="lang-ru">Сведения о выпуске Windows 11</span>
+            </a>
+            <div class="card-details">
+              <span class="lang-en">Language: Russian<br></span><span class="lang-ru">Язык: Русский<br></span>
+              <span class="lang-en">Update: 26100.4946 (August 2025)<br></span><span class="lang-ru">Обновление: 26100.4946 (Август 2025)<br></span>
+              <span class="lang-en">Edition: IoT Enterprise LTSC<br></span><span class="lang-ru">Издание: IoT Enterprise LTSC<br></span>
+              <span class="lang-en">Version: 24H2<br></span><span class="lang-ru">Версия: 24H2<br></span>
+              <span class="lang-en">Author: somov<br></span><span class="lang-ru">Автор: somov<br></span>
+              <a href="/windows-11-ru/" class="card-link">
+                <span class="lang-en">More Details...</span>
+                <span class="lang-ru">Подробнее...</span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/ru-ru_windows_11_iot_enterprise_ltsc_2024_x64_26100.4946_by_somov.iso"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+            <a class="torrent-link" href="https://dl.somov.org/ru-ru_windows_11_iot_enterprise_ltsc_2024_x64_26100.4946_by_somov.iso.torrent"><span class="lang-en">Download by torrent</span><span class="lang-ru">Скачать с помощью torrent</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-left">
+          <div class="card-info">
+            <a href="/windows-10-en/" class="card-title">
+                <span class="lang-en">Windows 10 release information</span>
+                <span class="lang-ru">Сведения о выпуске Windows 10</span>
+            </a>
+            <div class="card-details">
+              <span class="lang-en">Language: English<br></span><span class="lang-ru">Язык: Английский<br></span>
+              <span class="lang-en">Update: 19044.6218 (August 2025)<br></span><span class="lang-ru">Обновление: 19044.6218 (Август 2025)<br></span>
+              <span class="lang-en">Edition: IoT Enterprise LTSC<br></span><span class="lang-ru">Издание: IoT Enterprise LTSC<br></span>
+              <span class="lang-en">Version: 21H2<br></span><span class="lang-ru">Версия: 21H2<br></span>
+              <span class="lang-en">Author: somov<br></span><span class="lang-ru">Автор: somov<br></span>
+              <a href="/windows-10-en/" class="card-link">
+                <span class="lang-en">More Details...</span>
+                <span class="lang-ru">Подробнее...</span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/en-us_windows_10_iot_enterprise_ltsc_2021_x64_19044.6218_by_somov.iso"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+            <a class="torrent-link" href="https://dl.somov.org/en-us_windows_10_iot_enterprise_ltsc_2021_x64_19044.6218_by_somov.iso.torrent"><span class="lang-en">Download by torrent</span><span class="lang-ru">Скачать с помощью torrent</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-left">
+          <div class="card-info">
+            <a href="/windows-10-ru/" class="card-title">
+                <span class="lang-en">Windows 10 release information</span>
+                <span class="lang-ru">Сведения о выпуске Windows 10</span>
+            </a>
+            <div class="card-details">
+              <span class="lang-en">Language: Russian<br></span><span class="lang-ru">Язык: Русский<br></span>
+              <span class="lang-en">Update: 19044.6218 (August 2025)<br></span><span class="lang-ru">Обновление: 19044.6218 (Август 2025)<br></span>
+              <span class="lang-en">Edition: IoT Enterprise LTSC<br></span><span class="lang-ru">Издание: IoT Enterprise LTSC<br></span>
+              <span class="lang-en">Version: 21H2<br></span><span class="lang-ru">Версия: 21H2<br></span>
+              <span class="lang-en">Author: somov<br></span><span class="lang-ru">Автор: somov<br></span>
+              <a href="/windows-10-ru/" class="card-link">
+                <span class="lang-en">More Details...</span>
+                <span class="lang-ru">Подробнее...</span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="card-right">
+          <div class="card-actions">
+            <a class="btn" href="https://dl.somov.org/ru-ru_windows_10_iot_enterprise_ltsc_2021_x64_19044.6218_by_somov.iso"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+            <a class="torrent-link" href="https://dl.somov.org/ru-ru_windows_10_iot_enterprise_ltsc_2021_x64_19044.6218_by_somov.iso.torrent"><span class="lang-en">Download by torrent</span><span class="lang-ru">Скачать с помощью torrent</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-left">
+          <div class="card-info">
+            <a href="/ghost-spectre/" class="card-title">
+                <span class="lang-en">Windows 10/11 download page</span>
+                <span class="lang-ru">Страница загрузки Windows 10/11</span>
+            </a>
+            <div class="card-details">
+              <span class="lang-en">Language: English<br></span><span class="lang-ru">Язык: Английский<br></span>
+              <span class="lang-en">Edition: Pro/IoT Enterprise LTSC<br></span><span class="lang-ru">Издание: Pro/IoT Enterprise LTSC<br></span>
+              <span class="lang-en">Version: 20H1-22H2/23H2/24H2<br></span><span class="lang-ru">Версия: 20H1-22H2/23H2/24H2<br></span>
+              <span class="lang-en">Author: Ghost Spectre<br></span><span class="lang-ru">Автор: Ghost Spectre<br></span>
+              <a href="/ghost-spectre/" class="card-link">
+                <span class="lang-en">More Details...</span>
+                <span class="lang-ru">Подробнее...</span>
+              </a>
+          </div>
+        </div>
+        <!-- Нет card-right, т.к. нет кнопок -->
+      </section>
+    </main>
+  </div>
+    <footer>
+      <div class="footer-menu">
+        <span class="lang-en">
+            <a href="https://ko-fi.com/somov" target="_blank">Buy me a coffee</a> /
+            <a href="https://yoomoney.ru/to/4100118200965581" target="_blank">Tips via YooMoney</a> /
+            <span class="copyable-footer-item" data-full-address="1Bf7A9JZHuDzu7yTzNqEL9q8KHHfgjMZgu" title="Click to copy">
+                <span class="btc-label">BTC:</span> <span class="btc-address">1Bf7A...gjMZgu</span>
+                <img src="/images/copy_icon.svg" alt="Copy" class="copy-icon">
+                <span class="copy-feedback">Copied!</span>
+            </span>
+        </span>
+        <span class="lang-ru">
+            <a href="https://ko-fi.com/somov" target="_blank">Купить кофе</a> /
+            <a href="https://yoomoney.ru/to/4100118200965581" target="_blank">Чаевые через ЮMoney</a> /
+            <span class="copyable-footer-item" data-full-address="1Bf7A9JZHuDzu7yTzNqEL9q8KHHfgjMZgu" title="Нажмите, чтобы скопировать">
+                <span class="btc-label">BTC:</span> <span class="btc-address">1Bf7A...gjMZgu</span>
+                <img src="/images/copy_icon.svg" alt="Копировать" class="copy-icon">
+                <span class="copy-feedback">Скопировано!</span>
+            </span>
+        </span>
+      </div>
+      <div class="footer-bottom">
+        <span class="footer-links">&copy; somov.org</span>
+      </div>
+    </footer>
+   <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // --- Language Switcher Logic ---
+    const langSwitchers = document.querySelectorAll('.lang-switch-btn');
+
+    function setLanguage(lang) {
+        document.documentElement.lang = lang; // Update lang attribute on <html>
+        if (lang === 'ru') {
+            document.documentElement.classList.add('lang-ru-active');
+            document.documentElement.classList.remove('lang-en-active');
+        } else {
+            document.documentElement.classList.add('lang-en-active');
+            document.documentElement.classList.remove('lang-ru-active');
+        }
+        localStorage.setItem('siteLanguage', lang); // Save user's choice
+        updateActiveButton(lang);
+    }
+
+    function updateActiveButton(lang) {
+        langSwitchers.forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.lang === lang) {
+                btn.classList.add('active');
+            }
+        });
+    }
+
+    langSwitchers.forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault(); // Prevent page jump
+            setLanguage(button.dataset.lang);
+        });
+    });
+
+    // On page load, set active button based on the class set by the head script
+    updateActiveButton(document.documentElement.lang);
+
+    // --- Copy to Clipboard Logic ---
+    const copyTriggers = document.querySelectorAll('.copyable-footer-item');
+
+    copyTriggers.forEach(trigger => {
+        trigger.addEventListener('click', function() {
+            const textToCopy = this.dataset.fullAddress;
+            const feedbackElement = this.querySelector('.copy-feedback');
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                // Hide any other visible feedback messages
+                document.querySelectorAll('.copyable-footer-item .copy-feedback').forEach(fb => {
+                    fb.style.display = 'none';
+                });
+
+                // Show current feedback message
+                if (feedbackElement) {
+                    feedbackElement.style.display = 'block';
+                    setTimeout(() => {
+                        feedbackElement.style.display = 'none';
+                    }, 2000); // Hide after 2 seconds
+                }
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        });
+    });
+});
+</script>         
+</body>
+</html>

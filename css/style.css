@@ -1,0 +1,655 @@
+/* Сброс стилей */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%; /* Обеспечивает корректную базу для высоты body */
+}
+
+body {
+  background: #222;
+  color: #b8bfc2;
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-size: 1.15em;
+  min-height: 100vh;
+  display: flex;            /* Делаем body flex-контейнером */
+  flex-direction: column;   /* Его потомки располагаются в колонку */
+}
+
+.main-wrapper {
+  max-width: 945px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;             /* Заполнение свободного пространства на десктопе */
+  width: 100%;              /* Для корректной работы margin: 0 auto с max-width */
+}
+
+/* Header */
+.header-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 0 8px 0;
+  color: #ffffff;
+  font-size: 0.96em;
+  width: 100%;
+}
+
+header {
+  margin-top: 10px;
+  position: relative;       /* Для размещения абсолютно позиционированного заголовка */
+}
+
+/*
+  Заголовок сайта (.site-title)
+  В десктопной версии мы используем абсолютное позиционирование.
+  Значение left рассчитывается так, чтобы компенсировать центральное выравнивание
+  main-wrapper (макс. ширина 945px), и добавить отступ 10px от левого края окна.
+*/
+.header-title-container {
+  position: absolute;
+  top: 10px;
+  left: calc((945px - 100vw) / 2 + 70px); /* Эквивалентно, но может быть понятнее */
+  display: flex;
+  align-items: baseline;
+  gap: 15px;
+  z-index: 10;
+}
+
+.site-title {
+  /* position, top, left, z-index были перенесены в .header-title-container */
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.18em;
+  letter-spacing: 0.5px;
+  z-index: 10;
+  text-decoration: none;
+}
+
+.header-social-icons {
+  position: absolute;
+  top: 10px; /* На одном уровне с .site-title */
+  /* Используем тот же принцип расчета, что и для .site-title, но для правого края */
+  /* Это разместит иконки на расстоянии ~70px от правого края viewport на широких экранах */
+  right: calc((945px - 100vw) / 2 + 70px);
+  display: flex;
+  align-items: center;
+  z-index: 10;
+  color: #ffffff; /* Чтобы разделитель " / " был белым */
+}
+.header-social-icons a {
+  color: #ffffff;
+  text-decoration: underline;
+  text-decoration-thickness: 0.01px; /* Как в .footer-links a */
+  text-underline-offset: 2px;      /* Как в .footer-links a */
+  font-weight: 300;                /* Как в .footer-links a */
+  font-size: 0.93em;               /* Как у .footer-bottom, где находятся .footer-links */
+  transition: color 0.2s, text-decoration 0.2s;
+}
+.header-social-icons span.social-separator {
+  font-size: 0.93em; /* Такой же размер шрифта, как у ссылок */
+  font-weight: 300;  /* Такой же вес шрифта, как у ссылок */
+  color: #ffffff;    /* Явно задаем цвет, хотя он наследуется */
+  padding: 0 0.35em; /* Добавляем отступы слева и справа от слеша. 0.35em ~ 5-6px */
+}
+.header-social-icons a:hover {
+  text-decoration: none;
+  color: #fff;
+}
+.header-logo-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 40px 0 36px 0; 
+}
+
+.header-logo-center img {
+  height: 80px;
+  width: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #ffffff;
+}
+
+/* Language Switcher Styles */
+.lang-switcher {
+  text-align: center;
+  font-size: 1.18em; /* Match .site-title font-size */
+}
+.lang-switch-btn {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0 8px;
+}
+.lang-switch-btn.active {
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+/* Language Content Visibility */
+.lang-ru-active .lang-en, .lang-en-active .lang-ru { display: none;
+}
+
+/* Если нужна подпись под логотипом */
+.logo-caption {
+  color: #fff;
+  font-size: 1.1em;
+  margin-top: 10px;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+.header-logo img {
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #e9f4f7;
+}
+
+.header-desc {
+  margin: 18px 0 0 0;
+  background: #343434;
+  padding: 55px 0;
+  text-align: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 1.15em;
+  font-weight: 300;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.header-desc a {
+  color: #fff;
+  text-decoration: underline;
+  transition: color 0.2s, text-decoration 0.2s;
+}
+
+.header-desc a:hover {
+  color: #fff;
+  text-decoration: none;
+}
+
+.return-link {
+  color: #ffffff;
+  font-size: 0.9em;
+  margin-top: 4px;
+  width: max-content;
+  font-weight: 200;
+  text-decoration: underline;
+  text-decoration-thickness: 0.5px;
+  text-underline-offset: 3px;
+  transition: color 0.2s;
+}
+
+/* Main */
+main {
+  flex: 1 1 auto;
+}
+
+/* Карточки */
+.card {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: stretch;
+  background: #343434;
+  margin: 20px 0;
+  padding: 55px 70px 75px 70px;
+  gap: 0;
+  border-radius: 8px; /* Добавляем скругление углам */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Добавляем легкую тень для глубины */
+}
+
+.card-left {
+  width: 100%;
+}
+
+.card-right {
+  width: 100%;
+  display: flex;              /* Делаем card-right flex-контейнером */
+  flex-direction: column;     /* Располагаем кнопки по вертикали */
+  justify-content: center;    /* Центрирование по вертикали */
+  align-items: center;        /* Центрирование по горизонтали */
+}
+
+.card-info {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card-title {
+  color: #ffffff;
+  font-size: 1em;
+  text-decoration: underline;
+  text-decoration-thickness: 0.5px;
+  text-underline-offset: 3px;
+  margin-bottom: 30px;
+  font-weight: 300;
+  transition: color 0.2s;
+}
+.card-title:hover {
+  text-decoration: none;
+  color: #fff;
+}
+
+.card-details {
+  font-size: 1em;
+  color: #ffffff;
+  margin: 0;
+  font-weight: 300;
+  line-height: 1.6;
+}
+
+.card-text {
+  font-size: 1em;
+  color: #ffffff;
+  margin-bottom: 16px;
+  font-weight: 300;
+  line-height: 1.6;
+  overflow-wrap: break-word;
+}
+
+/* Уменьшение отступа, если список внутри card-details */
+.card > .card-details:only-child > .card-text:only-child {
+  margin-bottom: 0;
+}
+
+.card-link {
+  color: #ffffff;
+  font-size: 1em;
+  margin-top: 4px;
+  width: max-content;
+  font-weight: 300;
+  text-decoration: underline;
+  text-decoration-thickness: 0.5px;
+  text-underline-offset: 3px;
+  transition: color 0.2s;
+}
+.card-link:hover {
+  text-decoration: none;
+  color: #fff;
+}
+
+.card-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9em;
+}
+
+.card:last-of-type {
+  margin-bottom: 10px;
+  padding-bottom: 55px;
+}
+
+.updated {
+  color: #fff;
+  font-size: 1.5em;
+  margin-bottom: 10px;
+}
+
+/* Кнопки */
+.btn {
+  background: #222222;
+  color: #fff;
+  font-size: 1em;
+  height: 70px;
+  width: 300px;
+  padding: 0 60px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  margin-bottom: 2px;
+  font-family: inherit;
+  text-align: center;
+  font-weight: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25); /* Добавляем легкую тень */
+}
+.btn:hover {
+  background: #282828;
+  color: #ffffff;
+}
+
+.btn-windows {
+  background: #222222;
+  color: #fff;
+  font-size: 1em;
+  height: 80px;
+  width: 100%;
+  max-width: 600px;
+  padding: 0 60px;
+  padding-left: 20px;
+  padding-right: 20px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  margin-bottom: 2px;
+  font-family: inherit;
+  text-align: center;
+  font-weight: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25); /* Добавляем легкую тень */
+
+}
+.btn-windows:hover {
+  background: #282828;
+  color: #ffffff;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.torrent-link {
+  color: #ffffff;
+  font-size: 0.8em;
+  text-decoration: underline;
+  text-decoration-thickness: 0.5px;
+  text-underline-offset: 3px;
+  margin-top: 5px;
+  transition: color 0.2s;
+  font-weight: 300;
+}
+.torrent-link:hover {
+  text-decoration: none;
+  color: #fff;
+}
+
+/* Footer */
+footer {
+  margin: 0 0 8px 0;
+  color: #ffffff;
+  font-size: 0.96em;
+  width: 100%;
+}
+
+.footer-menu {
+  text-align: center;
+  margin-top: 15px;
+  margin-bottom: 50px;
+}
+.footer-menu a {
+  color: #ffffff;
+  text-decoration: underline;
+  text-decoration-thickness: 0.01px;
+  text-underline-offset: 2px;
+  margin: 0 2px;
+  font-size: 1em;
+  transition: color 0.2s;
+  font-weight: 300;
+}
+.footer-menu a:hover {
+  text-decoration: none;
+  color: #fff;
+}
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 0.93em;
+  margin: 0 8px;
+  padding: 45px 55px 50px 80px;
+  font-weight: 300;
+}
+
+.footer-links {
+  text-align: right;
+}
+.footer-links a {
+  color: #ffffff;
+  text-decoration: underline;
+  text-decoration-thickness: 0.01px;
+  text-underline-offset: 2px;
+  margin: 0 2px;
+  transition: color 0.2s;
+  font-weight: 300;
+}
+.footer-links a:hover {
+  text-decoration: none;
+  color: #fff;
+}
+
+.settings-header {
+  margin-bottom: 70px;
+  position: relative;
+}
+
+.card-details ol {
+  margin-left: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding-left: 20px;
+}
+
+.card-details ol li {
+  margin-bottom: 10px;
+}
+
+.marker-list {
+  list-style-type: none;
+  padding-left: 10px !important;
+}
+.marker-list li::before {
+  content: "• ";
+  font-weight: bold;
+}
+
+/* Gallery */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-top: 1.5em;
+  margin-bottom: -30px;
+}
+
+.gallery a {
+  aspect-ratio: 1/1;
+  overflow: hidden;
+  display: block;
+  border-radius: 6px;
+}
+
+.gallery img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.2s ease;
+}
+
+.gallery img:hover {
+  transform: scale(1.04);
+}
+
+.full-width-section {
+  width: 100%;
+  background: #343434;
+  padding: 40px 0;
+}
+
+/* Специальное правило для десктопа */
+.settings-header + main > .card:first-child .full-width-section {
+  padding-top: 15px;
+}
+/* Уменьшаем верхний отступ для первой карточки на странице windows-11-en (десктоп) */
+.settings-header + main > .card:first-child {
+  padding-top: 40px; /* Уменьшено с 55px */
+}
+  .copyable-footer-item {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
+      text-decoration: none;
+  }
+  .copyable-footer-item .copy-icon {
+      height: 14px;
+      margin-left: 5px;
+  }
+  .copyable-footer-item .copy-feedback {
+      position: absolute;
+      bottom: 150%;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #333;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      white-space: nowrap;
+      z-index: 10;
+      display: none;
+  }
+  /* Стили для разделения BTC адреса в футере */
+.copyable-footer-item .btc-label {
+  margin-right: 5px;
+}
+
+.copyable-footer-item .btc-address {
+  font-family: 'Courier New', Courier, monospace; /* Классический моноширинный шрифт */
+  background-color: rgba(255, 255, 255, 0.08); /* Легкий фон для выделения */
+  padding: 2px 5px;
+  border-radius: 4px;
+  letter-spacing: 0.5px; /* Небольшое увеличение расстояния между буквами */
+  line-height: 1;
+}
+
+/* Адаптивные стили для мобильных */
+@media (max-width: 700px) {
+  .main-wrapper {
+    max-width: 99vw;
+    border-radius: 0;
+    padding: 0 20px;
+    /* Отменяем растяжение основного блока */
+    flex-grow: 0;
+  }
+  header {
+    margin-top: 20px; /* Добавляем верхний отступ для хедера на главной в мобильной версии */
+  }
+  .settings-header {
+    margin-top: 20px; /* Добавляем верхний отступ для хедера на других страницах в мобильной версии */
+  }
+
+  /* На мобильных переопределяем заголовок для центрирования: */
+  .header-title-container {
+    position: absolute;
+    top: 0px;
+    left: 50%;
+    transform: translateX(-50%);
+    flex-direction: column;
+    gap: 5px;
+    width: 100%; /* Для корректного центрирования */
+    align-items: center;
+  }
+
+  .header-social-icons {
+    position: static; /* Возвращаем в поток документа */
+    /* Сбрасываем позиционирование с десктопа */
+    left: auto;
+    right: auto;
+    top: auto;
+    /* Размещаем под заголовком .site-title */
+    /* Отступ от нового блока с заголовком и переключателем языков */
+    margin-top: 65px;  
+    margin-bottom: 15px; /* Отступ снизу до .header-logo-center */
+    justify-content: center; /* Центрируем иконки */
+  }
+  .settings-header .header-social-icons {
+    margin-bottom: -40px; /* Уменьшенный отступ снизу */
+  }
+  .header-logo-center {
+    margin-top: 10px; /* Уменьшаем отступ сверху, т.к. иконки теперь занимают место и имеют margin-bottom */
+  }
+
+  .header-desc {
+    flex-direction: column;
+    padding: 45px 20px;
+    gap: 10px;
+  }
+  
+  /* Перестройка карточек в колонку */
+  .card {
+    flex-direction: column;
+    padding: 30px 20px;
+    gap: 25px;
+  }
+  
+  .settings-header + main > .card:first-child {
+    gap: 10px;
+    padding-top: 15px;
+  }
+  
+  .settings-header + main > .card:first-child .full-width-section {
+    padding-top: 10px;
+  }
+  
+  .card-left {
+    width: 100%;
+    align-items: flex-start;
+  }
+  .card-right {
+    width: 100%;
+    align-items: center;
+  }
+  
+  .card-actions {
+    align-items: center;
+    min-width: 0;
+  }
+
+  .card:last-of-type {
+  padding-bottom: 35px;
+}
+  .btn {
+    width: 100%;
+    max-width: 280px;
+  }
+  
+  .footer-menu {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    line-height: 1.8;
+  }
+  
+  .footer-bottom {
+    flex-direction: column;
+    gap: 6px;
+    text-align: center;
+    padding: 20px 15px;
+  }
+  
+  .gallery {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .gallery {
+    grid-template-columns: 1fr;
+  }
+}
