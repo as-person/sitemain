@@ -103,13 +103,29 @@
               <span class="lang-en">Bandwidth: ~1 Gbps<br></span><span class="lang-ru">Пропускная способность: ~1 Гбит/с<br></span>
               <span class="lang-en">Compatibility: Windows, iOS, Android, TV, Linux, macOS<br></span><span class="lang-ru">Совместимость: Windows, iOS, Android, TV, Linux, macOS<br></span>
               <span class="lang-en">Status: Verified / Recommended<br></span><span class="lang-ru">Статус: Рекомендовано (Verified)<br></span>
+              <br><span class="lang-en">
+                Promo code:
+                <span class="copy-promo" data-code="WINDOWS">
+                  WINDOWS
+                  <span class="promo-feedback">Copied!</span>
+                </span>
+                (send to bot)<br>7 days VPN free
+              </span>
+              <span class="lang-ru">
+                Промокод:
+                <span class="copy-promo" data-code="WINDOWS">
+                  WINDOWS
+                  <span class="promo-feedback">Скопировано!</span>
+                </span>
+                (отправьте боту)<br>7 дней VPN бесплатно
+              </span>
             </div>
           </div>
         </div>
         <div class="card-right">
           <div class="card-actions">
-            <a class="btn" href="https://t.me/vycevpn_bot" target="_blank"><span class="lang-en">24h Trial</span><span class="lang-ru">Тест 24 часа</span></a>
-            <a class="torrent-link" href="https://t.me/vycevpn_bot" target="_blank"><span class="lang-en">No card linking required</span><span class="lang-ru">Без привязки карты</span></a>
+            <a class="btn" href="https://t.me/vycevpn_bot" target="_blank"><span class="lang-en">Go to bot</span><span class="lang-ru">Перейти в бот</span></a>
+            <a class="torrent-link" href="https://t.me/vycevpn_bot" target="_blank"><span class="lang-en">Chat with support</span><span class="lang-ru">Чат с поддержкой</span></a>
           </div>
         </div>
       </section>
@@ -308,6 +324,36 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    // КОПИРОВАНИЕ ПРОМОКОДА
+    const promoTriggers = document.querySelectorAll(".copy-promo");
+
+    promoTriggers.forEach(trigger => {
+        trigger.addEventListener("click", function() {
+            const code = this.dataset.code;
+            const feedback = this.querySelector(".promo-feedback");
+
+            navigator.clipboard.writeText(code).then(() => {
+                // скрыть остальные сообщения
+                document.querySelectorAll(".promo-feedback").forEach(fb => {
+                    fb.style.display = "none";
+                });
+
+                // показать текущее
+                feedback.style.display = "block";
+
+                // скрыть через 2 сек
+                setTimeout(() => {
+                    feedback.style.display = "none";
+                }, 2000);
+            });
+        });
+    });
+
 });
 </script>
 <canvas id="snow"></canvas>
