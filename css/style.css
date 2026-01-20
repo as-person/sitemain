@@ -398,6 +398,7 @@ main {
   cursor: pointer;
 
   transition: transform 0.18s ease, background 0.25s ease;
+  text-decoration: none !important;
 }
 
 .btn-windows:hover {
@@ -408,10 +409,12 @@ main {
     #7b77ff 50%,
     #b36bff 100%
   );
+  text-decoration: none !important;
 }
 
 .btn-windows:active {
   transform: translateY(0);
+  text-decoration: none !important;
 }
 
 
