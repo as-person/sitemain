@@ -807,3 +807,53 @@ footer {
     grid-template-columns: 1fr;
   }
 }
+/* --- CLEAN MOBILE HEADER FIX --- */
+@media (max-width: 700px) {
+
+  /* 1. Заголовок контейнера — убрать absolute */
+  .header-title-container {
+    position: static !important;
+    transform: none !important;
+    left: auto !important;
+    top: auto !important;
+
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+
+    margin-bottom: 10px;
+  }
+
+  /* 2. Сам заголовок */
+  .site-title {
+    margin-bottom: 0;
+  }
+
+  /* 3. Переключатель языков */
+  .lang-switcher {
+    margin: 0;
+    font-size: 1em;
+  }
+
+  /* 4. Социальные ссылки */
+  .header-social-icons {
+    position: static !important;
+    margin: 5px 0 10px 0 !important;
+    justify-content: center;
+  }
+
+  /* 5. Логотип */
+  .header-logo-center {
+    margin-top: 10px !important;
+  }
+}
+@media (max-width: 700px) {
+
+  /* Воздух между ссылками и логотипом */
+  .header-social-icons {
+    margin-bottom: 18px !important;
+  }
+
+}
