@@ -19,25 +19,28 @@ document.addEventListener("DOMContentLoaded", () => {
   let windTarget = 0;
   let windTimer = 0;
 
+  // ——— Плавный ветер ———
   function updateWind() {
     windTimer++;
-    if (windTimer > 120) {
+    if (windTimer > 240) {               
       windTimer = 0;
-      windTarget = (Math.random() - 0.5) * 0.6;
+      windTarget = (Math.random() - 0.5) * 0.3; 
     }
-    wind += (windTarget - wind) * 0.01;
+    wind += (windTarget - wind) * 0.003; 
   }
 
+  // ——— Создание снежинок ———
   for (let i = 0; i < COUNT; i++) {
     flakes.push({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
-      r: Math.random() * 0.7 + 0.35, // ❄ ещё меньше
+      r: Math.random() * 0.7 + 0.35,
       s: Math.random() * 0.6 + 0.3,
       driftSeed: Math.random() * 1000,
     });
   }
 
+  // ——— Анимация ———
   function animate(t) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -50,7 +53,9 @@ document.addEventListener("DOMContentLoaded", () => {
       ctx.fill();
 
       f.y += f.s;
-      f.x += wind + Math.sin(t * 0.001 + f.driftSeed) * 0.15;
+
+      // Плавное левое/правое смещение
+      f.x += wind + Math.sin(t * 0.0004 + f.driftSeed) * 0.08;
 
       if (f.y > canvas.height) {
         f.y = -5;
