@@ -19,6 +19,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let windTarget = 0;
   let windTimer = 0;
 
+  // Определяем мобильное устройство
+  const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
+
   // ——— Плавный ветер ———
   function updateWind() {
     windTimer++;
@@ -34,8 +37,12 @@ document.addEventListener("DOMContentLoaded", () => {
     flakes.push({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
+
       r: Math.random() * 0.7 + 0.35,
-      s: Math.random() * 0.6 + 0.3,
+
+      // Ускоряем падение на мобильных (около +60%)
+      s: (Math.random() * 0.6 + 0.3) * (isMobile ? 1.6 : 1),
+
       driftSeed: Math.random() * 1000,
     });
   }
@@ -52,6 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
       ctx.fill();
 
+      // Вертикальная скорость (с учётом ускорения на мобильных)
       f.y += f.s;
 
       // Плавное левое/правое смещение
