@@ -13,14 +13,16 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("resize", resize);
 
   const flakes = [];
-  const COUNT = 110;
+
+  // Определяем мобильное устройство
+  const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
+
+  // Кол-во снега: меньше на мобильных
+  const COUNT = isMobile ? 60 : 110;
 
   let wind = 0;
   let windTarget = 0;
   let windTimer = 0;
-
-  // Определяем мобильное устройство
-  const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
 
   // ——— Плавный ветер ———
   function updateWind() {
@@ -59,10 +61,9 @@ document.addEventListener("DOMContentLoaded", () => {
       ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
       ctx.fill();
 
-      // Вертикальная скорость (с учётом ускорения на мобильных)
       f.y += f.s;
 
-      // Плавное левое/правое смещение
+      // Плавное боковое смещение
       f.x += wind + Math.sin(t * 0.0004 + f.driftSeed) * 0.08;
 
       if (f.y > canvas.height) {
