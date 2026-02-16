@@ -45,11 +45,6 @@
       </div>
       <div class="header-social-icons">
           <a href="https://t.me/windows_by_somov" target="_blank" aria-label="Telegram">Telegram</a><span class="social-separator">/</span><a href="mailto:me@somov.org" aria-label="Email">me@somov.org</a>
-        <span class="social-separator">/</span>
-        <a href="#" id="toggle-snow">
-          <span class="lang-en">Snow: ON</span>
-          <span class="lang-ru">Снег: Вкл</span>
-        </a>
       </div>
     </header>
     <main>
@@ -207,50 +202,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-</script>
-<canvas id="snow"></canvas>
-<script src="/snow.js"></script>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    const canvas = document.getElementById("snow");
-    const toggleBtn = document.getElementById("toggle-snow");
-
-    let snowEnabled = localStorage.getItem("snowEnabled");
-    if (snowEnabled === null) snowEnabled = "on";
-
-    function applyState() {
-        const isRu = document.documentElement.classList.contains("lang-ru-active");
-        const enText = toggleBtn.querySelector(".lang-en");
-        const ruText = toggleBtn.querySelector(".lang-ru");
-
-        if (snowEnabled === "on") {
-            canvas.style.display = "block";
-            enText.textContent = "Snow: ON";
-            ruText.textContent = "Снег: Вкл";
-        } else {
-            canvas.style.display = "none";
-            enText.textContent = "Snow: OFF";
-            ruText.textContent = "Снег: Выкл";
-        }
-    }
-
-    applyState();
-
-    toggleBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        snowEnabled = (snowEnabled === "on") ? "off" : "on";
-        localStorage.setItem("snowEnabled", snowEnabled);
-        applyState();
-    });
-
-    // Переключение языка — обновить текст
-    const langButtons = document.querySelectorAll(".lang-switch-btn");
-    langButtons.forEach(btn => {
-        btn.addEventListener("click", () => {
-            setTimeout(applyState, 0);
-        });
-    });
-});
 </script>
 </body>
 </html>
