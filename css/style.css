@@ -19,6 +19,54 @@ body {
   flex-direction: column;   /* Его потомки располагаются в колонку */
 }
 
+/* ############## */
+/* --- ВЕСЕННИЕ ЛЕПЕСТКИ (ФИНАЛЬНЫЙ ВАРИАНТ) --- */
+.spring-hint-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999; /* Жестко поверх всего сайта */
+  overflow: hidden;
+}
+
+.petal {
+  position: absolute;
+  background-color: rgba(255, 183, 197, 0.9); /* Плотный розовый, чтобы не терялся */
+  border-radius: 50% 10% 50% 10%;
+  box-shadow: 0 0 12px rgba(255, 183, 197, 0.6);
+  opacity: 0;
+}
+
+/* Секрет редкости: лепесток падает только первые 25% времени анимации,
+  а остальные 75% времени цикла он "отдыхает" невидимым за кадром.
+*/
+@keyframes loFiPetal {
+  0% { top: -10vh; opacity: 0; transform: translateX(0) rotate(0deg); }
+  5% { opacity: 0.9; } 
+  15% { opacity: 0.9; top: 50vh; transform: translateX(40px) rotate(180deg); }
+  25% { opacity: 0; top: 110vh; transform: translateX(-20px) rotate(360deg); }
+  100% { top: 110vh; opacity: 0; transform: translateX(0) rotate(360deg); }
+}
+
+.petal-1 {
+  width: 14px; height: 16px; left: 15vw;
+  animation: loFiPetal 40s ease-in-out infinite; 
+  animation-delay: 1s; /* Вылетит через 1 секунду после обновления */
+}
+
+.petal-2 {
+  width: 18px; height: 20px; left: 65vw;
+  animation: loFiPetal 55s ease-in-out infinite;
+  animation-delay: 18s; /* Вылетит через 18 секунд */
+}
+
+.petal-3 {
+  width: 12px; height: 14px; left: 85vw;
+  animation: loFiPetal 70s ease-in-out infinite;
+  animation-delay: 38s; /* Вылетит через 38 секунд */
+}
+/* ############## */
+
 .main-wrapper {
   max-width: 945px;
   margin: 0 auto;
