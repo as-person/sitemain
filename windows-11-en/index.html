@@ -53,7 +53,7 @@
             <div class="card-text"><a href="/" class="return-link"><span class="lang-en"><b>Return to Home</b></span><span class="lang-ru"><b>Вернуться на главную</b></span></a></div>
             <div class="card-text"><span class="lang-en">Language: English</span><span class="lang-ru">Язык: Английский</span></div>
             <div class="card-text"><span class="lang-en">Windows 11 IoT Enterprise LTSC (Long-Term Servicing Channel) is a lightweight version of Windows with long-term support, designed for stable performance on embedded devices and specialized systems. It excludes unnecessary apps, reducing system requirements and making it an ideal solution where reliability and minimal interference are critical.</span><span class="lang-ru">Windows 11 IoT Enterprise LTSC (Long-Term Servicing Channel) — это облегченная версия Windows с долгосрочной поддержкой, разработанная для стабильной работы на встраиваемых устройствах и специализированных системах. Она исключает ненужные приложения, снижая системные требования и делая ее идеальным решением там, где критически важны надежность и минимальное вмешательство.</span></div>
-            <div class="updated"><span class="lang-en"><b>TPM, Secure Boot, and OOBE checks are disabled,<br>Updated to 26100.7922 Preview (February 2026) by somov</b></span><span class="lang-ru"><b>Проверки TPM, Secure Boot и OOBE отключены,<br>Обновлено до 26100.7922 Предварительная версия (Февраль 2026) by somov</b></span></div>
+            <div class="updated"><span class="lang-en"><b>TPM, Secure Boot, and OOBE checks are disabled,<br>Updated to 26100.8037 (March 2026) by somov</b></span><span class="lang-ru"><b>Проверки TPM, Secure Boot и OOBE отключены,<br>Обновлено до 26100.8037 (Март 2026) by somov</b></span></div>
             <div class="card-text"><span class="lang-en"><b>System Requirements:</b></span><span class="lang-ru"><b>Системные требования:</b></span></div>
             <div class="card-text">
               <ol class="marker-list">
@@ -66,13 +66,13 @@
             </div>
             <div class="card-text"><span class="lang-en"><b>Image checksums:</b></span><span class="lang-ru"><b>Контрольные суммы образа:</b></span></div>
             <div class="card-text">
-              <ol class="marker-list"><li><b>CRC32:</b> 046cc330</li>
-              <li><b>MD5:</b> 32b05e3bad65fe90d441f6d038db2010</li>
-              <li><b>SHA-1:</b> 654143750c1c11abac725e9924457497d7081972</li>
+              <ol class="marker-list"><li><b>CRC32:</b> 8fe2a632</li>
+              <li><b>MD5:</b> 6e5280e5b952ee4f33eed12bef1d50c0</li>
+              <li><b>SHA-1:</b> a56dbdc805e22fd801d317b16ff2cecc45c15a1d</li>
             </ol></div>
             <div class="button-container">
-            <a class="btn-windows" href="https://dl3.somov.org/en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.7922_by_somov.iso"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
-            <a class="torrent-link" href="https://dl.somov.org/en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.7922_by_somov.iso.torrent"><span class="lang-en">Download by torrent</span><span class="lang-ru">Скачать с помощью torrent</span></a>
+            <a class="btn-windows" href="https://dl3.somov.org/en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.8037_by_somov.iso"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+            <a class="torrent-link" href="https://dl.somov.org/en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.8037_by_somov.iso.torrent"><span class="lang-en">Download by torrent</span><span class="lang-ru">Скачать с помощью torrent</span></a>
             </div>
   <div class="full-width-section">
     <div class="gallery">
@@ -202,65 +202,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-</script>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    // Создаем невидимый контейнер для лепестков поверх всего сайта
-    const container = document.createElement('div');
-    container.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden;';
-    document.body.appendChild(container);
-
-    function spawnPetal() {
-        const petal = document.createElement('div');
-        petal.classList.add('js-petal');
-        
-        // 1. Рандомный размер (от 12px до 20px)
-        const size = Math.random() * 8 + 12;
-        petal.style.width = `${size}px`;
-        petal.style.height = `${size + 2}px`;
-        
-        // 2. Рандомная стартовая позиция (по всей ширине экрана)
-        const startX = Math.random() * 100;
-        
-        // 3. Рандомное смещение по ветру (полетит влево или вправо на 10-20vw)
-        const endX = startX + (Math.random() * 30 - 15);
-        
-        // 4. Замедляем на 25%: теперь падение занимает от 20 до 40 секунд
-        const duration = Math.random() * 20000 + 20000; 
-        
-        container.appendChild(petal);
-        
-        // Запускаем анимацию
-        const animation = petal.animate([
-            { transform: `translate(${startX}vw, -5vh) rotate(0deg)`, opacity: 0 },
-            { opacity: 0.9, offset: 0.1 }, // Плавно появляется
-            { transform: `translate(${startX + (endX-startX)/2}vw, 50vh) rotate(180deg)`, opacity: 0.9, offset: 0.5 },
-            { transform: `translate(${endX}vw, 110vh) rotate(360deg)`, opacity: 0 } // Улетает за экран и исчезает
-        ], {
-            duration: duration,
-            easing: 'ease-in-out'
-        });
-        
-        // Как только лепесток упал — удаляем его из HTML
-        animation.onfinish = () => petal.remove();
-    }
-
-    function petalLoop() {
-        spawnPetal();
-        
-        // Шанс 30% на появление второго лепестка вдогонку
-        if (Math.random() < 0.3) {
-            setTimeout(spawnPetal, Math.random() * 4000 + 2000);
-        }
-        
-        // Пауза до следующего цикла: от 15 до 35 секунд тишины
-        const nextDelay = Math.random() * 20000 + 15000;
-        setTimeout(petalLoop, nextDelay);
-    }
-
-    // Запускаем первый лепесток через 2 секунды после загрузки сайта
-    setTimeout(petalLoop, 2000);
-});
 </script>
 </body>
 </html>

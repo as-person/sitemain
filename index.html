@@ -66,7 +66,7 @@
             </a>
             <div class="card-details">
               <span class="lang-en">Language: English<br></span><span class="lang-ru">Язык: Английский<br></span>
-              <span class="lang-en">Update: 26100.7922 Preview (February 2026)<br></span><span class="lang-ru">Обновление: 26100.7922 Предварительная версия (Февраль 2026)<br></span>
+              <span class="lang-en">Update: 26100.8037 (March 2026)<br></span><span class="lang-ru">Обновление: 26100.8037 (Март 2026)<br></span>
               <span class="lang-en">Edition: IoT Enterprise LTSC<br></span><span class="lang-ru">Издание: IoT Enterprise LTSC<br></span>
               <span class="lang-en">Version: 24H2<br></span><span class="lang-ru">Версия: 24H2<br></span>
               <span class="lang-en">Author: somov<br></span><span class="lang-ru">Автор: somov<br></span>
@@ -79,8 +79,8 @@
         </div>
         <div class="card-right">
           <div class="card-actions">
-            <a class="btn" href="https://dl3.somov.org/en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.7922_by_somov.iso"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
-            <a class="torrent-link" href="https://dl.somov.org/en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.7922_by_somov.iso.torrent"><span class="lang-en">Download by torrent</span><span class="lang-ru">Скачать с помощью torrent</span></a>
+            <a class="btn" href="https://dl3.somov.org/en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.8037_by_somov.iso"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+            <a class="torrent-link" href="https://dl.somov.org/en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.8037_by_somov.iso.torrent"><span class="lang-en">Download by torrent</span><span class="lang-ru">Скачать с помощью torrent</span></a>
           </div>
         </div>
       </section>
@@ -133,7 +133,7 @@
             </a>
             <div class="card-details">
               <span class="lang-en">Language: Russian<br></span><span class="lang-ru">Язык: Русский<br></span>
-              <span class="lang-en">Update: 26100.7922 Preview (February 2026)<br></span><span class="lang-ru">Обновление: 26100.7922 Предварительная версия (Февраль 2026)<br></span>
+              <span class="lang-en">Update: 26100.8037 (March 2026)<br></span><span class="lang-ru">Обновление: 26100.8037 (Март 2026)<br></span>
               <span class="lang-en">Edition: IoT Enterprise LTSC<br></span><span class="lang-ru">Издание: IoT Enterprise LTSC<br></span>
               <span class="lang-en">Version: 24H2<br></span><span class="lang-ru">Версия: 24H2<br></span>
               <span class="lang-en">Author: somov<br></span><span class="lang-ru">Автор: somov<br></span>
@@ -146,8 +146,8 @@
         </div>
         <div class="card-right">
           <div class="card-actions">
-            <a class="btn" href="https://dl3.somov.org/ru-ru_windows_11_iot_enterprise_ltsc_2024_x64_26100.7922_by_somov.iso"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
-            <a class="torrent-link" href="https://dl.somov.org/ru-ru_windows_11_iot_enterprise_ltsc_2024_x64_26100.7922_by_somov.iso.torrent"><span class="lang-en">Download by torrent</span><span class="lang-ru">Скачать с помощью torrent</span></a>
+            <a class="btn" href="https://dl3.somov.org/ru-ru_windows_11_iot_enterprise_ltsc_2024_x64_26100.8037_by_somov.iso"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
+            <a class="torrent-link" href="https://dl.somov.org/ru-ru_windows_11_iot_enterprise_ltsc_2024_x64_26100.8037_by_somov.iso.torrent"><span class="lang-en">Download by torrent</span><span class="lang-ru">Скачать с помощью torrent</span></a>
           </div>
         </div>
       </section>
@@ -314,65 +314,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-});
-</script>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    // Создаем невидимый контейнер для лепестков поверх всего сайта
-    const container = document.createElement('div');
-    container.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden;';
-    document.body.appendChild(container);
-
-    function spawnPetal() {
-        const petal = document.createElement('div');
-        petal.classList.add('js-petal');
-        
-        // 1. Рандомный размер (от 12px до 20px)
-        const size = Math.random() * 8 + 12;
-        petal.style.width = `${size}px`;
-        petal.style.height = `${size + 2}px`;
-        
-        // 2. Рандомная стартовая позиция (по всей ширине экрана)
-        const startX = Math.random() * 100;
-        
-        // 3. Рандомное смещение по ветру (полетит влево или вправо на 10-20vw)
-        const endX = startX + (Math.random() * 30 - 15);
-        
-        // 4. Замедляем на 25%: теперь падение занимает от 20 до 40 секунд
-        const duration = Math.random() * 20000 + 20000; 
-        
-        container.appendChild(petal);
-        
-        // Запускаем анимацию
-        const animation = petal.animate([
-            { transform: `translate(${startX}vw, -5vh) rotate(0deg)`, opacity: 0 },
-            { opacity: 0.9, offset: 0.1 }, // Плавно появляется
-            { transform: `translate(${startX + (endX-startX)/2}vw, 50vh) rotate(180deg)`, opacity: 0.9, offset: 0.5 },
-            { transform: `translate(${endX}vw, 110vh) rotate(360deg)`, opacity: 0 } // Улетает за экран и исчезает
-        ], {
-            duration: duration,
-            easing: 'ease-in-out'
-        });
-        
-        // Как только лепесток упал — удаляем его из HTML
-        animation.onfinish = () => petal.remove();
-    }
-
-    function petalLoop() {
-        spawnPetal();
-        
-        // Шанс 30% на появление второго лепестка вдогонку
-        if (Math.random() < 0.3) {
-            setTimeout(spawnPetal, Math.random() * 4000 + 2000);
-        }
-        
-        // Пауза до следующего цикла: от 15 до 35 секунд тишины
-        const nextDelay = Math.random() * 20000 + 15000;
-        setTimeout(petalLoop, nextDelay);
-    }
-
-    // Запускаем первый лепесток через 2 секунды после загрузки сайта
-    setTimeout(petalLoop, 2000);
 });
 </script>
 </body>
