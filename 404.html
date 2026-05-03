@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en"> <!-- The 'lang' attribute will be dynamically updated by JavaScript -->
+<head>
+  <meta charset="UTF-8">
+  <title>Windows by somov</title>
+<script>
+  // IIFE to set language class on <html> tag before content loads, to prevent FOUC
+  (function() {
+    const savedLang = localStorage.getItem('siteLanguage');    // Determine language: 1. localStorage, 2. default 'en'
+    const lang = savedLang || 'en';
+    document.documentElement.lang = lang;
+    if (lang === 'ru') {
+      document.documentElement.classList.add('lang-ru-active');
+    } else {
+      document.documentElement.classList.add('lang-en-active');
+    }
+  })();
+</script>
+</head>
+<body>
+  <div class="main-wrapper">
+    <header>
+      <div class="site-title">WINDOWS BY SOMOV</div>
+      <div class="header-social-icons">
+        <a href="https://t.me/windows_by_somov" target="_blank" aria-label="Telegram">Telegram</a><span class="social-separator">/</span><a href="mailto:me@somov.org" aria-label="Email">me@somov.org</a>
+        </div>
+      <div class="header-logo-center">
+        <img src="images/logo.png" alt="Windows by Somov" />
+        <div class="lang-switcher">
+          <a href="#" class="lang-switch-btn" data-lang="en">ENG</a>
+          <span>/</span>
+          <a href="#" class="lang-switch-btn" data-lang="ru">RUS</a>
+        </div>
+        <!-- Если нужна подпись под логотипом, раскомментируйте следующую строку -->
+        <!-- <div class="logo-caption">windows by somov</div> -->
+      </div>
+      <div class="header-desc">
+        <span class="lang-en">Page doesn't exist</span>
+        <span class="lang-ru">Страница не найдена</span>
+        <br><div class="card-text"><a href="/" class="return-link">
+          <b class="lang-en">Return to Home</b>
+          <b class="lang-ru">Вернуться на главную</b>
+        </a></div>
+      </div>
+    </header>
+
+
+    <footer>
+      <div class="footer-menu">
+        <span class="lang-en">
+            <a href="https://ko-fi.com/somov" target="_blank">Buy me a coffee</a> /
+            <a href="https://yoomoney.ru/to/4100118200965581" target="_blank">Tips via YooMoney</a> /
+            <span class="copyable-footer-item" data-full-address="1Bf7A9JZHuDzu7yTzNqEL9q8KHHfgjMZgu" title="Click to copy">
+                <span class="btc-label">BTC:</span> <span class="btc-address">1Bf7A...gjMZgu</span>
+                <img src="/images/copy_icon.svg" alt="Copy" class="copy-icon">
+                <span class="copy-feedback">Copied!</span>
+            </span>
+        </span>
+        <span class="lang-ru">
+            <a href="https://ko-fi.com/somov" target="_blank">Купить кофе</a> /
+            <a href="https://yoomoney.ru/to/4100118200965581" target="_blank">Чаевые через ЮMoney</a> /
+            <span class="copyable-footer-item" data-full-address="1Bf7A9JZHuDzu7yTzNqEL9q8KHHfgjMZgu" title="Нажмите, чтобы скопировать">
+                <span class="btc-label">BTC:</span> <span class="btc-address">1Bf7A...gjMZgu</span>
+                <img src="/images/copy_icon.svg" alt="Копировать" class="copy-icon">
+                <span class="copy-feedback">Скопировано!</span>
+            </span>
+        </span>
+      </div>
+      <div class="footer-bottom">
+        <span class="footer-links">&copy; somov.org</span>
+      </div>
+    </footer>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // --- Language Switcher Logic ---
+    const langSwitchers = document.querySelectorAll('.lang-switch-btn');
+
+    function setLanguage(lang) {
+        document.documentElement.lang = lang; // Update lang attribute on <html>
+        if (lang === 'ru') {
+            document.documentElement.classList.add('lang-ru-active');
+            document.documentElement.classList.remove('lang-en-active');
+        } else {
+            document.documentElement.classList.add('lang-en-active');
+            document.documentElement.classList.remove('lang-ru-active');
+        }
+        localStorage.setItem('siteLanguage', lang); // Save user's choice
+        updateActiveButton(lang);
+    }
+
+    function updateActiveButton(lang) {
+        langSwitchers.forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.lang === lang) {
+                btn.classList.add('active');
+            }
+        });
+    }
+
+    langSwitchers.forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault(); // Prevent page jump
+            setLanguage(button.dataset.lang);
+        });
+    });
+
+    // On page load, set active button based on the class set by the head script
+    updateActiveButton(document.documentElement.lang);
+
+    // --- Copy to Clipboard Logic ---
+    const copyTriggers = document.querySelectorAll('.copyable-footer-item');
+
+    copyTriggers.forEach(trigger => {
+        trigger.addEventListener('click', function() {
+            const textToCopy = this.dataset.fullAddress;
+            const feedbackElement = this.querySelector('.copy-feedback');
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                // Hide any other visible feedback messages
+                document.querySelectorAll('.copyable-footer-item .copy-feedback').forEach(fb => {
+                    fb.style.display = 'none';
+                });
+
+                // Show current feedback message
+                if (feedbackElement) {
+                    feedbackElement.style.display = 'block';
+                    setTimeout(() => {
+                        feedbackElement.style.display = 'none';
+                    }, 2000); // Hide after 2 seconds
+                }
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        });
+    });
+});
+</script>
+</body>
+</html>
