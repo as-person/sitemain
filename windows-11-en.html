@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Windows 11 IoT Enterprise LTSC [EN] - Windows by somov</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#212121">
+  <link rel="canonical" href="https://somov.org/windows-11-en">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4RBN0G8775"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-4RBN0G8775');
+</script>
+<script>
+  (function() {
+    const lang = localStorage.getItem('siteLanguage') || 'en';
+    document.documentElement.lang = lang;
+    document.documentElement.classList.add(lang === 'ru' ? 'lang-ru-active' : 'lang-en-active');
+  })();
+</script>
+<style>
+  :root {
+    --bg: #212121;
+    --surface: #2f2f2f;
+    --surface-hover: #3a3a3a;
+    --border: rgb(255 255 255 / .1);
+    --text: #ececec;
+    --muted: #b4b4b4;
+    --accent: #fff;
+    --on-accent: #0d0d0d;
+    --grad: linear-gradient(90deg, #3a8dff 0%, #6f6bff 50%, #a855f7 100%);
+    --radius: 16px;
+    --pill: 999px;
+    --mono: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    color: var(--text);
+    font: 400 16px/1.6 Inter, "Segoe UI", system-ui, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .lang-ru-active .lang-en, .lang-en-active .lang-ru { display: none; }
+  [hidden] { display: none !important; }
+
+  /* Header */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 20px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; white-space: nowrap; }
+  .brand img { width: 32px; height: 32px; border-radius: 50%; background: #fff; display: block; }
+  .topbar-actions { display: flex; align-items: center; gap: 16px; font-size: 14px; }
+  .text-link { color: var(--muted); transition: color .15s; }
+  .text-link:hover { color: var(--text); }
+  .lang-switcher { display: flex; padding: 3px; border-radius: var(--pill); background: var(--surface); }
+  .lang-switch-btn {
+    min-width: 36px;
+    padding: 3px 8px;
+    border-radius: var(--pill);
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+    transition: color .15s, background .15s;
+  }
+  .lang-switch-btn:hover { color: var(--text); }
+  .lang-switch-btn[aria-pressed="true"] { background: var(--grad); color: #fff; }
+
+  /* Document */
+  main { width: 100%; max-width: 768px; margin: 0 auto; padding: 8px 16px 56px; flex: 1; }
+  .back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 8px 0 24px;
+    color: var(--muted);
+    font-size: 14px;
+    transition: color .15s;
+  }
+  .back:hover { color: var(--text); }
+  .back svg { width: 16px; height: 16px; transition: transform .15s; }
+  .back:hover svg { transform: translateX(-3px); }
+
+  h1 { font-size: clamp(26px, 4vw, 32px); line-height: 1.2; font-weight: 600; letter-spacing: -.02em; }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+    margin-top: 12px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .meta .mono { font-family: var(--mono); font-size: 13px; }
+  .badge {
+    padding: 2px 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--pill);
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .badge-accent { background: rgb(255 255 255 / .1); }
+
+  .lead { margin-top: 20px; color: var(--muted); font-size: 16px; }
+
+  .callout {
+    margin-top: 20px;
+    padding: 16px 18px;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--text);
+    border-radius: 12px;
+    background: var(--surface);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* Download panel */
+  .download {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 24px;
+    padding: 20px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+  .dl-file { color: var(--muted); font-family: var(--mono); font-size: 12.5px; word-break: break-all; }
+  .dl-hint { margin-top: 4px; color: var(--muted); font-size: 13px; }
+  .dl-actions { display: flex; flex-direction: column; gap: 10px; flex: none; width: 200px; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 48px;
+    padding: 0 20px;
+    border-radius: var(--pill);
+    font-size: 15px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: background .15s, opacity .15s;
+  }
+  .btn-primary { background: var(--grad); color: #fff; }
+  .btn-primary:hover { filter: brightness(1.08); transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-secondary { font-weight: 500; border: 1px solid var(--border); }
+  .btn-secondary:hover { background: var(--surface-hover); }
+  .btn svg { width: 18px; height: 18px; }
+
+  /* Sections */
+  .section { margin-top: 44px; }
+  .section h2 { font-size: 20px; font-weight: 600; letter-spacing: -.01em; margin-bottom: 16px; }
+
+  .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .gallery a { aspect-ratio: 1/1; overflow: hidden; border-radius: 10px; display: block; border: 1px solid var(--border); }
+  .gallery img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .2s ease; }
+  .gallery a:hover img { transform: scale(1.05); }
+
+  .req { list-style: none; display: grid; gap: 10px; }
+  .req li { display: flex; gap: 12px; align-items: flex-start; font-size: 15px; }
+  .req li::before {
+    content: "";
+    flex: none;
+    width: 6px; height: 6px;
+    margin-top: 9px;
+    border-radius: 50%;
+    background: var(--muted);
+  }
+  .req b { font-weight: 600; }
+
+  .sums { display: grid; gap: 8px; }
+  .sum-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+  }
+  .sum-label { flex: none; width: 64px; color: var(--muted); font-size: 13px; font-weight: 600; }
+  .sum-val { flex: 1; min-width: 0; font-family: var(--mono); font-size: 12.5px; word-break: break-all; }
+  .copy-btn { flex: none; display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; transition: color .15s; }
+  .copy-btn:hover { color: var(--text); }
+  .copy-btn svg { width: 15px; height: 15px; }
+  .copy-btn.copied { color: #7ee2a8; }
+
+  .author { margin-top: 40px; color: var(--muted); font-size: 15px; }
+  .author a { color: var(--text); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--border); }
+
+  /* Footer */
+  footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px 16px;
+    padding: 20px;
+    color: var(--muted);
+    font-size: 13px;
+    text-align: center;
+    border-top: 1px solid var(--border);
+  }
+  footer .copy-btn code { font-family: var(--mono); font-size: 12px; }
+  footer .copy-btn svg { width: 14px; height: 14px; }
+
+  @media (max-width: 600px) {
+    .topbar { padding: 10px 16px; }
+    .topbar-telegram { display: none; }
+    .download { flex-direction: column; align-items: stretch; }
+    .dl-actions { width: 100%; }
+    .gallery { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="/" class="brand">
+      <img src="/images/logo.png" alt="" width="32" height="32">
+      <span>Windows by somov</span>
+    </a>
+    <div class="topbar-actions">
+      <a class="text-link topbar-telegram" href="https://t.me/+gmXk9-zXZ405YWY6" target="_blank" rel="noopener">Telegram</a>
+      <div class="lang-switcher" role="group" aria-label="Site language / Язык сайта">
+        <button type="button" class="lang-switch-btn" data-lang="en" aria-pressed="false">EN</button>
+        <button type="button" class="lang-switch-btn" data-lang="ru" aria-pressed="false">RU</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <a href="/" class="back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg>
+      <span class="lang-en">Home</span><span class="lang-ru">На главную</span>
+    </a>
+
+    <h1>Windows 11 IoT Enterprise LTSC</h1>
+    <div class="meta">
+      <span>24H2</span>
+      <span aria-hidden="true">·</span>
+      <span class="mono">26100.9711</span>
+      <span aria-hidden="true">·</span>
+      <span><span class="lang-en">October 2026</span><span class="lang-ru">Октябрь 2026</span></span>
+      <span class="badge badge-accent"><span class="lang-en">English</span><span class="lang-ru">Английский</span></span>
+    </div>
+
+    <p class="lead">
+      <span class="lang-en">Windows 11 IoT Enterprise LTSC (Long-Term Servicing Channel) is a lightweight version of Windows with long-term support, designed for stable performance on embedded devices and specialized systems. It excludes unnecessary apps, reducing system requirements and making it an ideal solution where reliability and minimal interference are critical.</span>
+      <span class="lang-ru">Windows 11 IoT Enterprise LTSC (Long-Term Servicing Channel) — это облегчённая версия Windows с долгосрочной поддержкой, разработанная для стабильной работы на встраиваемых устройствах и специализированных системах. Она лишена лишних приложений, что снижает системные требования и делает её идеальным решением, где важны надёжность и минимальное вмешательство.</span>
+    </p>
+
+    <div class="callout">
+      <span class="lang-en"><b>TPM, Secure Boot and OOBE checks are disabled.</b><br>Updated to 26100.9711 (October 2026) by somov.</span>
+      <span class="lang-ru"><b>Проверки TPM, Secure Boot и OOBE отключены.</b><br>Обновлено до 26100.9711 (Октябрь 2026) by somov.</span>
+    </div>
+
+    <div class="download">
+      <div class="dl-left">
+        <div class="dl-hint"><span class="lang-en">Direct download or torrent</span><span class="lang-ru">Прямая загрузка или torrent</span></div>
+      </div>
+      <div class="dl-actions">
+        <a class="btn btn-primary" href="https://dl3.somov.org/en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9711_by_somov.iso">
+          <span class="lang-en">Download</span><span class="lang-ru">Скачать</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg>
+        </a>
+        <a class="btn btn-secondary" href="https://dl3.somov.org/en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9711_by_somov.iso.torrent">Torrent</a>
+      </div>
+    </div>
+
+    <section class="section">
+      <h2><span class="lang-en">Screenshots</span><span class="lang-ru">Скриншоты</span></h2>
+      <div class="gallery">
+        <a href="/images/windows-11-en/1.png" class="glightbox" data-gallery="windows"><img src="/images/windows-11-en/1.png" alt="Screenshot 1" loading="lazy"></a>
+        <a href="/images/windows-11-en/2.png" class="glightbox" data-gallery="windows"><img src="/images/windows-11-en/2.png" alt="Screenshot 2" loading="lazy"></a>
+        <a href="/images/windows-11-en/3.png" class="glightbox" data-gallery="windows"><img src="/images/windows-11-en/3.png" alt="Screenshot 3" loading="lazy"></a>
+        <a href="/images/windows-11-en/4.png" class="glightbox" data-gallery="windows"><img src="/images/windows-11-en/4.png" alt="Screenshot 4" loading="lazy"></a>
+        <a href="/images/windows-11-en/5.png" class="glightbox" data-gallery="windows"><img src="/images/windows-11-en/5.png" alt="Screenshot 5" loading="lazy"></a>
+        <a href="/images/windows-11-en/6.png" class="glightbox" data-gallery="windows"><img src="/images/windows-11-en/6.png" alt="Screenshot 6" loading="lazy"></a>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2><span class="lang-en">System requirements</span><span class="lang-ru">Системные требования</span></h2>
+      <ul class="req">
+        <li><span><b><span class="lang-en">Processor:</span><span class="lang-ru">Процессор:</span></b> <span class="lang-en">1 GHz or faster, x64 architecture, supporting SSE2 and NX.</span><span class="lang-ru">1 ГГц или быстрее, x64, с поддержкой SSE2 и NX.</span></span></li>
+        <li><span><b><span class="lang-en">RAM:</span><span class="lang-ru">ОЗУ:</span></b> <span class="lang-en">minimum 2 GB (4 GB or more recommended).</span><span class="lang-ru">минимум 2 ГБ (рекомендуется 4 ГБ и более).</span></span></li>
+        <li><span><b><span class="lang-en">Storage:</span><span class="lang-ru">Хранилище:</span></b> <span class="lang-en">32 GB (SSD recommended).</span><span class="lang-ru">32 ГБ (рекомендуется SSD).</span></span></li>
+        <li><span><b><span class="lang-en">Graphics:</span><span class="lang-ru">Графика:</span></b> <span class="lang-en">DirectX 12 compatible or higher.</span><span class="lang-ru">совместимость с DirectX 12 или выше.</span></span></li>
+        <li><span><b>TPM:</b> <span class="lang-en">not required — checks are bypassed.</span><span class="lang-ru">не требуется — проверки обойдены.</span></span></li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2><span class="lang-en">Checksums</span><span class="lang-ru">Контрольные суммы</span></h2>
+      <div class="sums">
+        <div class="sum-row">
+          <span class="sum-label">CRC32</span>
+          <span class="sum-val">9a9a505b</span>
+          <button type="button" class="copy-btn" data-copy="9a9a505b" aria-label="Copy CRC32">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
+          </button>
+        </div>
+        <div class="sum-row">
+          <span class="sum-label">MD5</span>
+          <span class="sum-val">a6f45df113983f6d71eb4dfb480581cc</span>
+          <button type="button" class="copy-btn" data-copy="a6f45df113983f6d71eb4dfb480581cc" aria-label="Copy MD5">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
+          </button>
+        </div>
+        <div class="sum-row">
+          <span class="sum-label">SHA-1</span>
+          <span class="sum-val">9db1dc28ab6c84d4e04458f65121d0fdfd92cbcf</span>
+          <button type="button" class="copy-btn" data-copy="9db1dc28ab6c84d4e04458f65121d0fdfd92cbcf" aria-label="Copy SHA-1">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <p class="author">
+      <span class="lang-en">Author's Telegram: </span><span class="lang-ru">Телеграм автора: </span>
+      <a href="https://t.me/+gmXk9-zXZ405YWY6" target="_blank" rel="noopener">t.me/windows_by_somov</a>
+    </p>
+  </main>
+
+  <footer>
+    <a class="text-link" href="https://ko-fi.com/somov" target="_blank" rel="noopener"><span class="lang-en">Buy me a coffee</span><span class="lang-ru">Купить кофе</span></a>
+    <a class="text-link" href="https://yoomoney.ru/to/4100118200965581" target="_blank" rel="noopener"><span class="lang-en">Tips via YooMoney</span><span class="lang-ru">Чаевые через ЮMoney</span></a>
+    <button type="button" class="copy-btn" data-copy="1Bf7A9JZHuDzu7yTzNqEL9q8KHHfgjMZgu">
+      BTC <code>1Bf7A...gjMZgu</code>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
+    </button>
+    <a class="text-link" href="mailto:me@somov.org">me@somov.org</a>
+    <span>&copy; somov.org</span>
+  </footer>
+
+<script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    GLightbox({ selector: '.glightbox' });
+
+    function setSiteLang(lang) {
+        const root = document.documentElement;
+        root.lang = lang;
+        root.classList.toggle('lang-ru-active', lang === 'ru');
+        root.classList.toggle('lang-en-active', lang !== 'ru');
+        document.title = lang === 'ru'
+            ? 'Windows 11 IoT Enterprise LTSC [EN] - Windows by somov'
+            : 'Windows 11 IoT Enterprise LTSC [EN] - Windows by somov';
+        document.querySelectorAll('.lang-switch-btn').forEach(btn => {
+            btn.setAttribute('aria-pressed', String(btn.dataset.lang === lang));
+        });
+    }
+    document.querySelectorAll('.lang-switch-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            localStorage.setItem('siteLanguage', btn.dataset.lang);
+            setSiteLang(btn.dataset.lang);
+        });
+    });
+    setSiteLang(document.documentElement.lang);
+
+    document.querySelectorAll('.copy-btn[data-copy]').forEach(btn => {
+        let timer;
+        btn.addEventListener('click', () => {
+            navigator.clipboard.writeText(btn.dataset.copy).then(() => {
+                btn.classList.add('copied');
+                clearTimeout(timer);
+                timer = setTimeout(() => btn.classList.remove('copied'), 1500);
+            }).catch(err => console.error('Failed to copy: ', err));
+        });
+    });
+});
+</script>
+</body>
+</html>

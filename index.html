@@ -1,11 +1,15 @@
 <!DOCTYPE html>
-<html lang="en"> <!-- The 'lang' attribute will be dynamically updated by JavaScript -->
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Windows by somov</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link href="https://fonts.googleapis.com/css?family=Montserrat:200,300,400,500,600&display=swap" rel="stylesheet">  <link rel="stylesheet" href="/css/style.css">
+  <meta name="theme-color" content="#212121">
+  <link rel="canonical" href="https://somov.org/">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-4RBN0G8775"></script>
 <script>
@@ -16,265 +20,463 @@
   gtag('config', 'G-4RBN0G8775');
 </script>
 <script>
-  // IIFE to set language class on <html> tag before content loads, to prevent FOUC
+  // Set the language before first paint to avoid a flash of the wrong language
   (function() {
-    const savedLang = localStorage.getItem('siteLanguage');    // Determine language: 1. localStorage, 2. default 'en'
-    const lang = savedLang || 'en';
+    const lang = localStorage.getItem('siteLanguage') || 'en';
     document.documentElement.lang = lang;
-    if (lang === 'ru') {
-      document.documentElement.classList.add('lang-ru-active');
-    } else {
-      document.documentElement.classList.add('lang-en-active');
-    }
+    document.documentElement.classList.add(lang === 'ru' ? 'lang-ru-active' : 'lang-en-active');
   })();
 </script>
+<style>
+  :root {
+    --bg: #212121;
+    --surface: #2f2f2f;
+    --surface-hover: #3a3a3a;
+    --border: rgb(255 255 255 / .1);
+    --text: #ececec;
+    --muted: #b4b4b4;
+    --accent: #fff;
+    --on-accent: #0d0d0d;
+    --grad: linear-gradient(90deg, #3a8dff 0%, #6f6bff 50%, #a855f7 100%);
+    --radius-lg: 24px;
+    --pill: 999px;
+    --mono: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    color: var(--text);
+    font: 400 16px/1.5 Inter, "Segoe UI", system-ui, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .lang-ru-active .lang-en, .lang-en-active .lang-ru { display: none; }
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip-path: inset(50%); white-space: nowrap;
+  }
+
+  /* Header */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 20px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; white-space: nowrap; }
+  .brand img { width: 32px; height: 32px; border-radius: 50%; background: #fff; display: block; }
+  .topbar-actions { display: flex; align-items: center; gap: 16px; font-size: 14px; }
+  .text-link { color: var(--muted); transition: color .15s; }
+  .text-link:hover { color: var(--text); }
+  .lang-switcher { display: flex; padding: 3px; border-radius: var(--pill); background: var(--surface); }
+  .lang-switch-btn {
+    min-width: 36px;
+    padding: 3px 8px;
+    border-radius: var(--pill);
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+    transition: color .15s, background .15s;
+  }
+  .lang-switch-btn:hover { color: var(--text); }
+  .lang-switch-btn[aria-pressed="true"] { background: var(--grad); color: #fff; }
+
+  /* Hero */
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    max-width: 768px;
+    margin: 0 auto;
+    padding: 32px 16px 48px;
+  }
+  .hero { text-align: center; margin-bottom: 28px; }
+  h1 {
+    font-size: clamp(26px, 4.5vw, 34px);
+    line-height: 1.2;
+    font-weight: 600;
+    letter-spacing: -.02em;
+    text-wrap: balance;
+  }
+  .hero p { margin-top: 10px; color: var(--muted); }
+
+  /* Download composer */
+  .composer {
+    padding: 22px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    box-shadow: 0 8px 28px rgb(0 0 0 / .18);
+  }
+  .selectors { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 18px 28px; }
+  fieldset { border: 0; min-width: 0; }
+  .field-label {
+    display: block;
+    margin-bottom: 10px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+  }
+  .segmented {
+    display: inline-grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    gap: 2px;
+    padding: 4px;
+    border-radius: var(--pill);
+    background: var(--bg);
+  }
+  .segmented label { position: relative; cursor: pointer; }
+  .segmented input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .segmented label > span {
+    display: block;
+    padding: 8px 18px;
+    border-radius: var(--pill);
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    white-space: nowrap;
+    transition: color .15s, background .15s;
+  }
+  .segmented label:hover > span { color: var(--text); }
+  .segmented input:checked + span { background: var(--surface-hover); color: var(--text); }
+  .segmented input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  /* Result zone */
+  .result {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 28px;
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .result-info { min-width: 0; }
+  .result-info h2 { font-size: 22px; line-height: 1.3; font-weight: 600; letter-spacing: -.01em; }
+  .build-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 10px;
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .build-number { font-family: var(--mono); font-size: 13px; }
+  .badge {
+    padding: 1px 8px;
+    border: 1px solid var(--border);
+    border-radius: var(--pill);
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .details { margin-top: 16px; }
+  .details-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .details-link svg { width: 16px; height: 16px; transition: transform .15s; }
+  .details-link:hover svg { transform: translateX(3px); }
+  .details-link u { text-decoration-color: var(--border); text-underline-offset: 3px; }
+  .details-sub { margin-top: 4px; color: var(--muted); font-size: 13px; }
+  [hidden] { display: none !important; }
+
+  .result-actions { display: flex; flex-direction: column; gap: 10px; flex: none; width: 200px; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 48px;
+    padding: 0 20px;
+    border-radius: var(--pill);
+    font-size: 15px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: background .15s, opacity .15s;
+  }
+  .btn-primary { background: var(--grad); color: #fff; }
+  .btn-primary:hover { filter: brightness(1.08); transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-secondary { font-weight: 500; border: 1px solid var(--border); }
+  .btn-secondary:hover { background: var(--surface-hover); }
+  .btn svg { width: 18px; height: 18px; }
+
+  /* Secondary cards */
+  .more { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+  .more-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 18px;
+    border-radius: 16px;
+    background: var(--surface);
+    transition: background .15s;
+  }
+  .more-card:hover { background: var(--surface-hover); }
+  .more-card-title { font-size: 15px; font-weight: 600; }
+  .more-card-sub { margin-top: 2px; color: var(--muted); font-size: 13px; }
+  .more-card .arrow { flex: none; color: var(--muted); transition: transform .15s; }
+  .more-card:hover .arrow { transform: translateX(3px); color: var(--text); }
+  .more-card .arrow svg { width: 18px; height: 18px; display: block; }
+
+  /* Footer */
+  footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px 16px;
+    padding: 16px 20px 20px;
+    color: var(--muted);
+    font-size: 13px;
+    text-align: center;
+  }
+  .copy-btn { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); transition: color .15s; }
+  .copy-btn:hover { color: var(--text); }
+  .copy-btn code { font-family: var(--mono); font-size: 12px; }
+  .copy-btn svg { width: 14px; height: 14px; }
+
+  @media (max-width: 600px) {
+    .topbar { padding: 10px 16px; }
+    .topbar-telegram { display: none; }
+    main { justify-content: flex-start; padding-top: 28px; }
+    .composer { padding: 14px; border-radius: 20px; }
+    .selectors { flex-direction: column; }
+    .segmented label { flex: 1; text-align: center; }
+    .build { padding: 20px 4px; }
+    .selectors { gap: 16px; }
+    fieldset { width: 100%; }
+    .segmented { width: 100%; }
+    .result { flex-direction: column; gap: 20px; }
+    .result-actions { width: 100%; }
+    .build-file { max-width: 100%; white-space: normal; word-break: break-all; }
+    .more { grid-template-columns: 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
 </head>
 <body>
-  <div class="main-wrapper">
-    <header>
-      <div class="header-title-container">
-        <a href="/" class="site-title">WINDOWS BY SOMOV</a>
-        <div class="lang-switcher">
-          <a href="#" class="lang-switch-btn" data-lang="en">ENG</a>
-          <span>/</span>
-          <a href="#" class="lang-switch-btn" data-lang="ru">RUS</a>
-        </div>
-      </div>        
-      <div class="header-social-icons">
-          <a href="https://t.me/+gmXk9-zXZ405YWY6" target="_blank" aria-label="Telegram">Telegram</a><span class="social-separator">/</span><a href="mailto:me@somov.org" aria-label="Email">me@somov.org</a>
+  <header class="topbar">
+    <a href="/" class="brand">
+      <img src="/images/logo.png" alt="" width="32" height="32">
+      <span>Windows by somov</span>
+    </a>
+    <div class="topbar-actions">
+      <a class="text-link topbar-telegram" href="https://t.me/+gmXk9-zXZ405YWY6" target="_blank" rel="noopener">Telegram</a>
+      <div class="lang-switcher" role="group" aria-label="Site language / Язык сайта">
+        <button type="button" class="lang-switch-btn" data-lang="en" aria-pressed="false">EN</button>
+        <button type="button" class="lang-switch-btn" data-lang="ru" aria-pressed="false">RU</button>
       </div>
-      <div class="header-logo-center">
-        <img src="/images/logo.png" alt="Windows by Somov" />
-        <!-- Если нужна подпись под логотипом, раскомментируйте следующую строку -->
-        <!-- <div class="logo-caption">windows by somov</div> -->
+    </div>
+  </header>
+
+  <main>
+    <div class="hero">
+      <h1>
+        <span class="lang-en">Which Windows do you want to install?</span>
+        <span class="lang-ru">Какую Windows вы хотите установить?</span>
+      </h1>
+      <p>
+        <span class="lang-en">IoT Enterprise LTSC builds by somov</span>
+        <span class="lang-ru">Сборки IoT Enterprise LTSC от somov</span>
+      </p>
+    </div>
+
+    <section class="composer" aria-labelledby="build-title">
+      <div class="selectors">
+        <fieldset>
+          <label class="field-label" id="os-label"><span class="lang-en">Version</span><span class="lang-ru">Версия</span></label>
+          <div class="segmented" role="radiogroup" aria-labelledby="os-label">
+            <label><input type="radio" name="os" value="11" checked><span>Windows 11</span></label>
+            <label><input type="radio" name="os" value="10"><span>Windows 10</span></label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <label class="field-label" id="lang-label"><span class="lang-en">Image language</span><span class="lang-ru">Язык образа</span></label>
+          <div class="segmented" role="radiogroup" aria-labelledby="lang-label">
+            <label><input type="radio" name="image-lang" value="en" checked><span><span class="lang-en">English</span><span class="lang-ru">Английский</span></span></label>
+            <label><input type="radio" name="image-lang" value="ru"><span><span class="lang-en">Russian</span><span class="lang-ru">Русский</span></span></label>
+          </div>
+        </fieldset>
       </div>
-      <div class="header-desc">
-        <a href="settings-for-windows">
-            <span class="lang-en">Settings for Windows</span>
-            <span class="lang-ru">Настройки для Windows</span>
-        </a>
-      </div>
-    </header>
 
-    <main>
-      <section class="card">
-        <div class="card-left">
-          <div class="card-info">
-            <a href="/windows-11-en/" class="card-title">
-                <span class="lang-en">Windows 11 release information</span>
-                <span class="lang-ru">Сведения о выпуске Windows 11</span>
-            </a>
-            <div class="card-details">
-              <span class="lang-en">Language: English<br></span><span class="lang-ru">Язык: Английский<br></span>
-              <span class="lang-en">Update: 26100.9711 (October 2026)<br></span><span class="lang-ru">Обновление: 26100.9711 (Октябрь 2026)<br></span>
-              <span class="lang-en">Edition: IoT Enterprise LTSC<br></span><span class="lang-ru">Издание: IoT Enterprise LTSC<br></span>
-              <span class="lang-en">Version: 24H2<br></span><span class="lang-ru">Версия: 24H2<br></span>
-              <span class="lang-en">Author: somov<br></span><span class="lang-ru">Автор: somov<br></span>
-              <a href="/windows-11-en/" class="card-link">
-                <span class="lang-en">More Details...</span>
-                <span class="lang-ru">Подробнее...</span>
-              </a>
-            </div>
-          </div>
-        </div>
-        <div class="card-right">
-          <div class="card-actions">
-            <a class="btn" href="https://dl3.somov.org/en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9711_by_somov.iso"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
-            <a class="torrent-link" href="https://dl3.somov.org/en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9711_by_somov.iso.torrent"><span class="lang-en">Download by torrent</span><span class="lang-ru">Скачать с помощью torrent</span></a>
-          </div>
-        </div>
-      </section>
-
-      <section class="card">
-        <div class="card-left">
-          <div class="card-info">
-            <a href="/windows-11-ru/" class="card-title">
-                <span class="lang-en">Windows 11 release information</span>
-                <span class="lang-ru">Сведения о выпуске Windows 11</span>
-            </a>
-            <div class="card-details">
-              <span class="lang-en">Language: Russian<br></span><span class="lang-ru">Язык: Русский<br></span>
-              <span class="lang-en">Update: 26100.9711 (October 2026)<br></span><span class="lang-ru">Обновление: 26100.9711 (Октябрь 2026)<br></span>
-              <span class="lang-en">Edition: IoT Enterprise LTSC<br></span><span class="lang-ru">Издание: IoT Enterprise LTSC<br></span>
-              <span class="lang-en">Version: 24H2<br></span><span class="lang-ru">Версия: 24H2<br></span>
-              <span class="lang-en">Author: somov<br></span><span class="lang-ru">Автор: somov<br></span>
-              <a href="/windows-11-ru/" class="card-link">
-                <span class="lang-en">More Details...</span>
-                <span class="lang-ru">Подробнее...</span>
-              </a>
-            </div>
-          </div>
-        </div>
-        <div class="card-right">
-          <div class="card-actions">
-            <a class="btn" href="https://dl3.somov.org/ru-ru_windows_11_iot_enterprise_ltsc_2024_x64_26100.9711_by_somov.iso"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></a>
-            <a class="torrent-link" href="https://dl3.somov.org/ru-ru_windows_11_iot_enterprise_ltsc_2024_x64_26100.9711_by_somov.iso.torrent"><span class="lang-en">Download by torrent</span><span class="lang-ru">Скачать с помощью torrent</span></a>
-          </div>
-        </div>
-      </section>
-
-      <section class="card">
-        <div class="card-left">
-          <div class="card-info">
-            <a href="/windows-10/" class="card-title">
-                <span class="lang-en">Windows 10 release information</span>
-                <span class="lang-ru">Сведения о выпусах Windows 10</span>
-            </a>
-            <div class="card-details">
-              <span class="lang-en">Language: English and Russian<br></span><span class="lang-ru">Язык: Английский и Русский<br></span>
-              <span class="lang-en">Update: 19044.6456 (October 2025) <b>Final</b><br></span><span class="lang-ru">Обновление: 19044.6456 (Октябрь 2025) <b>Финальный</b><br></span>
-              <span class="lang-en">Edition: IoT Enterprise LTSC<br></span><span class="lang-ru">Издание: IoT Enterprise LTSC<br></span>
-              <span class="lang-en">Version: 21H2<br></span><span class="lang-ru">Версия: 21H2<br></span>
-              <span class="lang-en">Author: somov<br></span><span class="lang-ru">Автор: somov<br></span>
-              <a href="/windows-10/" class="card-link">
-                <span class="lang-en">More Details...</span>
-                <span class="lang-ru">Подробнее...</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="card">
-        <div class="card-left">
-          <div class="card-info">
-            <a href="/ghost-spectre/" class="card-title">
-                <span class="lang-en">Windows 10/11 download page</span>
-                <span class="lang-ru">Страница загрузки Windows 10/11</span>
-            </a>
-            <div class="card-details">
-              <span class="lang-en">Language: English<br></span><span class="lang-ru">Язык: Английский<br></span>
-              <span class="lang-en">Edition: Pro/IoT Enterprise LTSC<br></span><span class="lang-ru">Издание: Pro/IoT Enterprise LTSC<br></span>
-              <span class="lang-en">Version: 20H1-22H2/23H2/24H2<br></span><span class="lang-ru">Версия: 20H1-22H2/23H2/24H2<br></span>
-              <span class="lang-en">Author: Ghost Spectre<br></span><span class="lang-ru">Автор: Ghost Spectre<br></span>
-              <a href="/ghost-spectre/" class="card-link">
-                <span class="lang-en">More Details...</span>
-                <span class="lang-ru">Подробнее...</span>
-              </a>
-          </div>
-        </div>
-        <!-- Нет card-right, т.к. нет кнопок -->
-      </section>
-    </main>
-  </div>
-    <footer>
-      <div class="footer-menu">
-        <span class="lang-en">
-            <a href="https://ko-fi.com/somov" target="_blank">Buy me a coffee</a> /
-            <a href="https://yoomoney.ru/to/4100118200965581" target="_blank">Tips via YooMoney</a> /
-            <span class="copyable-footer-item" data-full-address="1Bf7A9JZHuDzu7yTzNqEL9q8KHHfgjMZgu" title="Click to copy">
-                <span class="btc-label">BTC:</span> <span class="btc-address">1Bf7A...gjMZgu</span>
-                <img src="/images/copy_icon.svg" alt="Copy" class="copy-icon">
-                <span class="copy-feedback">Copied!</span>
+      <div class="result" aria-live="polite">
+        <div class="result-info">
+          <h2 id="build-title">Windows 11 IoT Enterprise LTSC</h2>
+          <div class="build-meta">
+            <span id="build-version">24H2</span>
+            <span aria-hidden="true">·</span>
+            <span class="build-number" id="build-number">26100.9711</span>
+            <span aria-hidden="true">·</span>
+            <span>
+              <span class="lang-en" id="build-date-en">October 2026</span>
+              <span class="lang-ru" id="build-date-ru">Октябрь 2026</span>
             </span>
-        </span>
-        <span class="lang-ru">
-            <a href="https://ko-fi.com/somov" target="_blank">Купить кофе</a> /
-            <a href="https://yoomoney.ru/to/4100118200965581" target="_blank">Чаевые через ЮMoney</a> /
-            <span class="copyable-footer-item" data-full-address="1Bf7A9JZHuDzu7yTzNqEL9q8KHHfgjMZgu" title="Нажмите, чтобы скопировать">
-                <span class="btc-label">BTC:</span> <span class="btc-address">1Bf7A...gjMZgu</span>
-                <img src="/images/copy_icon.svg" alt="Копировать" class="copy-icon">
-                <span class="copy-feedback">Скопировано!</span>
-            </span>
-        </span>
+            <span class="badge" id="build-final" hidden><span class="lang-en">Final</span><span class="lang-ru">Финальный</span></span>
+          </div>
+          <div class="details">
+            <a class="details-link" id="details-link" href="/windows-11-en">
+              <u><span class="lang-en">Build details</span><span class="lang-ru">Подробнее о сборке</span></u>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+            </a>
+            <p class="details-sub">
+              <span class="lang-en">Screenshots · requirements · checksums</span>
+              <span class="lang-ru">Скриншоты · требования · контрольные суммы</span>
+            </p>
+          </div>
+        </div>
+        <div class="result-actions">
+          <a class="btn btn-primary" id="download-link" href="https://dl3.somov.org/en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9711_by_somov.iso">
+            <span class="lang-en">Download</span><span class="lang-ru">Скачать</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg>
+          </a>
+          <a class="btn btn-secondary" id="torrent-link" href="https://dl3.somov.org/en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9711_by_somov.iso.torrent">Torrent</a>
+        </div>
       </div>
-      <div class="footer-bottom">
-        <span class="footer-links">&copy; somov.org</span>
-      </div>
-    </footer>
-   <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // --- Language Switcher Logic ---
-    const langSwitchers = document.querySelectorAll('.lang-switch-btn');
+    </section>
 
-    function setLanguage(lang) {
-        document.documentElement.lang = lang; // Update lang attribute on <html>
-        if (lang === 'ru') {
-            document.documentElement.classList.add('lang-ru-active');
-            document.documentElement.classList.remove('lang-en-active');
-        } else {
-            document.documentElement.classList.add('lang-en-active');
-            document.documentElement.classList.remove('lang-ru-active');
-        }
-        localStorage.setItem('siteLanguage', lang); // Save user's choice
-        updateActiveButton(lang);
-    }
+    <nav class="more" aria-label="More / Ещё">
+      <a class="more-card" href="/ghost-spectre">
+        <span>
+          <span class="more-card-title"><span class="lang-en">Ghost Spectre builds</span><span class="lang-ru">Сборки Ghost Spectre</span></span>
+          <span class="more-card-sub"><span class="lang-en">Windows 10/11 · by Ghost Spectre</span><span class="lang-ru">Windows 10/11 · автор Ghost Spectre</span></span>
+        </span>
+        <span class="arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>
+      </a>
+      <a class="more-card" href="/settings-for-windows">
+        <span>
+          <span class="more-card-title"><span class="lang-en">Settings for Windows</span><span class="lang-ru">Настройки для Windows</span></span>
+          <span class="more-card-sub"><span class="lang-en">Tweaks &amp; guides</span><span class="lang-ru">Твики и инструкции</span></span>
+        </span>
+        <span class="arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>
+      </a>
+    </nav>
+  </main>
 
-    function updateActiveButton(lang) {
-        langSwitchers.forEach(btn => {
-            btn.classList.remove('active');
-            if (btn.dataset.lang === lang) {
-                btn.classList.add('active');
-            }
-        });
-    }
+  <footer>
+    <a class="text-link" href="https://ko-fi.com/somov" target="_blank" rel="noopener"><span class="lang-en">Buy me a coffee</span><span class="lang-ru">Купить кофе</span></a>
+    <a class="text-link" href="https://yoomoney.ru/to/4100118200965581" target="_blank" rel="noopener"><span class="lang-en">Tips via YooMoney</span><span class="lang-ru">Чаевые через ЮMoney</span></a>
+    <button type="button" class="copy-btn" id="copy-btc" data-address="1Bf7A9JZHuDzu7yTzNqEL9q8KHHfgjMZgu">
+      BTC <code>1Bf7A...gjMZgu</code>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
+      <span id="copy-status" role="status" hidden><span class="lang-en">Copied!</span><span class="lang-ru">Скопировано!</span></span>
+    </button>
+    <a class="text-link" href="https://t.me/+gmXk9-zXZ405YWY6" target="_blank" rel="noopener">Telegram</a>
+    <a class="text-link" href="mailto:me@somov.org">me@somov.org</a>
+    <span>&copy; somov.org</span>
+  </footer>
 
-    langSwitchers.forEach(button => {
-        button.addEventListener('click', (e) => {
-            e.preventDefault(); // Prevent page jump
-            setLanguage(button.dataset.lang);
-        });
-    });
-
-    // On page load, set active button based on the class set by the head script
-    updateActiveButton(document.documentElement.lang);
-
-    // --- Copy to Clipboard Logic ---
-    const copyTriggers = document.querySelectorAll('.copyable-footer-item');
-
-    copyTriggers.forEach(trigger => {
-        trigger.addEventListener('click', function() {
-            const textToCopy = this.dataset.fullAddress;
-            const feedbackElement = this.querySelector('.copy-feedback');
-
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                // Hide any other visible feedback messages
-                document.querySelectorAll('.copyable-footer-item .copy-feedback').forEach(fb => {
-                    fb.style.display = 'none';
-                });
-
-                // Show current feedback message
-                if (feedbackElement) {
-                    feedbackElement.style.display = 'block';
-                    setTimeout(() => {
-                        feedbackElement.style.display = 'none';
-                    }, 2000); // Hide after 2 seconds
-                }
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
-            });
-        });
-    });
-});
-</script>
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener('DOMContentLoaded', function() {
+    const BUILDS = {
+        '11': {
+            title: 'Windows 11 IoT Enterprise LTSC',
+            version: '24H2',
+            number: '26100.9711',
+            date: { en: 'October 2026', ru: 'Октябрь 2026' },
+            file: 'windows_11_iot_enterprise_ltsc_2024_x64_26100.9711_by_somov.iso',
+            details: { en: '/windows-11-en', ru: '/windows-11-ru' },
+            final: false
+        },
+        '10': {
+            title: 'Windows 10 IoT Enterprise LTSC',
+            version: '21H2',
+            number: '19044.6456',
+            date: { en: 'October 2025', ru: 'Октябрь 2025' },
+            file: 'windows_10_iot_enterprise_ltsc_2021_x64_19044.6456_by_somov.iso',
+            details: { en: '/windows-10-en', ru: '/windows-10-ru' },
+            final: true
+        }
+    };
+    const LOCALES = { en: 'en-us', ru: 'ru-ru' };
+    const byId = id => document.getElementById(id);
 
-    // КОПИРОВАНИЕ ПРОМОКОДА
-    const promoTriggers = document.querySelectorAll(".copy-promo");
+    function renderBuild() {
+        const os = document.querySelector('input[name="os"]:checked').value;
+        const imageLang = document.querySelector('input[name="image-lang"]:checked').value;
+        const build = BUILDS[os];
+        const url = 'https://dl3.somov.org/' + LOCALES[imageLang] + '_' + build.file;
 
-    promoTriggers.forEach(trigger => {
-        trigger.addEventListener("click", function() {
-            const code = this.dataset.code;
-            const feedback = this.querySelector(".promo-feedback");
+        byId('build-title').textContent = build.title;
+        byId('build-version').textContent = build.version;
+        byId('build-number').textContent = build.number;
+        byId('build-date-en').textContent = build.date.en;
+        byId('build-date-ru').textContent = build.date.ru;
+        byId('build-final').hidden = !build.final;
+        byId('details-link').href = build.details[imageLang];
+        byId('download-link').href = url;
+        byId('torrent-link').href = url + '.torrent';
+    }
 
-            navigator.clipboard.writeText(code).then(() => {
-                // скрыть остальные сообщения
-                document.querySelectorAll(".promo-feedback").forEach(fb => {
-                    fb.style.display = "none";
-                });
+    function setImageLang(lang) {
+        document.querySelector('input[name="image-lang"][value="' + lang + '"]').checked = true;
+        renderBuild();
+    }
 
-                // показать текущее
-                feedback.style.display = "block";
+    function setSiteLang(lang) {
+        const root = document.documentElement;
+        root.lang = lang;
+        root.classList.toggle('lang-ru-active', lang === 'ru');
+        root.classList.toggle('lang-en-active', lang !== 'ru');
+        document.querySelectorAll('.lang-switch-btn').forEach(btn => {
+            btn.setAttribute('aria-pressed', String(btn.dataset.lang === lang));
+        });
+    }
 
-                // скрыть через 2 сек
-                setTimeout(() => {
-                    feedback.style.display = "none";
-                }, 2000);
-            });
+    document.querySelectorAll('input[name="os"], input[name="image-lang"]').forEach(input => {
+        input.addEventListener('change', renderBuild);
+    });
+
+    document.querySelectorAll('.lang-switch-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            localStorage.setItem('siteLanguage', btn.dataset.lang);
+            setSiteLang(btn.dataset.lang);
+            setImageLang(btn.dataset.lang); // the image language follows the site language
         });
     });
 
+    const initialLang = document.documentElement.lang;
+    setSiteLang(initialLang);
+    setImageLang(initialLang);
+
+    const copyBtn = byId('copy-btc');
+    let copyTimer;
+    copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(copyBtn.dataset.address).then(() => {
+            byId('copy-status').hidden = false;
+            clearTimeout(copyTimer);
+            copyTimer = setTimeout(() => { byId('copy-status').hidden = true; }, 2000);
+        }).catch(err => console.error('Failed to copy: ', err));
+    });
 });
 </script>
 </body>
