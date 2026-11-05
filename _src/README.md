@@ -24,6 +24,8 @@ SHA-256 указывается в поле `sums.sha256`. Если оно зап
 curl -sI "https://dl3.somov.org/файл.iso" | findstr /i content-length
 ```
 
+При создании нового `.torrent` указывайте те же трекеры, что и в `TRACKERS` в `build.mjs`, иначе раздачу можно будет найти только через DHT.
+
 ## Другие данные
 
 - `data/ghost-spectre.json`: сборки Ghost Spectre.

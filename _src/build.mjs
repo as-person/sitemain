@@ -21,6 +21,13 @@ const GA_ID = 'G-4RBN0G8775';
 const TELEGRAM = 'https://t.me/+gmXk9-zXZ405YWY6';
 const BTC = '1Bf7A9JZHuDzu7yTzNqEL9q8KHHfgjMZgu';
 const LANGS = ['en', 'ru'];
+const TRACKERS = [
+  'udp://tracker.torrent.eu.org:451/announce',
+  'udp://open.stealth.si:80/announce',
+  'udp://open.demonii.com:1337/announce',
+  'udp://tracker.dler.org:6969/announce',
+  'udp://tracker.theoks.net:6969/announce',
+];
 
 const assetHash = file => createHash('sha1').update(readFileSync(join(ROOT, file))).digest('hex').slice(0, 8);
 const CSS_URL = `/assets/site.css?v=${assetHash('assets/site.css')}`;
@@ -191,7 +198,7 @@ const imageFor = (build, imageLang) => {
   return {
     ...image,
     url: `${CDN}${image.file}`,
-    magnet: `magnet:?xt=urn:btih:${image.btih}&dn=${encodeURIComponent(image.file)}`,
+    magnet: `magnet:?xt=urn:btih:${image.btih}&dn=${encodeURIComponent(image.file)}${TRACKERS.map(t => `&tr=${encodeURIComponent(t)}`).join('')}`,
     path: `/windows-${build.id}-${imageLang}`,
   };
 };
