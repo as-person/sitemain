@@ -154,6 +154,8 @@
   .dl-sub { margin-top: 2px; color: var(--muted); font-family: var(--mono); font-size: 12.5px; }
   .dl-hint { color: var(--muted); font-size: 13px; }
   .dl-actions { display: flex; flex-direction: column; gap: 14px; flex: none; width: 200px; }
+  .dl-magnet { display: inline-flex; align-items: center; justify-content: center; gap: 6px; margin-top: -4px; color: var(--muted); font-size: 13px; transition: color .15s; }
+  .dl-magnet:hover { color: var(--text); }
   .btn {
     display: inline-flex;
     align-items: center;
@@ -302,6 +304,9 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg>
         </a>
         <a class="btn btn-secondary" href="https://dl3.somov.org/en-us_windows_10_iot_enterprise_ltsc_2021_x64_19044.6456_by_somov.iso.torrent">Torrent</a>
+        <a class="dl-magnet" href="magnet:?xt=urn:btih:6dd253aaaff2891e7ec188edbebefbab98cb414e&amp;dn=en-us_windows_10_iot_enterprise_ltsc_2021_x64_19044.6456_by_somov.iso">
+          <span class="lang-en">magnet link</span><span class="lang-ru">magnet-ссылка</span>
+        </a>
       </div>
     </div>
 

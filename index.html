@@ -209,6 +209,8 @@
   [hidden] { display: none !important; }
 
   .result-actions { display: flex; flex-direction: column; gap: 14px; flex: none; width: 200px; }
+  .magnet-link { display: inline-flex; align-items: center; justify-content: center; gap: 6px; margin-top: -4px; color: var(--muted); font-size: 13px; transition: color .15s; }
+  .magnet-link:hover { color: var(--text); }
   .btn {
     display: inline-flex;
     align-items: center;
@@ -368,6 +370,9 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg>
           </a>
           <a class="btn btn-secondary" id="torrent-link" href="https://dl3.somov.org/en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9711_by_somov.iso.torrent">Torrent</a>
+          <a class="magnet-link" id="magnet-link" href="magnet:?xt=urn:btih:8c5c4587ddf1f6ed46d841a4d5480263efc9fb2c&amp;dn=en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9711_by_somov.iso">
+            <span class="lang-en">magnet link</span><span class="lang-ru">magnet-ссылка</span>
+          </a>
         </div>
       </div>
     </section>
@@ -412,6 +417,7 @@ document.addEventListener('DOMContentLoaded', function() {
             number: '26100.9711',
             date: { en: 'October 2026', ru: 'Октябрь 2026' },
             file: 'windows_11_iot_enterprise_ltsc_2024_x64_26100.9711_by_somov.iso',
+            hash: { en: '8c5c4587ddf1f6ed46d841a4d5480263efc9fb2c', ru: '645d3d71d10b47236afa1a9336737a1916bf2876' },
             details: { en: '/windows-11-en', ru: '/windows-11-ru' },
             final: false
         },
@@ -421,6 +427,7 @@ document.addEventListener('DOMContentLoaded', function() {
             number: '19044.6456',
             date: { en: 'October 2025', ru: 'Октябрь 2025' },
             file: 'windows_10_iot_enterprise_ltsc_2021_x64_19044.6456_by_somov.iso',
+            hash: { en: '6dd253aaaff2891e7ec188edbebefbab98cb414e', ru: '7d5af2ae14566256f2c37a62c2e0458bcb460b50' },
             details: { en: '/windows-10-en', ru: '/windows-10-ru' },
             final: true
         }
@@ -443,6 +450,7 @@ document.addEventListener('DOMContentLoaded', function() {
         byId('details-link').href = build.details[imageLang];
         byId('download-link').href = url;
         byId('torrent-link').href = url + '.torrent';
+        byId('magnet-link').href = 'magnet:?xt=urn:btih:' + build.hash[imageLang] + '&dn=' + encodeURIComponent(LOCALES[imageLang] + '_' + build.file);
     }
 
     function setImageLang(lang) {
