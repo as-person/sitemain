@@ -1,0 +1,232 @@
+[
+  {
+    "id": "11",
+    "title": "Windows 11 IoT Enterprise LTSC",
+    "version": "24H2",
+    "number": "26100.9711",
+    "date": {
+      "en": "October 2026",
+      "ru": "Октябрь 2026"
+    },
+    "final": false,
+    "edition": "2024",
+    "ratio": [
+      1600,
+      1200
+    ],
+    "changes": [
+      {
+        "en": "TPM, Secure Boot and OOBE checks are disabled.",
+        "ru": "Проверки TPM, Secure Boot и OOBE отключены."
+      },
+      {
+        "en": "Updated to build 26100.9711 (October 2026).",
+        "ru": "Обновлено до сборки 26100.9711 (Октябрь 2026)."
+      }
+    ],
+    "history": [
+      {
+        "number": "26100.9711",
+        "date": {
+          "en": "October 2026",
+          "ru": "Октябрь 2026"
+        }
+      }
+    ],
+    "lead": {
+      "en": "Windows 11 IoT Enterprise LTSC (Long-Term Servicing Channel) is a lightweight version of Windows with long-term support, designed for stable performance on embedded devices and specialized systems. It excludes unnecessary apps, reducing system requirements and making it an ideal solution where reliability and minimal interference are critical.",
+      "ru": "Windows 11 IoT Enterprise LTSC (Long-Term Servicing Channel) — это облегчённая версия Windows с долгосрочной поддержкой, разработанная для стабильной работы на встраиваемых устройствах и специализированных системах. Она лишена лишних приложений, что снижает системные требования и делает её идеальным решением, где важны надёжность и минимальное вмешательство."
+    },
+    "requirements": [
+      {
+        "label": {
+          "en": "Processor",
+          "ru": "Процессор"
+        },
+        "value": {
+          "en": "1 GHz or faster, x64 architecture, supporting SSE2 and NX.",
+          "ru": "1 ГГц или быстрее, x64, с поддержкой SSE2 и NX."
+        }
+      },
+      {
+        "label": {
+          "en": "RAM",
+          "ru": "ОЗУ"
+        },
+        "value": {
+          "en": "minimum 2 GB (4 GB or more recommended).",
+          "ru": "минимум 2 ГБ (рекомендуется 4 ГБ и более)."
+        }
+      },
+      {
+        "label": {
+          "en": "Storage",
+          "ru": "Хранилище"
+        },
+        "value": {
+          "en": "32 GB (SSD recommended).",
+          "ru": "32 ГБ (рекомендуется SSD)."
+        }
+      },
+      {
+        "label": {
+          "en": "Graphics",
+          "ru": "Графика"
+        },
+        "value": {
+          "en": "DirectX 12 compatible or higher.",
+          "ru": "совместимость с DirectX 12 или выше."
+        }
+      },
+      {
+        "label": {
+          "en": "TPM",
+          "ru": "TPM"
+        },
+        "value": {
+          "en": "not required — checks are bypassed.",
+          "ru": "не требуется — проверки обойдены."
+        }
+      }
+    ],
+    "images": {
+      "en": {
+        "file": "en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9711_by_somov.iso",
+        "btih": "8c5c4587ddf1f6ed46d841a4d5480263efc9fb2c",
+        "size": 5750372352,
+        "sums": {
+          "crc32": "9a9a505b",
+          "md5": "a6f45df113983f6d71eb4dfb480581cc",
+          "sha1": "9db1dc28ab6c84d4e04458f65121d0fdfd92cbcf",
+          "sha256": null
+        }
+      },
+      "ru": {
+        "file": "ru-ru_windows_11_iot_enterprise_ltsc_2024_x64_26100.9711_by_somov.iso",
+        "btih": "645d3d71d10b47236afa1a9336737a1916bf2876",
+        "size": 5697013760,
+        "sums": {
+          "crc32": "f1a99add",
+          "md5": "112a9855da7c24012ea7d4409c49f18a",
+          "sha1": "3abefe67e85ed12a349804e7b0f8489e2131bfe8",
+          "sha256": null
+        }
+      }
+    }
+  },
+  {
+    "id": "10",
+    "title": "Windows 10 IoT Enterprise LTSC",
+    "version": "21H2",
+    "number": "19044.6456",
+    "date": {
+      "en": "October 2025",
+      "ru": "Октябрь 2025"
+    },
+    "final": true,
+    "edition": "2021",
+    "ratio": [
+      1600,
+      900
+    ],
+    "changes": [
+      {
+        "en": "Final build of this version.",
+        "ru": "Финальная сборка этой версии."
+      },
+      {
+        "en": "Updated to build 19044.6456 (October 2025).",
+        "ru": "Обновлено до сборки 19044.6456 (Октябрь 2025)."
+      }
+    ],
+    "history": [
+      {
+        "number": "19044.6456",
+        "date": {
+          "en": "October 2025",
+          "ru": "Октябрь 2025"
+        }
+      }
+    ],
+    "lead": {
+      "en": "Windows 10 IoT Enterprise LTSC (Long-Term Servicing Channel) is a lightweight version of Windows with long-term support, designed for stable performance on embedded devices and specialized systems. It excludes unnecessary apps, reducing system requirements and making it an ideal solution where reliability and minimal interference are critical.",
+      "ru": "Windows 10 IoT Enterprise LTSC (Long-Term Servicing Channel) — это облегчённая версия Windows с долгосрочной поддержкой, разработанная для стабильной работы на встраиваемых устройствах и специализированных системах. Она лишена лишних приложений, что снижает системные требования и делает её идеальным решением, где важны надёжность и минимальное вмешательство."
+    },
+    "requirements": [
+      {
+        "label": {
+          "en": "Processor",
+          "ru": "Процессор"
+        },
+        "value": {
+          "en": "1 GHz or faster with x64 architecture.",
+          "ru": "1 ГГц или быстрее с архитектурой x64."
+        }
+      },
+      {
+        "label": {
+          "en": "RAM",
+          "ru": "ОЗУ"
+        },
+        "value": {
+          "en": "minimum 2 GB (4 GB or more recommended).",
+          "ru": "минимум 2 ГБ (рекомендуется 4 ГБ и более)."
+        }
+      },
+      {
+        "label": {
+          "en": "Storage",
+          "ru": "Хранилище"
+        },
+        "value": {
+          "en": "16–20 GB (SSD recommended).",
+          "ru": "16–20 ГБ (рекомендуется SSD)."
+        }
+      },
+      {
+        "label": {
+          "en": "Graphics",
+          "ru": "Графика"
+        },
+        "value": {
+          "en": "DirectX 9 compatible or higher.",
+          "ru": "совместимость с DirectX 9 или выше."
+        }
+      },
+      {
+        "label": {
+          "en": "TPM",
+          "ru": "TPM"
+        },
+        "value": {
+          "en": "TPM 2.0 required for modern devices.",
+          "ru": "требуется TPM 2.0 для современных устройств."
+        }
+      }
+    ],
+    "images": {
+      "en": {
+        "file": "en-us_windows_10_iot_enterprise_ltsc_2021_x64_19044.6456_by_somov.iso",
+        "btih": "6dd253aaaff2891e7ec188edbebefbab98cb414e",
+        "size": 4796112896,
+        "sums": {
+          "crc32": "bd30c82b",
+          "md5": "de9f40035211b55840d5a6bd42648940",
+          "sha1": "b36d009342e4c8a71ff777aa312464c588f9a9ea",
+          "sha256": null
+        }
+      },
+      "ru": {
+        "file": "ru-ru_windows_10_iot_enterprise_ltsc_2021_x64_19044.6456_by_somov.iso",
+        "btih": "7d5af2ae14566256f2c37a62c2e0458bcb460b50",
+        "size": 4755148800,
+        "sums": {
+          "crc32": "852b5e42",
+          "md5": "84fc353e1ffc57822f82de53c8b85e8a",
+          "sha1": "4b323a3a76aea6a3e8ed4691ff8b1ce087d61dd4",
+          "sha256": null
+        }
+      }
+    }
+  }
+]

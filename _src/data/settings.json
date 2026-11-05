@@ -1,0 +1,263 @@
+{
+  "categories": [
+    { "id": "tweaks", "title": { "en": "Windows tweaks", "ru": "Твики Windows" } },
+    { "id": "privacy", "title": { "en": "Privacy and security", "ru": "Приватность и безопасность" } },
+    { "id": "store", "title": { "en": "Microsoft Store", "ru": "Microsoft Store" } },
+    { "id": "apps", "title": { "en": "Apps", "ru": "Программы" } },
+    { "id": "drivers", "title": { "en": "Drivers and runtimes", "ru": "Драйверы и компоненты" } },
+    { "id": "maintenance", "title": { "en": "Maintenance", "ru": "Обслуживание" } }
+  ],
+  "items": [
+    {
+      "id": "drag-and-drop", "category": "tweaks",
+      "title": { "en": "Fix Drag & Drop under Administrator", "ru": "Исправить Drag & Drop под Администратором" },
+      "desc": { "en": "In Windows 11, Drag & Drop doesn’t work under the Administrator account. This .reg file fixes it.", "ru": "В Windows 11 под учётной записью Администратор не работает Drag & Drop. Этот .reg файл решает проблему." },
+      "file": "enable_dragdrop.reg", "tags": ["reboot"]
+    },
+    {
+      "id": "explorer-tabs", "category": "tweaks",
+      "title": { "en": "Disable tabs in File Explorer", "ru": "Отключить вкладки в Проводнике" },
+      "desc": { "en": "For Windows 11. Relevant for old or low-performance computers.", "ru": "Для Windows 11. Актуально для старых и слабых компьютеров." },
+      "file": "DisableExplorersTabs.reg", "tags": ["reboot"]
+    },
+    {
+      "id": "old-context-menu", "category": "tweaks",
+      "title": { "en": "Old context menu", "ru": "Старое контекстное меню" },
+      "desc": { "en": "For Windows 11. Brings back the context menu from Windows 10.", "ru": "Для Windows 11. Возвращает контекстное меню, как в Windows 10." },
+      "file": "OldContextMenu.reg", "tags": ["reboot"]
+    },
+    {
+      "id": "classic-notepad", "category": "tweaks",
+      "title": { "en": "Classic Notepad", "ru": "Классический Блокнот" },
+      "desc": { "en": "Brings back the classic Notepad.", "ru": "Возвращает классический Блокнот." },
+      "file": "notepad.reg"
+    },
+    {
+      "id": "classic-media-player", "category": "tweaks",
+      "title": { "en": "Classic Windows Media Player", "ru": "Классический Windows Media Player" },
+      "desc": { "en": "Brings back the classic Windows Media Player.", "ru": "Возвращает классический Windows Media Player." },
+      "file": "WinMediaPlayer.cmd"
+    },
+    {
+      "id": "classic-photo-viewer", "category": "tweaks",
+      "title": { "en": "Classic Windows Photo Viewer", "ru": "Классический Windows Photo Viewer" },
+      "desc": { "en": "Brings back the classic Windows Photo Viewer.", "ru": "Возвращает классический Windows Photo Viewer." },
+      "file": "WinPhotoViewer.reg"
+    },
+    {
+      "id": "num-lock", "category": "tweaks",
+      "title": { "en": "Num Lock on by default", "ru": "Num Lock включён по умолчанию" },
+      "desc": { "en": "Num Lock is enabled when Windows starts.", "ru": "При запуске Windows Num Lock будет включён." },
+      "file": "NumLockOnDefault.reg"
+    },
+    {
+      "id": "russification", "category": "tweaks",
+      "title": { "en": "Russian language pack", "ru": "Русификация системы" },
+      "desc": { "en": "Russification of Windows.", "ru": "Русификация Windows." },
+      "file": "Russification.bat"
+    },
+    {
+      "id": "remove-edge", "category": "tweaks",
+      "title": { "en": "Remove Microsoft Edge", "ru": "Удалить Microsoft Edge" },
+      "desc": { "en": "Launch RemoveMicrosoftEdge.bat and Microsoft Edge will be removed.", "ru": "Запустите RemoveMicrosoftEdge.bat, и Microsoft Edge будет удалён." },
+      "file": "RemoveMicrosoftEdge.bat"
+    },
+    {
+      "id": "turn-off-telemetry", "category": "privacy",
+      "title": { "en": "Turn off telemetry in Windows 10", "ru": "Выключить телеметрию в Windows 10" },
+      "desc": { "en": "A script that turns off telemetry in Windows 10.", "ru": "Скрипт, который выключает телеметрию в Windows 10." },
+      "file": "Turn%20Off%20Telemetry%20in%20Windows%2010.cmd"
+    },
+    {
+      "id": "donotspy11", "category": "privacy",
+      "title": { "en": "DoNotSpy11", "ru": "DoNotSpy11" },
+      "desc": { "en": "One of the ways to disable telemetry (spying and advertisement) after installing Windows 10 and 11.", "ru": "Один из способов отключить телеметрию (слежку и рекламу) после установки Windows 10 и 11." },
+      "file": "DoNotSpy11-1.3.0.0-Setup.exe",
+      "links": [
+        { "label": { "en": "Site", "ru": "Сайт" }, "url": "https://pxc-coding.com/donotspy11/donotspy-11-download/" },
+        { "label": { "en": "Guide", "ru": "Инструкция" }, "url": "https://www.youtube.com/watch?v=uc_ouoPYFzE" }
+      ]
+    },
+    {
+      "id": "pause-updates", "category": "privacy",
+      "title": { "en": "Pause Windows Updates for 100 years", "ru": "Пауза обновлений Windows на 100 лет" },
+      "desc": { "en": "After applying the file: Settings → Update & Security → Pause updates for 7 days → Advanced Options → scroll “Pause until” to the date you wish.", "ru": "После применения файла: Настройки → Обновление и безопасность → Приостановить обновления на 7 дн. → Дополнительные параметры → в «Приостановить до» выберите нужную дату." },
+      "file": "PauseUpdate100Years.reg"
+    },
+    {
+      "id": "disable-security-warning", "category": "privacy",
+      "title": { "en": "Disable “Open File – Security Warning”", "ru": "Отключить «Открыть файл – предупреждение системы безопасности»" },
+      "desc": { "en": "Disables this prompt when launching certain programs. Run the file as Administrator; a restart or signing out and back in may be required.", "ru": "Отключает этот запрос при запуске некоторых программ. Запустите файл от имени администратора; может потребоваться перезагрузка или повторный вход в систему." },
+      "file": "Disable_security_warning.bat", "tags": ["admin", "reboot"]
+    },
+    {
+      "id": "defender-remover", "category": "privacy",
+      "title": { "en": "Turn off Windows Defender completely", "ru": "Полностью отключить Защитник Windows" },
+      "desc": { "en": "Defender Remover turns off Windows Defender completely.", "ru": "Defender Remover полностью отключает Защитник Windows." },
+      "file": "DefenderRemover.exe",
+      "links": [
+        { "label": { "en": "Source code", "ru": "Исходный код" }, "url": "https://github.com/ionuttbara/windows-defender-remover/releases" }
+      ]
+    },
+    {
+      "id": "miner-search", "category": "privacy",
+      "title": { "en": "Miner Search", "ru": "Miner Search" },
+      "desc": { "en": "Finds and destroys hidden miners. An auxiliary tool for checking suspicious files, directories and processes; it is NOT an antivirus.", "ru": "Ищет и уничтожает скрытые майнеры. Вспомогательный инструмент для проверки подозрительных файлов, каталогов и процессов; НЕ является антивирусом." },
+      "file": "MinerSearch_v1.4.9.1.zip",
+      "links": [
+        { "label": "GitHub", "url": "https://github.com/BlendLog/MinerSearch" },
+        { "label": { "en": "How to use", "ru": "Как пользоваться" }, "url": { "en": "https://github.com/BlendLog/MinerSearch?tab=readme-ov-file#how-to-use", "ru": "https://github.com/BlendLog/MinerSearch?tab=readme-ov-file#%D0%BA%D0%B0%D0%BA-%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D1%8C%D1%81%D1%8F" } },
+        { "label": { "en": "Help on Telegram", "ru": "Помощь в Telegram" }, "url": "https://t.me/MinerSearch_blog" }
+      ]
+    },
+    {
+      "id": "censor-tracker", "category": "privacy",
+      "title": { "en": "Censor Tracker", "ru": "Censor Tracker" },
+      "desc": { "en": "A free browser extension by Roskomsvoboda. Helps bypass internet censorship using proxy servers and alerts you about websites sharing data with government authorities.", "ru": "Бесплатное расширение для браузеров от Роскомсвободы. Помогает обходить интернет-цензуру с помощью прокси-серверов и уведомляет о сайтах, передающих данные государственным органам." },
+      "links": [
+        { "label": { "en": "Install", "ru": "Установить" }, "url": { "en": "https://censortracker.org/en.html", "ru": "https://censortracker.org" } },
+        { "label": { "en": "Roskomsvoboda", "ru": "Роскомсвобода" }, "url": { "en": "https://roskomsvoboda.org/en/", "ru": "https://roskomsvoboda.org/ru/" } },
+        { "label": { "en": "Guide", "ru": "Инструкция" }, "url": "https://www.youtube.com/watch?v=Sq8g9tu5BdM" },
+        { "label": { "en": "Help on Telegram", "ru": "Помощь в Telegram" }, "url": "https://t.me/CensorTracker_feedback" }
+      ]
+    },
+    {
+      "id": "store-method-1", "category": "store",
+      "title": { "en": "Restore Microsoft Store: method 1", "ru": "Вернуть Microsoft Store: метод 1" },
+      "desc": { "en": "Run wsreset.bat.", "ru": "Запустите wsreset.bat." },
+      "file": "wsreset.bat"
+    },
+    {
+      "id": "store-method-2", "category": "store",
+      "title": { "en": "Restore Microsoft Store: method 2", "ru": "Вернуть Microsoft Store: метод 2" },
+      "desc": { "en": "Unpack the archive and launch Add-Store.cmd.", "ru": "Распакуйте архив и запустите Add-Store.cmd." },
+      "file": "LTSC-Add-MicrosoftStore-master.rar"
+    },
+    {
+      "id": "alt-app-installer", "category": "store",
+      "title": { "en": "Alt App Installer", "ru": "Alt App Installer" },
+      "desc": { "en": "Installs apps from Microsoft Store without using the Microsoft Store.", "ru": "Устанавливает программы из Microsoft Store без участия самого Microsoft Store." },
+      "file": "altappinstaller.exe",
+      "links": [
+        { "label": { "en": "Guide", "ru": "Инструкция" }, "url": "https://www.youtube.com/watch?v=ayIilTc-6u4" },
+        { "label": "GitHub", "url": "https://github.com/mjishnu/alt-app-installer/releases" }
+      ]
+    },
+    {
+      "id": "browsers", "category": "apps",
+      "title": { "en": "Browsers", "ru": "Браузеры" },
+      "desc": { "en": "The top browsers, gathered in one place.", "ru": "Главные браузеры в одном месте." },
+      "downloads": [
+        { "label": "Google Chrome", "file": "ChromeSetup.exe" },
+        { "label": "Yandex Browser", "file": "Yandex.exe" },
+        { "label": "Opera", "file": "OperaSetup.exe" },
+        { "label": "Mozilla Firefox", "file": "Firefox%20Installer.exe" }
+      ]
+    },
+    {
+      "id": "qbittorrent", "category": "apps",
+      "title": { "en": "qBittorrent", "ru": "qBittorrent" },
+      "desc": { "en": "A fast, cross-platform BitTorrent client, similar to uTorrent but without the ad clutter.", "ru": "Быстрый кроссплатформенный BitTorrent-клиент, похожий на uTorrent, но без навязчивой рекламы." },
+      "file": "qbittorrent_5.3.0_x64_setup.exe"
+    },
+    {
+      "id": "winrar", "category": "apps",
+      "title": { "en": "WinRAR", "ru": "WinRAR" },
+      "desc": { "en": "A popular archiver with support for many formats, encryption and multi-volume archives.", "ru": "Популярный архиватор с поддержкой множества форматов, шифрованием и многотомными архивами." },
+      "file": "WinRAR.v7.22.exe"
+    },
+    {
+      "id": "acrobat-reader", "category": "apps",
+      "title": { "en": "Adobe Acrobat Reader", "ru": "Adobe Acrobat Reader" },
+      "desc": { "en": "For reading, printing and commenting on PDF files.", "ru": "Для чтения, печати и рецензирования файлов PDF." },
+      "file": "Adobe.Acrobat.Reader.v2026.001.21651.zip"
+    },
+    {
+      "id": "msedgeredirect", "category": "apps",
+      "title": { "en": "MSEdgeRedirect", "ru": "MSEdgeRedirect" },
+      "desc": { "en": "Stops Windows 10/11 from forcing system links into Microsoft Edge and routes them to your default browser. Can also replace Bing in system search with another engine.", "ru": "Не даёт Windows 10/11 принудительно открывать системные ссылки в Microsoft Edge и перенаправляет их в браузер по умолчанию. Также может заменить Bing в системном поиске на другой поисковик." },
+      "file": "MSEdgeRedirect.exe",
+      "links": [
+        { "label": "GitHub", "url": "https://github.com/rcmaehl/MSEdgeRedirect" },
+        { "label": { "ru": "Описание на русском" }, "url": "https://www.comss.ru/page.php?id=9848" }
+      ]
+    },
+    {
+      "id": "super-god-mode", "category": "apps",
+      "title": { "en": "Windows Super God Mode", "ru": "Windows Super God Mode" },
+      "desc": { "en": "A script that creates a folder with shortcuts to all Windows system settings, including hidden and advanced ones.", "ru": "Скрипт, который создаёт папку с ярлыками ко всем системным настройкам Windows, включая скрытые и продвинутые." },
+      "file": "Windows%20Super%20God%20Mode%201.2.3.zip",
+      "links": [
+        { "label": "GitHub", "url": "https://github.com/ThioJoe/Windows-Super-God-Mode" },
+        { "label": { "en": "How to use" }, "url": "https://github.com/ThioJoe/Windows-Super-God-Mode?tab=readme-ov-file#how-to-run" },
+        { "label": { "en": "Video guide" }, "url": "https://www.youtube.com/watch?v=CnATL9kJPn8" },
+        { "label": { "ru": "Описание и инструкция" }, "url": "https://www.comss.ru/page.php?id=14513" }
+      ]
+    },
+    {
+      "id": "vcpp-runtimes", "category": "drivers",
+      "title": { "en": "Visual C++ Redistributable Runtime All-in-One", "ru": "Visual C++ Redistributable Runtime All-in-One" },
+      "desc": { "en": "Libraries required to run programs built with Visual C++. Helps prevent errors caused by missing components.", "ru": "Библиотеки для запуска программ, созданных на Visual C++. Помогают избежать ошибок из-за отсутствующих компонентов." },
+      "file": "Visual-C-Runtimes-All-in-One-May-2023.rar"
+    },
+    {
+      "id": "directx", "category": "drivers",
+      "title": { "en": "DirectX Web Setup", "ru": "DirectX Web Setup" },
+      "desc": { "en": "A Microsoft tool that installs the latest DirectX components needed for games and multimedia apps.", "ru": "Инструмент от Microsoft, который устанавливает последние компоненты DirectX для игр и мультимедиа." },
+      "file": "dxwebsetup.exe"
+    },
+    {
+      "id": "snappy-driver-installer", "category": "drivers",
+      "title": { "en": "Snappy Driver Installer", "ru": "Snappy Driver Installer" },
+      "desc": { "en": "The best driver installer in my experience. Works offline and online, has a complete driver database, lets you choose versions and doesn’t need to be installed.", "ru": "Лучший установщик драйверов, опираясь на мой опыт. Работает офлайн и онлайн, содержит полную базу драйверов, позволяет выбирать версии и не требует установки." },
+      "file": "SDI_R2601.zip",
+      "links": [
+        { "label": { "en": "Official site", "ru": "Официальный сайт" }, "url": { "en": "https://sdi-tool.org/download/?lang=en", "ru": "https://sdi-tool.org/download/?lang=ru" } }
+      ]
+    },
+    {
+      "id": "backup-drivers", "category": "drivers",
+      "title": { "en": "Back up and restore drivers", "ru": "Резервная копия и восстановление драйверов" },
+      "commands": [
+        { "label": { "en": "Back up drivers from this PC (PowerShell)", "ru": "Резервное копирование драйверов (PowerShell)" }, "code": "Export-WindowsDriver -Online -Destination D:\\your_folder" },
+        { "label": { "en": "Restore drivers to this PC (cmd or PowerShell)", "ru": "Восстановление драйверов (cmd или PowerShell)" }, "code": "pnputil.exe /add-driver D:\\your_folder\\*.inf /subdirs /install" }
+      ]
+    },
+    {
+      "id": "clear-temp", "category": "maintenance",
+      "title": { "en": "Clean temporary files", "ru": "Очистка временных файлов" },
+      "desc": { "en": "A very simple tool to clean all temporary files. Without administrator rights it won’t do anything.", "ru": "Очень простой инструмент для очистки всех временных файлов. Без прав администратора ничего не произойдёт." },
+      "file": "Clear(Run%20As%20Admin).bat", "tags": ["admin"]
+    },
+    {
+      "id": "optimize-volume", "category": "maintenance",
+      "title": { "en": "Optimize drives with PowerShell", "ru": "Оптимизация дисков через PowerShell" },
+      "commands": [
+        { "label": { "en": "Optimize the C: drive (SSD)", "ru": "Оптимизация диска C: (SSD)" }, "code": "Optimize-Volume -DriveLetter C -ReTrim -Verbose" },
+        { "label": { "en": "Analyze the D: drive (HDD)", "ru": "Анализ диска D: (HDD)" }, "code": "Optimize-Volume -DriveLetter D -Analyze -Verbose" },
+        { "label": { "en": "Defragment the D: drive (HDD)", "ru": "Дефрагментация диска D: (HDD)" }, "code": "Optimize-Volume -DriveLetter D -Defrag -Verbose" }
+      ]
+    },
+    {
+      "id": "defrag-tools", "category": "maintenance",
+      "title": { "en": "Defragmentation tools", "ru": "Программы для дефрагментации" },
+      "desc": { "en": "Defragment only an HDD.", "ru": "Дефрагментируйте только HDD." },
+      "links": [
+        { "label": "Defraggler", "url": "https://www.ccleaner.com/defraggler/download" },
+        { "label": "Smart Defrag", "url": { "en": "https://www.iobit.com/en/iobitsmartdefrag.php", "ru": "https://ru.iobit.com/iobitsmartdefrag.php" } },
+        { "label": "Auslogics Disk Defrag", "url": { "en": "https://www.auslogics.com/en/software/disk-defrag/", "ru": "https://www.auslogics.com/ru/software/disk-defrag/" } }
+      ]
+    },
+    {
+      "id": "keyboard-shortcuts", "category": "maintenance",
+      "title": { "en": "Keyboard shortcuts everyone should know", "ru": "Горячие клавиши, о которых должен знать каждый" },
+      "keys": [
+        { "combo": { "en": "Win + period", "ru": "Win + точка" }, "desc": { "en": "insert emoji anywhere", "ru": "вставить эмодзи куда угодно" } },
+        { "combo": "Win + H", "desc": { "en": "voice typing", "ru": "голосовой ввод текста" } },
+        { "combo": "Win + Alt + R", "desc": { "en": "screen recording", "ru": "запись экрана" } },
+        { "combo": "Win + E", "desc": { "en": "open File Explorer", "ru": "открыть Проводник" } },
+        { "combo": "Win + M", "desc": { "en": "minimize all windows", "ru": "свернуть все окна" } }
+      ]
+    }
+  ]
+}
