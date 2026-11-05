@@ -82,20 +82,18 @@
     });
   });
 
-  /* Home: build picker. The selection is mirrored in the URL so it can be shared. */
+  /* Home: build picker */
   const buildsData = $('#builds-data');
   if (buildsData) {
     const builds = JSON.parse(buildsData.textContent);
     const osInputs = $$('input[name="os"]');
     const langInputs = $$('input[name="image-lang"]');
     const selected = inputs => inputs.find(input => input.checked).value;
-    const select = (inputs, value) => {
-      const match = inputs.find(input => input.value === value);
-      if (match) match.checked = true;
+    const selectImageLang = lang => {
+      langInputs.find(input => input.value === lang).checked = true;
     };
-    const urlHasSelection = () => new URLSearchParams(location.search).has('os');
 
-    function render(updateUrl) {
+    function render() {
       const os = selected(osInputs);
       const imageLang = selected(langInputs);
       const build = builds[os];
@@ -112,24 +110,15 @@
       $('#download-size-ru').textContent = image.size.ru;
       $('#torrent-link').href = image.url + '.torrent';
       $('#magnet-link').href = image.magnet;
-      if (updateUrl) {
-        const url = new URL(location.href);
-        url.searchParams.set('os', os);
-        url.searchParams.set('lang', imageLang);
-        history.replaceState(null, '', url);
-      }
     }
 
-    // The image language follows the site language unless the link says otherwise.
-    const params = new URLSearchParams(location.search);
-    select(langInputs, currentLang());
-    select(osInputs, params.get('os'));
-    select(langInputs, params.get('lang'));
-    render(false);
-    osInputs.concat(langInputs).forEach(input => input.addEventListener('change', () => render(true)));
+    // The image language follows the site language.
+    selectImageLang(currentLang());
+    render();
+    osInputs.concat(langInputs).forEach(input => input.addEventListener('change', render));
     languageListeners.push(lang => {
-      select(langInputs, lang);
-      render(urlHasSelection());
+      selectImageLang(lang);
+      render();
     });
   }
 

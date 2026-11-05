@@ -292,7 +292,7 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 .segmented:has(label:nth-child(2) input:checked)::before { transform: translateX(100%); }
 .segmented label { position: relative; cursor: pointer; }
 .segmented input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-.segmented span {
+.segmented label > span {
   display: grid;
   place-items: center;
   min-height: 42px;
@@ -304,7 +304,7 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
   white-space: nowrap;
   transition: color var(--ease);
 }
-.segmented label:hover span { color: var(--text); }
+.segmented label:hover > span { color: var(--text); }
 .segmented input:checked + span { color: var(--on-selected); }
 .segmented input:focus-visible + span { outline: 2px solid var(--accent-text); outline-offset: 2px; }
 @supports not selector(:has(*)) {
@@ -469,7 +469,7 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 .history { display: grid; gap: 6px; font-size: var(--fs-sm); }
 .history li { display: flex; gap: 12px; align-items: baseline; }
 .history .mono { font-size: var(--fs-xs); }
-.history span:last-child { color: var(--muted); }
+.history li > span:last-child { color: var(--muted); }
 
 .dl-bar {
   position: fixed;
