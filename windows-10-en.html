@@ -145,8 +145,10 @@
     border-radius: var(--radius);
     background: var(--surface);
   }
-  .dl-file { color: var(--muted); font-family: var(--mono); font-size: 12.5px; word-break: break-all; }
-  .dl-hint { margin-top: 4px; color: var(--muted); font-size: 13px; }
+  .dl-left { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .dl-name { font-size: 15px; font-weight: 600; color: var(--text); line-height: 1.3; }
+  .dl-sub { margin-top: 2px; color: var(--muted); font-family: var(--mono); font-size: 12.5px; }
+  .dl-hint { color: var(--muted); font-size: 13px; }
   .dl-actions { display: flex; flex-direction: column; gap: 10px; flex: none; width: 200px; }
   .btn {
     display: inline-flex;
@@ -284,6 +286,10 @@
 
     <div class="download">
       <div class="dl-left">
+        <div>
+          <div class="dl-name">Windows 10 IoT Enterprise LTSC</div>
+          <div class="dl-sub">ISO · x64 · 19044.6456</div>
+        </div>
         <div class="dl-hint"><span class="lang-en">Direct download or torrent</span><span class="lang-ru">Прямая загрузка или torrent</span></div>
       </div>
       <div class="dl-actions">
