@@ -48,6 +48,10 @@
   footer{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 16px;padding:20px;color:var(--muted);font-size:13px;text-align:center;border-top:1px solid var(--border);}
   @media(max-width:600px){.topbar-telegram{display:none;}}
   @media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+  @media(max-width:600px){
+    footer{gap:12px 18px;padding-bottom:28px;}
+    footer>span:last-child{flex-basis:100%;margin-top:4px;opacity:.8;}
+  }
 </style>
 </head>
 <body>
