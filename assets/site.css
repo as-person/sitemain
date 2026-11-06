@@ -545,6 +545,9 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 .row-text-link:hover { color: var(--text); background: var(--raised-hover); }
 .row-muted .row-name { color: var(--muted); }
 .notice { margin-top: 6px; color: var(--muted); font-size: var(--fs-sm); }
+.stats-line { color: var(--muted); font-size: var(--fs-xs); }
+.row .stats-line { margin-top: 4px; }
+.dl-actions .stats-line { text-align: center; }
 
 /* -- Settings ------------------------------------------------------------ */
 

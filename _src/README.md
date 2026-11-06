@@ -26,6 +26,18 @@ curl -sI "https://dl3.somov.org/файл.iso" | findstr /i content-length
 
 При создании нового `.torrent` указывайте те же трекеры, что и в `TRACKERS` в `build.mjs`, иначе раздачу можно будет найти только через DHT.
 
+## Счётчик скачиваний
+
+Кнопки образов (скачать, торрент, magnet) сообщают о нажатии сервису на dl3. Код лежит в `counter/`, на сервере он установлен в `/opt/somov-counter`, данные хранятся в `/var/lib/private/somov-counter/counts.db`. IP посетителей не сохраняются, нажатия с IP владельца не считаются.
+
+Цифры на сайте видны только с IP из `/etc/somov-counter.env`. Если ваш IP сменился, выполните на dl3 (несколько адресов указываются через запятую):
+
+```
+echo "OWNER_IPS=новый.ip" > /etc/somov-counter.env && systemctl restart somov-counter
+```
+
+Чтобы показать цифры всем, нужно в `server.py` отдавать статистику без проверки IP и обновить файл на сервере.
+
 ## Другие данные
 
 - `data/ghost-spectre.json`: сборки Ghost Spectre.

@@ -1,0 +1,19 @@
+[Unit]
+Description=somov.org download click counter
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /opt/somov-counter/server.py
+EnvironmentFile=/etc/somov-counter.env
+DynamicUser=yes
+StateDirectory=somov-counter
+Restart=on-failure
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+MemoryMax=64M
+
+[Install]
+WantedBy=multi-user.target

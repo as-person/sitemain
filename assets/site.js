@@ -6,8 +6,8 @@
   const root = document.documentElement;
 
   const STRINGS = {
-    en: { copied: 'Copied', copyFailed: 'Could not copy', found: 'Found' },
-    ru: { copied: 'Скопировано', copyFailed: 'Не удалось скопировать', found: 'Найдено' },
+    en: { copied: 'Copied', copyFailed: 'Could not copy', found: 'Found', clicks: 'Clicks', download: 'Download' },
+    ru: { copied: 'Скопировано', copyFailed: 'Не удалось скопировать', found: 'Найдено', clicks: 'Нажатий', download: 'Скачать' },
   };
   const currentLang = () => (root.lang === 'ru' ? 'ru' : 'en');
   const t = key => STRINGS[currentLang()][key];
@@ -82,6 +82,49 @@
     });
   });
 
+  /* Download counter: report clicks; the server returns the counts only to the owner's IP */
+  const COUNTER = 'https://dl3.somov.org/api';
+
+  function reportClick(event) {
+    const link = event.target.closest && event.target.closest('[data-count-file]');
+    if (!link) return;
+    const url = COUNTER + '/count?file=' + encodeURIComponent(link.dataset.countFile) + '&kind=' + link.dataset.countKind;
+    if (!(navigator.sendBeacon && navigator.sendBeacon(url))) {
+      fetch(url, { method: 'POST', mode: 'no-cors', keepalive: true }).catch(() => {});
+    }
+  }
+  document.addEventListener('click', reportClick);
+  document.addEventListener('auxclick', event => {
+    if (event.button === 1) reportClick(event);
+  });
+
+  let statsCounts = null;
+  function renderStats() {
+    if (!statsCounts) return;
+    $$('[data-stats-file]').forEach(line => {
+      const counts = statsCounts[line.dataset.statsFile] || {};
+      const parts = line.dataset.statsKinds.split(',').map(kind => ({
+        label: kind === 'download' ? t('download') : kind === 'torrent' ? 'Torrent' : 'Magnet',
+        value: counts[kind] || 0,
+      }));
+      const total = parts.reduce((sum, part) => sum + part.value, 0);
+      line.textContent = t('clicks') + ': ' + total + ' (' + parts.map(part => part.label + ' ' + part.value).join(' · ') + ')';
+      line.hidden = false;
+    });
+  }
+  if ($('[data-stats-file]')) {
+    languageListeners.push(renderStats);
+    fetch(COUNTER + '/stats')
+      .then(response => response.json())
+      .then(data => {
+        if (data.owner) {
+          statsCounts = data.counts;
+          renderStats();
+        }
+      })
+      .catch(() => {});
+  }
+
   /* Home: build picker */
   const buildsData = $('#builds-data');
   if (buildsData) {
@@ -110,6 +153,11 @@
       $('#download-size-ru').textContent = image.size.ru;
       $('#torrent-link').href = image.url + '.torrent';
       $('#magnet-link').href = image.magnet;
+      ['#download-link', '#torrent-link', '#magnet-link'].forEach(selector => {
+        $(selector).dataset.countFile = image.file;
+      });
+      $('.composer [data-stats-file]').dataset.statsFile = image.file;
+      renderStats();
     }
 
     // The image language follows the site language.

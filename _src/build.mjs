@@ -54,6 +54,11 @@ const formatSize = (bytes, lang) => {
 };
 const sizeL = bytes => L(formatSize(bytes, 'en'), formatSize(bytes, 'ru'));
 
+// Download click counter: buttons report clicks, the stats line is filled in only for the owner's IP.
+const countAttr = (file, kind) => `data-count-file="${esc(file)}" data-count-kind="${kind}"`;
+const statsLine = (file, kinds = 'download,torrent,magnet') =>
+  `<p class="stats-line" data-stats-file="${esc(file)}" data-stats-kinds="${kinds}" hidden></p>`;
+
 const PATHS = {
   d: 'M5 12h14m-6-6 6 6-6 6',
   back: 'M19 12H5m6-6-6 6 6 6',
@@ -216,6 +221,7 @@ function homePage() {
     images: Object.fromEntries(LANGS.map(l => {
       const img = imageFor(b, l);
       return [l, {
+        file: img.file,
         url: img.url,
         magnet: img.magnet,
         size: { en: formatSize(img.size, 'en'), ru: formatSize(img.size, 'ru') },
@@ -267,13 +273,14 @@ function homePage() {
             </a>
           </div>
           <div class="dl-actions">
-            <a class="btn btn-primary btn-block" id="download-link" href="${image.url}">
+            <a class="btn btn-primary btn-block" id="download-link" href="${image.url}" ${countAttr(image.file, 'download')}>
               ${icon('download')} <span>${S.downloadIso} · <span class="lang-en" id="download-size-en">${formatSize(image.size, 'en')}</span><span class="lang-ru" id="download-size-ru">${formatSize(image.size, 'ru')}</span></span>
             </a>
             <div class="dl-alt">
-              <a class="btn btn-secondary btn-sm" id="torrent-link" href="${image.url}.torrent">Torrent</a>
-              <a class="btn btn-secondary btn-sm" id="magnet-link" href="${esc(image.magnet)}">Magnet</a>
+              <a class="btn btn-secondary btn-sm" id="torrent-link" href="${image.url}.torrent" ${countAttr(image.file, 'torrent')}>Torrent</a>
+              <a class="btn btn-secondary btn-sm" id="magnet-link" href="${esc(image.magnet)}" ${countAttr(image.file, 'magnet')}>Magnet</a>
             </div>
+            ${statsLine(image.file)}
           </div>
         </div>
       </section>
@@ -366,11 +373,12 @@ function buildPage(build, imageLang) {
             <div><dt>${L('Format', 'Формат')}</dt><dd>ISO · x64</dd></div>
           </dl>
           <div class="dl-actions">
-            <a class="btn btn-primary btn-block" href="${image.url}">${icon('download')} <span>${S.downloadIso}</span></a>
+            <a class="btn btn-primary btn-block" href="${image.url}" ${countAttr(image.file, 'download')}>${icon('download')} <span>${S.downloadIso}</span></a>
             <div class="dl-alt">
-              <a class="btn btn-secondary btn-sm" href="${image.url}.torrent">Torrent</a>
-              <a class="btn btn-secondary btn-sm" href="${esc(image.magnet)}">Magnet</a>
+              <a class="btn btn-secondary btn-sm" href="${image.url}.torrent" ${countAttr(image.file, 'torrent')}>Torrent</a>
+              <a class="btn btn-secondary btn-sm" href="${esc(image.magnet)}" ${countAttr(image.file, 'magnet')}>Magnet</a>
             </div>
+            ${statsLine(image.file)}
           </div>
           <a class="panel-other link" href="/windows-${build.id}-${otherImage}">${L('Image in another language', 'Образ на другом языке')}: ${imageLangName(otherImage)}</a>
         </div>
@@ -431,7 +439,7 @@ function buildPage(build, imageLang) {
   </main>
 
   <div class="dl-bar" hidden>
-    <a class="btn btn-primary btn-block" href="${image.url}">${icon('download')} <span>${S.downloadIso} · ${size}</span></a>
+    <a class="btn btn-primary btn-block" href="${image.url}" ${countAttr(image.file, 'download')}>${icon('download')} <span>${S.downloadIso} · ${size}</span></a>
   </div>
 
   <dialog class="lightbox" id="lightbox" ${attr('aria-label', 'Screenshot', 'Скриншот')}>
@@ -469,10 +477,11 @@ function ghostPage() {
               <span>${sizeL(item.size)}</span>
               ${item.status ? `<span class="badge">${T(item.status)}</span>` : ''}
             </div>
+            ${statsLine(item.file, 'download,torrent')}
           </div>
           <div class="row-actions">
-            <a class="btn btn-secondary btn-sm" href="${url}">${icon('download')} <span>${S.download}</span></a>
-            <a class="row-text-link" href="${url}.torrent">Torrent</a>
+            <a class="btn btn-secondary btn-sm" href="${url}" ${countAttr(item.file, 'download')}>${icon('download')} <span>${S.download}</span></a>
+            <a class="row-text-link" href="${url}.torrent" ${countAttr(item.file, 'torrent')}>Torrent</a>
           </div>
         </article>`;
   };
