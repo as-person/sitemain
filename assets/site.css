@@ -544,7 +544,7 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 }
 .row-text-link:hover { color: var(--text); background: var(--raised-hover); }
 .row-muted .row-name { color: var(--muted); }
-.note { margin-top: 28px; color: var(--muted); font-size: var(--fs-sm); }
+.notice { margin-top: 6px; color: var(--muted); font-size: var(--fs-sm); }
 
 /* -- Settings ------------------------------------------------------------ */
 

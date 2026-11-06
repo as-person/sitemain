@@ -482,6 +482,11 @@ function ghostPage() {
       <a href="/" class="back">${icon('back')} ${S.home}</a>
       <h1 class="page-title">${L('Ghost Spectre builds', 'Сборки Ghost Spectre')}</h1>
       <p class="page-sub">${L('Windows 10/11 · by Ghost Spectre', 'Windows 10/11 · автор Ghost Spectre')}</p>
+      <p class="notice">
+        ${L('This page is a download mirror. For questions and support, contact the author:', 'Страница работает как зеркало для скачивания. Вопросы и поддержка у автора:')}
+        <a class="link" href="${ghost.youtube}" target="_blank" rel="noopener">YouTube</a> ·
+        <a class="link" href="${ghost.website}" target="_blank" rel="noopener">${L('Website', 'Сайт')}</a>
+      </p>
       <div class="section">
         ${ghost.groups.map(group => `<section class="group">
         <h2 class="group-title">${group.title}</h2>
@@ -490,7 +495,6 @@ function ghostPage() {
         </div>
         </section>`).join('\n        ')}
       </div>
-      <p class="note">${L('Author’s YouTube channel:', 'YouTube-канал автора:')} <a class="link" href="${ghost.youtube}" target="_blank" rel="noopener">youtube.com/@GHOSTSPECTRE</a></p>
     </div>
   </main>`;
 
