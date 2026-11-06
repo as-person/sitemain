@@ -4,7 +4,9 @@
 POST /api/count?file=<iso name>&kind=download|torrent|magnet  adds one click
 GET  /api/stats  returns the counts to the owner's IP, and {"owner": false} to everyone else
 
-Runs behind nginx, which sets X-Real-IP. Visitor IPs are never stored on disk.
+Each IP is counted once per 24 hours, across all files and buttons.
+Runs behind nginx, which sets X-Real-IP. Visitor IPs are kept in memory only, never on disk,
+so a restart of the service forgets who has already been counted.
 """
 import json
 import os
@@ -12,7 +14,6 @@ import re
 import sqlite3
 import threading
 import time
-from collections import defaultdict, deque
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlsplit
 
@@ -24,27 +25,29 @@ OWNER_IPS = {ip.strip() for ip in os.environ.get('OWNER_IPS', '').split(',') if 
 
 KINDS = {'download', 'torrent', 'magnet'}
 FILE_RE = re.compile(r'^[A-Za-z0-9._()-]{1,200}\.iso$', re.IGNORECASE)
-RATE_LIMIT = 30  # clicks per IP per minute, the rest is ignored
+CLICK_WINDOW = int(os.environ.get('CLICK_WINDOW', '86400'))  # seconds between counted clicks from one IP
+MAX_TRACKED_IPS = 200000
 
 db = sqlite3.connect(DB_PATH, check_same_thread=False)
 db.execute('CREATE TABLE IF NOT EXISTS counts (file TEXT, kind TEXT, n INTEGER NOT NULL, PRIMARY KEY (file, kind))')
 db.commit()
 lock = threading.Lock()
-recent = defaultdict(deque)
+last_counted = {}
 
 
-def rate_limited(ip):
+def first_click_today(ip):
     now = time.monotonic()
     with lock:
-        if len(recent) > 10000:
-            recent.clear()
-        clicks = recent[ip]
-        while clicks and now - clicks[0] > 60:
-            clicks.popleft()
-        if len(clicks) >= RATE_LIMIT:
-            return True
-        clicks.append(now)
-        return False
+        last = last_counted.get(ip)
+        if last is not None and now - last < CLICK_WINDOW:
+            return False
+        if len(last_counted) >= MAX_TRACKED_IPS:
+            for old_ip in [k for k, t in last_counted.items() if now - t >= CLICK_WINDOW]:
+                del last_counted[old_ip]
+            if len(last_counted) >= MAX_TRACKED_IPS:
+                last_counted.clear()
+        last_counted[ip] = now
+        return True
 
 
 def add_click(file, kind):
@@ -92,7 +95,7 @@ class Handler(BaseHTTPRequestHandler):
         if kind not in KINDS or not FILE_RE.match(file) or not os.path.isfile(os.path.join(FILES_DIR, file)):
             return self.respond(400)
         ip = self.headers.get('X-Real-IP', '')
-        if ip and ip not in OWNER_IPS and not rate_limited(ip):
+        if ip and ip not in OWNER_IPS and first_click_today(ip):
             add_click(file, kind)
         return self.respond(204)
 
