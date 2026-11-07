@@ -181,12 +181,18 @@
     if (shownLink && !/-(en|ru)$/.test(location.pathname)) {
       history.replaceState(null, '', shownLink.getAttribute('href') + location.search + location.hash);
     }
+    const showImage = lang => {
+      const link = imageSwitches.find(l => l.dataset.switchImage === lang);
+      root.dataset.image = lang;
+      history.replaceState(null, '', link.getAttribute('href') + location.search + location.hash);
+      syncImageSwitches();
+    };
     imageSwitches.forEach(link => link.addEventListener('click', event => {
       event.preventDefault();
-      root.dataset.image = link.dataset.switchImage;
-      history.replaceState(null, '', link.getAttribute('href'));
-      syncImageSwitches();
+      showImage(link.dataset.switchImage);
     }));
+    // Same as on the home page: switching the site language switches the image language too.
+    languageListeners.push(showImage);
   }
 
   /* Build page: screenshot lightbox on a native dialog */
