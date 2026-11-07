@@ -100,6 +100,9 @@ const PATHS = {
   download: 'M12 4v12m-5-5 5 5 5-5M5 20h14',
   copy: '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>',
   check: 'm5 12 5 5 9-10',
+  send: 'M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z',
+  link: 'M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.5 1.5M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.5-1.5',
+  share: 'M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13',
   search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
   close: 'M6 6l12 12M18 6 6 18',
   left: 'm15 6-6 6 6 6',
@@ -134,9 +137,11 @@ const analytics = `<!-- Owner opt-out: open /?noga to stop counting this device,
 window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');
 </script>`;
 
-// Before first paint: use the saved language, otherwise the browser language.
+// Before first paint: use the saved language, otherwise the page language (/ru copies are Russian),
+// otherwise the browser language. Visitors of a /ru copy keep the usual address: the prefix is removed
+// from the address bar without reloading, and Russian is remembered for the rest of the site.
 const langScript = `<script>
-(function(){var s;try{s=localStorage.getItem('siteLanguage')}catch(e){}var l=s==='ru'||s==='en'?s:((navigator.language||'').toLowerCase().indexOf('ru')===0?'ru':'en');var r=document.documentElement;r.lang=l;r.classList.add('lang-'+l+'-active');if(l==='ru'){if(r.dataset.titleRu)document.title=r.dataset.titleRu;var k=document.createElement('link');k.rel='preload';k.as='font';k.type='font/woff2';k.crossOrigin='';k.href='/assets/fonts/inter-cyrillic-wght-normal.woff2';document.head.appendChild(k);}})();
+(function(){var r=document.documentElement,p=location.pathname,s;try{s=localStorage.getItem('siteLanguage')}catch(e){}if(/^\\/ru(\\/|$)/.test(p)){if(!s){s='ru';try{localStorage.setItem('siteLanguage','ru')}catch(e){}}history.replaceState(null,'',(p.replace(/^\\/ru/,'')||'/')+location.search+location.hash)}var l=s==='ru'||s==='en'?s:(r.lang==='ru'||(navigator.language||'').toLowerCase().indexOf('ru')===0?'ru':'en');r.lang=l;r.classList.remove('lang-en-active','lang-ru-active');r.classList.add('lang-'+l+'-active');if(l==='ru'){if(r.dataset.titleRu)document.title=r.dataset.titleRu;var k=document.createElement('link');k.rel='preload';k.as='font';k.type='font/woff2';k.crossOrigin='';k.href='/assets/fonts/inter-cyrillic-wght-normal.woff2';document.head.appendChild(k);}})();
 </script>`;
 
 // Build pages: which image language to show before first paint. An explicit URL (-en/-ru) wins,
@@ -145,21 +150,30 @@ const imageScript = preset => (preset === undefined ? '' : `<script>
 document.documentElement.dataset.image=${preset ? `'${preset}'` : "document.documentElement.lang==='ru'?'ru':'en'"};
 </script>`);
 
+let PAGE_LANG = 'en';
+const langPath = (lang, path) => (lang === 'ru' ? (path === '/' ? '/ru/' : `/ru${path}`) : path);
+
 function head({ path, title, description, imageDefault }) {
-  const canonical = `${SITE}${path}`;
+  const lang = PAGE_LANG;
+  const canonical = `${SITE}${langPath(lang, path)}`;
+  const staticImage = imageDefault === undefined ? '' : (imageDefault || (lang === 'ru' ? 'ru' : ''));
   return `<!DOCTYPE html>
-<html lang="en" data-title-en="${esc(title.en)}" data-title-ru="${esc(title.ru)}">
+<html lang="${lang}"${lang === 'ru' ? ' class="lang-ru-active"' : ''}${staticImage ? ` data-image="${staticImage}"` : ''} data-title-en="${esc(title.en)}" data-title-ru="${esc(title.ru)}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>${esc(title.en)}</title>
-  <meta name="description" content="${esc(description)}">
+  <title>${esc(title[lang])}</title>
+  <meta name="description" content="${esc(description[lang])}">
   <link rel="canonical" href="${canonical}">
+  <link rel="alternate" hreflang="en" href="${SITE}${langPath('en', path)}">
+  <link rel="alternate" hreflang="ru" href="${SITE}${langPath('ru', path)}">
+  <link rel="alternate" hreflang="x-default" href="${SITE}${langPath('en', path)}">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Windows by somov">
-  <meta property="og:title" content="${esc(title.en)}">
-  <meta property="og:description" content="${esc(description)}">
+  <meta property="og:title" content="${esc(title[lang])}">
+  <meta property="og:description" content="${esc(description[lang])}">
   <meta property="og:url" content="${canonical}">
+  <meta property="og:locale" content="${lang === 'ru' ? 'ru_RU' : 'en_US'}">
   <meta property="og:image" content="${SITE}/images/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -231,7 +245,7 @@ const shell = (meta, current, body, bodyClass = '') => `${head(meta)}
 `;
 
 function write(relativePath, html) {
-  const full = join(ROOT, relativePath);
+  const full = join(ROOT, PAGE_LANG === 'ru' ? `ru/${relativePath}` : relativePath);
   mkdirSync(dirname(full), { recursive: true });
   writeFileSync(full, html);
 }
@@ -291,8 +305,8 @@ function homePage() {
           <fieldset>
             <legend class="field-label">${L('Image language', 'Язык образа')}</legend>
             <div class="segmented">
-              ${radio('image-lang', 'en', S.english, true)}
-              ${radio('image-lang', 'ru', S.russian, false)}
+              ${radio('image-lang', 'en', S.english, PAGE_LANG === 'en')}
+              ${radio('image-lang', 'ru', S.russian, PAGE_LANG === 'ru')}
             </div>
           </fieldset>
         </div>
@@ -301,6 +315,8 @@ function homePage() {
           <div>
             <h2 id="build-title">${esc(build.title)}</h2>
             <div class="meta">
+              <span class="author">${L('Author: somov', 'Автор: somov')}</span>
+              <span aria-hidden="true">·</span>
               <span id="build-version">${build.version}</span>
               <span aria-hidden="true">·</span>
               <span class="mono" id="build-number">${build.number}</span>
@@ -355,7 +371,10 @@ function homePage() {
   write('index.html', shell({
     path: '/',
     title: { en: 'Windows by somov: IoT Enterprise LTSC builds', ru: 'Windows от somov: сборки IoT Enterprise LTSC' },
-    description: 'Windows 11 and Windows 10 IoT Enterprise LTSC builds by somov in English and Russian. Direct download, torrent and magnet.',
+    description: {
+      en: 'Windows 11 and Windows 10 IoT Enterprise LTSC builds by somov in English and Russian. Direct download, torrent and magnet.',
+      ru: 'Сборки Windows 11 и Windows 10 IoT Enterprise LTSC от somov на русском и английском. Прямая загрузка, торрент и magnet.',
+    },
   }, 'builds', body));
 }
 
@@ -382,7 +401,7 @@ function gallery(build, imageLang) {
 function buildPage(build, preset) {
   const images = Object.fromEntries(LANGS.map(l => [l, imageFor(build, l)]));
   const other = l => (l === 'ru' ? 'en' : 'ru');
-  const start = preset || 'en';
+  const start = preset || PAGE_LANG;
   // One block per image language; CSS shows the one chosen in <html data-image>.
   const V = (fn, tag = 'div', cls = '') => LANGS.map(l => `<${tag} class="img-${l}${cls ? ' ' + cls : ''}">${fn(l)}</${tag}>`).join('');
   const switchLink = (l, content, cls = '') =>
@@ -406,12 +425,31 @@ function buildPage(build, preset) {
         <a href="/" class="back">${icon('back')} ${S.home}</a>
         <h1 class="page-title">${esc(build.title)}</h1>
         <div class="meta">
+          <span class="author">${L('Author: somov', 'Автор: somov')}</span>
+          <span aria-hidden="true">·</span>
           <span>${build.version}</span>
           <span aria-hidden="true">·</span>
           <span class="mono">${build.number}</span>
           <span aria-hidden="true">·</span>
           <span>${T(build.date)}</span>
           ${build.final ? `<span class="badge">${S.final}</span>` : ''}
+        </div>
+        <div class="share">
+          <div class="share-more">
+            <button type="button" class="share-btn" data-share-toggle aria-haspopup="menu" aria-expanded="false">${icon('share')} ${L('Share', 'Поделиться')}</button>
+            <div class="share-menu" role="menu" hidden>
+              <button type="button" role="menuitem" data-share-copy>${icon('link')} ${L('Copy link', 'Скопировать ссылку')}</button>
+              <button type="button" role="menuitem" data-share-native hidden>${icon('share')} ${L('Other apps…', 'Другие приложения…')}</button>
+              <span class="share-sep" role="separator"></span>
+              <a role="menuitem" href="#" target="_blank" rel="noopener" data-share-service="telegram">Telegram</a>
+              <a role="menuitem" href="#" target="_blank" rel="noopener" data-share-service="whatsapp">WhatsApp</a>
+              <a role="menuitem" href="#" target="_blank" rel="noopener" data-share-service="vk">${L('VK', 'ВКонтакте')}</a>
+              <a role="menuitem" href="#" target="_blank" rel="noopener" data-share-service="x">X</a>
+              <a role="menuitem" href="#" target="_blank" rel="noopener" data-share-service="facebook">Facebook</a>
+              <a role="menuitem" href="#" target="_blank" rel="noopener" data-share-service="reddit">Reddit</a>
+              <a role="menuitem" href="#" data-share-service="email">Email</a>
+            </div>
+          </div>
         </div>
         <p class="lead">${T(build.lead)}</p>
       </div>
@@ -438,6 +476,14 @@ function buildPage(build, preset) {
             ${supportNudge}
           </div>
         </div>
+        <a class="tg-card" href="${TELEGRAM}" target="_blank" rel="noopener">
+          <span class="tg-icon">${icon('send')}</span>
+          <span class="tg-text">
+            <span class="tg-title">${L('New builds on Telegram', 'Новые сборки — в Telegram')}</span>
+            <span class="tg-sub">${L('Be the first to know about new versions', 'Узнавайте о новых версиях первыми')}</span>
+          </span>
+          <span class="tg-action" ${attr('aria-label', 'Subscribe', 'Подписаться')}>${icon('d')}</span>
+        </a>
       </aside>
 
       <div class="build-body">
@@ -516,7 +562,10 @@ function buildPage(build, preset) {
       en: `${build.title} - Windows by somov`,
       ru: `${build.title} - Windows от somov`,
     },
-    description: `${build.title} ${build.version}, build ${build.number}. English and Russian images (${sizes}). Direct download, torrent, magnet and checksums.`,
+    description: {
+      en: `${build.title} ${build.version}, build ${build.number}. English and Russian images (${sizes}). Direct download, torrent, magnet and checksums.`,
+      ru: `${build.title} ${build.version}, сборка ${build.number}. Образы на русском и английском (${LANGS.map(l => formatSize(images[l].size, 'ru')).join(' / ')}). Прямая загрузка, торрент, magnet и контрольные суммы.`,
+    },
   }, 'builds', body, 'has-dl-bar'));
 }
 
@@ -570,7 +619,10 @@ function ghostPage() {
   write('ghost-spectre.html', shell({
     path: '/ghost-spectre',
     title: { en: 'Ghost Spectre - Windows by somov', ru: 'Ghost Spectre - Windows от somov' },
-    description: 'Windows 10 and Windows 11 builds by Ghost Spectre: versions, dates and sizes. Direct download and torrent.',
+    description: {
+      en: 'Windows 10 and Windows 11 builds by Ghost Spectre: versions, dates and sizes. Direct download and torrent.',
+      ru: 'Сборки Windows 10 и Windows 11 от Ghost Spectre: версии, даты и размеры. Прямая загрузка и торрент.',
+    },
   }, 'ghost', body));
 }
 
@@ -661,7 +713,10 @@ function settingsPage() {
   write('settings-for-windows.html', shell({
     path: '/settings-for-windows',
     title: { en: 'Settings for Windows - Windows by somov', ru: 'Настройки для Windows - Windows от somov' },
-    description: 'Windows tweaks, drivers, PowerShell commands and useful tools, with search and categories.',
+    description: {
+      en: 'Windows tweaks, drivers, PowerShell commands and useful tools, with search and categories.',
+      ru: 'Твики Windows, драйверы, команды PowerShell и полезные утилиты, с поиском и категориями.',
+    },
   }, 'settings', body));
 }
 
@@ -775,7 +830,10 @@ function supportPage() {
   write('support.html', shell({
     path: '/support',
     title: { en: 'Support the project - Windows by somov', ru: 'Поддержать проект - Windows от somov' },
-    description: 'Ways to support Windows by somov: crypto (USDT, USDC, BTC, ETH, LTC, DOGE) and YooMoney.',
+    description: {
+      en: 'Ways to support Windows by somov: crypto (USDT, USDC, BTC, ETH, LTC, DOGE) and YooMoney.',
+      ru: 'Как поддержать Windows by somov: криптовалюта (USDT, USDC, BTC, ETH, LTC, DOGE) и ЮMoney.',
+    },
   }, '', body));
 }
 
@@ -784,9 +842,13 @@ function supportPage() {
 function sitemap() {
   const paths = ['/', '/ghost-spectre', '/settings-for-windows', '/support',
     ...builds.map(b => `/windows-${b.id}`)];
+  const alternates = path => LANGS.map(l => `    <xhtml:link rel="alternate" hreflang="${l}" href="${SITE}${langPath(l, path)}"/>`).join('\n');
   write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${paths.map(path => `  <url><loc>${SITE}${path}</loc></url>`).join('\n')}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${paths.flatMap(path => LANGS.map(lang => `  <url>
+    <loc>${SITE}${langPath(lang, path)}</loc>
+${alternates(path)}
+  </url>`)).join('\n')}
 </urlset>
 `);
   write('robots.txt', `User-agent: *\nAllow: /\n\nSitemap: ${SITE}/sitemap.xml\n`);
@@ -803,14 +865,18 @@ for (const build of builds) {
   }
 }
 
-homePage();
-ghostPage();
-settingsPage();
-supportPage();
-for (const build of builds) {
-  buildPage(build, null);
-  for (const imageLang of LANGS) buildPage(build, imageLang);
+for (const lang of LANGS) {
+  PAGE_LANG = lang;
+  homePage();
+  ghostPage();
+  settingsPage();
+  supportPage();
+  for (const build of builds) {
+    buildPage(build, null);
+    for (const imageLang of LANGS) buildPage(build, imageLang);
+  }
 }
+PAGE_LANG = 'en';
 notFoundPage();
 sitemap();
 console.log('Site built.');

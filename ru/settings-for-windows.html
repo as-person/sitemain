@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="ru" class="lang-ru-active" data-title-en="Settings for Windows - Windows by somov" data-title-ru="Настройки для Windows - Windows от somov">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Настройки для Windows - Windows от somov</title>
+  <meta name="description" content="Твики Windows, драйверы, команды PowerShell и полезные утилиты, с поиском и категориями.">
+  <link rel="canonical" href="https://somov.org/ru/settings-for-windows">
+  <link rel="alternate" hreflang="en" href="https://somov.org/settings-for-windows">
+  <link rel="alternate" hreflang="ru" href="https://somov.org/ru/settings-for-windows">
+  <link rel="alternate" hreflang="x-default" href="https://somov.org/settings-for-windows">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Windows by somov">
+  <meta property="og:title" content="Настройки для Windows - Windows от somov">
+  <meta property="og:description" content="Твики Windows, драйверы, команды PowerShell и полезные утилиты, с поиском и категориями.">
+  <meta property="og:url" content="https://somov.org/ru/settings-for-windows">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:image" content="https://somov.org/images/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#0f1115">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+  <link rel="preload" href="/assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <script>
+(function(){var r=document.documentElement,p=location.pathname,s;try{s=localStorage.getItem('siteLanguage')}catch(e){}if(/^\/ru(\/|$)/.test(p)){if(!s){s='ru';try{localStorage.setItem('siteLanguage','ru')}catch(e){}}history.replaceState(null,'',(p.replace(/^\/ru/,'')||'/')+location.search+location.hash)}var l=s==='ru'||s==='en'?s:(r.lang==='ru'||(navigator.language||'').toLowerCase().indexOf('ru')===0?'ru':'en');r.lang=l;r.classList.remove('lang-en-active','lang-ru-active');r.classList.add('lang-'+l+'-active');if(l==='ru'){if(r.dataset.titleRu)document.title=r.dataset.titleRu;var k=document.createElement('link');k.rel='preload';k.as='font';k.type='font/woff2';k.crossOrigin='';k.href='/assets/fonts/inter-cyrillic-wght-normal.woff2';document.head.appendChild(k);}})();
+</script>
+  
+  <!-- Owner opt-out: open /?noga to stop counting this device, /?ga to resume -->
+<script>
+(function(){var ID='G-4RBN0G8775';try{var p=new URLSearchParams(location.search);if(p.has('noga'))localStorage.setItem('ga-optout','1');if(p.has('ga'))localStorage.removeItem('ga-optout');if(localStorage.getItem('ga-optout')==='1')window['ga-disable-'+ID]=true;}catch(e){}})();
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4RBN0G8775"></script>
+<script>
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-4RBN0G8775');
+</script>
+  <link rel="stylesheet" href="/assets/site.css?v=eab12e68">
+</head>
+<body>
+  <a class="skip-link" href="#content"><span class="lang-en">Skip to content</span><span class="lang-ru">Перейти к содержимому</span></a>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a href="/" class="brand">
+        <img src="/images/logo-mark.png" alt="" width="32" height="32">
+        <span>Windows by somov</span>
+      </a>
+      <nav class="site-nav" aria-label="Main" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Main&quot;,&quot;ru&quot;:&quot;Основная навигация&quot;}}">
+        <a href="/"><span class="lang-en">Builds</span><span class="lang-ru">Сборки</span></a>
+        <a href="/ghost-spectre">Ghost Spectre</a>
+        <a href="/settings-for-windows" aria-current="page"><span class="lang-en">Settings</span><span class="lang-ru">Настройки</span></a>
+        <a class="nav-external" href="https://t.me/+gmXk9-zXZ405YWY6" target="_blank" rel="noopener">Telegram</a>
+      </nav>
+      <div class="lang-switch" role="group" aria-label="Site language / Язык сайта">
+        <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+        <button type="button" data-set-lang="ru" aria-pressed="false">RU</button>
+      </div>
+    </div>
+  </header>
+  <main class="page" id="content">
+    <div class="container container-narrow">
+      <a href="/" class="back"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg> <span class="lang-en">Home</span><span class="lang-ru">На главную</span></a>
+      <h1 class="page-title"><span class="lang-en">Settings for Windows</span><span class="lang-ru">Настройки для Windows</span></h1>
+      <p class="page-sub"><span class="lang-en">Tools, tweaks and guides</span><span class="lang-ru">Утилиты, твики и инструкции</span></p>
+
+      <div class="toolbar">
+        <label class="search">
+          <span class="sr-only"><span class="lang-en">Search</span><span class="lang-ru">Поиск</span></span>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+          <input type="search" id="settings-search" placeholder="Search: telemetry, drivers, Store…" data-i18n="{&quot;placeholder&quot;:{&quot;en&quot;:&quot;Search: telemetry, drivers, Store…&quot;,&quot;ru&quot;:&quot;Поиск: телеметрия, драйверы, Store…&quot;}}" autocomplete="off">
+        </label>
+        <div class="chips" role="group" aria-label="Categories" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Categories&quot;,&quot;ru&quot;:&quot;Категории&quot;}}">
+          <button type="button" class="chip" data-category="all" aria-pressed="true"><span class="lang-en">All</span><span class="lang-ru">Все</span></button>
+          <button type="button" class="chip" data-category="tweaks" aria-pressed="false"><span class="lang-en">Windows tweaks</span><span class="lang-ru">Твики Windows</span></button>
+          <button type="button" class="chip" data-category="privacy" aria-pressed="false"><span class="lang-en">Privacy and security</span><span class="lang-ru">Приватность и безопасность</span></button>
+          <button type="button" class="chip" data-category="store" aria-pressed="false">Microsoft Store</button>
+          <button type="button" class="chip" data-category="apps" aria-pressed="false"><span class="lang-en">Apps</span><span class="lang-ru">Программы</span></button>
+          <button type="button" class="chip" data-category="drivers" aria-pressed="false"><span class="lang-en">Drivers and runtimes</span><span class="lang-ru">Драйверы и компоненты</span></button>
+          <button type="button" class="chip" data-category="maintenance" aria-pressed="false"><span class="lang-en">Maintenance</span><span class="lang-ru">Обслуживание</span></button>
+        </div>
+      </div>
+
+      <p class="result-count" id="result-count" role="status"></p>
+      <p class="empty" id="empty" hidden><span class="lang-en">Nothing found. Try another word or category.</span><span class="lang-ru">Ничего не найдено. Попробуйте другое слово или категорию.</span></p>
+
+      <section class="section group" data-group="tweaks">
+        <h2 class="group-title"><span class="lang-en">Windows tweaks</span><span class="lang-ru">Твики Windows</span></h2>
+        <div class="rows">
+        <article class="item" id="drag-and-drop" data-category="tweaks" data-search="fix drag &amp; drop under administrator исправить drag &amp; drop под администратором in windows 11, drag &amp; drop doesn’t work under the administrator account. this .reg file fixes it. в windows 11 под учётной записью администратор не работает drag &amp; drop. этот .reg файл решает проблему. enable_dragdrop.reg">
+          <div>
+            <h3 class="item-title"><a href="#drag-and-drop"><span class="lang-en">Fix Drag &amp; Drop under Administrator</span><span class="lang-ru">Исправить Drag &amp; Drop под Администратором</span></a></h3>
+            <p class="item-desc"><span class="lang-en">In Windows 11, Drag &amp; Drop doesn’t work under the Administrator account. This .reg file fixes it.</span><span class="lang-ru">В Windows 11 под учётной записью Администратор не работает Drag &amp; Drop. Этот .reg файл решает проблему.</span></p>
+            <div class="item-tags"><span class="badge"><span class="lang-en">Restart required</span><span class="lang-ru">Нужна перезагрузка</span></span></div>
+            
+            
+            
+            
+          </div>
+          <div class="item-action">
+            <span class="file-type">.reg</span>
+            <a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/enable_dragdrop.reg"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
+          </div>
+        </article>
+        <article class="item" id="explorer-tabs" data-category="tweaks" data-search="disable tabs in file explorer отключить вкладки в проводнике for windows 11. relevant for old or low-performance computers. для windows 11. актуально для старых и слабых компьютеров. disableexplorerstabs.reg">
+          <div>
+            <h3 class="item-title"><a href="#explorer-tabs"><span class="lang-en">Disable tabs in File Explorer</span><span class="lang-ru">Отключить вкладки в Проводнике</span></a></h3>
+            <p class="item-desc"><span class="lang-en">For Windows 11. Relevant for old or low-performance computers.</span><span class="lang-ru">Для Windows 11. Актуально для старых и слабых компьютеров.</span></p>
+            <div class="item-tags"><span class="badge"><span class="lang-en">Restart required</span><span class="lang-ru">Нужна перезагрузка</span></span></div>
+            
+            
+            
+            
+          </div>
+          <div class="item-action">
+            <span class="file-type">.reg</span>
+            <a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/DisableExplorersTabs.reg"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
+          </div>
+        </article>
+        <article class="item" id="old-context-menu" data-category="tweaks" data-search="old context menu старое контекстное меню for windows 11. brings back the context menu from windows 10. для windows 11. возвращает контекстное меню, как в windows 10. oldcontextmenu.reg">
+          <div>
+            <h3 class="item-title"><a href="#old-context-menu"><span class="lang-en">Old context menu</span><span class="lang-ru">Старое контекстное меню</span></a></h3>
+            <p class="item-desc"><span class="lang-en">For Windows 11. Brings back the context menu from Windows 10.</span><span class="lang-ru">Для Windows 11. Возвращает контекстное меню, как в Windows 10.</span></p>
+            <div class="item-tags"><span class="badge"><span class="lang-en">Restart required</span><span class="lang-ru">Нужна перезагрузка</span></span></div>
+            
+            
+            
+            
+          </div>
+          <div class="item-action">
+            <span class="file-type">.reg</span>
+            <a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/OldContextMenu.reg"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
+          </div>
+        </article>
+        <article class="item" id="classic-notepad" data-category="tweaks" data-search="classic notepad классический блокнот brings back the classic notepad. возвращает классический блокнот. notepad.reg">
+          <div>
+            <h3 class="item-title"><a href="#classic-notepad"><span class="lang-en">Classic Notepad</span><span class="lang-ru">Классический Блокнот</span></a></h3>
+            <p class="item-desc"><span class="lang-en">Brings back the classic Notepad.</span><span class="lang-ru">Возвращает классический Блокнот.</span></p>
+            
+            
+            
+            
+            
+          </div>
+          <div class="item-action">
+            <span class="file-type">.reg</span>
+            <a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/notepad.reg"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
+          </div>
+        </article>
+        <article class="item" id="classic-media-player" data-category="tweaks" data-search="classic windows media player классический windows media player brings back the classic windows media player. возвращает классический windows media player. winmediaplayer.cmd">
+          <div>
+            <h3 class="item-title"><a href="#classic-media-player"><span class="lang-en">Classic Windows Media Player</span><span class="lang-ru">Классический Windows Media Player</span></a></h3>
+            <p class="item-desc"><span class="lang-en">Brings back the classic Windows Media Player.</span><span class="lang-ru">Возвращает классический Windows Media Player.</span></p>
+            
+            
+            
+            
+            
+          </div>
+          <div class="item-action">
+            <span class="file-type">.cmd</span>
+            <a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/WinMediaPlayer.cmd"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
+          </div>
+        </article>
+        <article class="item" id="classic-photo-viewer" data-category="tweaks" data-search="classic windows photo viewer классический windows photo viewer brings back the classic windows photo viewer. возвращает классический windows photo viewer. winphotoviewer.reg">
+          <div>
+            <h3 class="item-title"><a href="#classic-photo-viewer"><span class="lang-en">Classic Windows Photo Viewer</span><span class="lang-ru">Классический Windows Photo Viewer</span></a></h3>
+            <p class="item-desc"><span class="lang-en">Brings back the classic Windows Photo Viewer.</span><span class="lang-ru">Возвращает классический Windows Photo Viewer.</span></p>
+            
+            
+            
+            
+            
+          </div>
+          <div class="item-action">
+            <span class="file-type">.reg</span>
+            <a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/WinPhotoViewer.reg"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
+          </div>
+        </article>
+        <article class="item" id="num-lock" data-category="tweaks" data-search="num lock on by default num lock включён по умолчанию num lock is enabled when windows starts. при запуске windows num lock будет включён. numlockondefault.reg">
+          <div>
+            <h3 class="item-title"><a href="#num-lock"><span class="lang-en">Num Lock on by default</span><span class="lang-ru">Num Lock включён по умолчанию</span></a></h3>
+            <p class="item-desc"><span class="lang-en">Num Lock is enabled when Windows starts.</span><span class="lang-ru">При запуске Windows Num Lock будет включён.</span></p>
+            
+            
+            
+            
+            
+          </div>
+          <div class="item-action">
+            <span class="file-type">.reg</span>
+            <a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/NumLockOnDefault.reg"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
+          </div>
+        </article>
+        <article class="item" id="russification" data-category="tweaks" data-search="russian language pack русификация системы russification of windows. русификация windows. russification.bat">
+          <div>
+            <h3 class="item-title"><a href="#russification"><span class="lang-en">Russian language pack</span><span class="lang-ru">Русификация системы</span></a></h3>
+            <p class="item-desc"><span class="lang-en">Russification of Windows.</span><span class="lang-ru">Русификация Windows.</span></p>
+            
+            
+            
+            
+            
+          </div>
+          <div class="item-action">
+            <span class="file-type">.bat</span>
+            <a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/Russification.bat"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
+          </div>
+        </article>
+        <article class="item" id="remove-edge" data-category="tweaks" data-search="remove microsoft edge удалить microsoft edge launch removemicrosoftedge.bat and microsoft edge will be removed. запустите removemicrosoftedge.bat, и microsoft edge будет удалён. removemicrosoftedge.bat">
+          <div>
+            <h3 class="item-title"><a href="#remove-edge"><span class="lang-en">Remove Microsoft Edge</span><span class="lang-ru">Удалить Microsoft Edge</span></a></h3>
+            <p class="item-desc"><span class="lang-en">Launch RemoveMicrosoftEdge.bat and Microsoft Edge will be removed.</span><span class="lang-ru">Запустите RemoveMicrosoftEdge.bat, и Microsoft Edge будет удалён.</span></p>
+            
+            
+            
+            
+            
+          </div>
+          <div class="item-action">
+            <span class="file-type">.bat</span>
+            <a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/RemoveMicrosoftEdge.bat"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
+          </div>
+        </article>
+        </div>
+      </section>
+      <section class="section group" data-group="privacy">
+        <h2 class="group-title"><span class="lang-en">Privacy and security</span><span class="lang-ru">Приватность и безопасность</span></h2>
+        <div class="rows">
+        <article class="item" id="turn-off-telemetry" data-category="privacy" data-search="turn off telemetry in windows 10 выключить телеметрию в windows 10 a script that turns off telemetry in windows 10. скрипт, который выключает телеметрию в windows 10. turn off telemetry in windows 10.cmd">
+          <div>
+            <h3 class="item-title"><a href="#turn-off-telemetry"><span class="lang-en">Turn off telemetry in Windows 10</span><span class="lang-ru">Выключить телеметрию в Windows 10</span></a></h3>
+            <p class="item-desc"><span class="lang-en">A script that turns off telemetry in Windows 10.</span><span class="lang-ru">Скрипт, который выключает телеметрию в Windows 10.</span></p>
+            
+            
+            
+            
+            
+          </div>
+          <div class="item-action">
+            <span class="file-type">.cmd</span>
+            <a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/Turn%20Off%20Telemetry%20in%20Windows%2010.cmd"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
+          </div>
+        </article>
+        <article class="item" id="donotspy11" data-category="privacy" data-search="donotspy11 donotspy11 one of the ways to disable telemetry (spying and advertisement) after installing windows 10 and 11. один из способов отключить телеметрию (слежку и рекламу) после установки windows 10 и 11. donotspy11-1.3.0.0-setup.exe site сайт guide инструкция">
+          <div>
+            <h3 class="item-title"><a href="#donotspy11">DoNotSpy11</a></h3>
+            <p class="item-desc"><span class="lang-en">One of the ways to disable telemetry (spying and advertisement) after installing Windows 10 and 11.</span><span class="lang-ru">Один из способов отключить телеметрию (слежку и рекламу) после установки Windows 10 и 11.</span></p>
+            
+            <div class="item-links"><a class="link" href="https://pxc-coding.com/donotspy11/donotspy-11-download/" target="_blank" rel="noopener"><span class="lang-en">Site</span><span class="lang-ru">Сайт</span></a><a class="link" href="https://www.youtube.com/watch?v=uc_ouoPYFzE" target="_blank" rel="noopener"><span class="lang-en">Guide</span><span class="lang-ru">Инструкция</span></a></div>
+            
+            
+            
+          </div>
+          <div class="item-action">
+            <span class="file-type">.exe</span>
+            <a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/DoNotSpy11-1.3.0.0-Setup.exe"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
+          </div>
+        </article>
+        <article class="item" id="pause-updates" data-category="privacy" data-search="pause windows updates for 100 years пауза обновлений windows на 100 лет after applying the file: settings → update &amp; security → pause updates for 7 days → advanced options → scroll “pause until” to the date you wish. после применения файла: настройки → обновление и безопасность → приостановить обновления на 7 дн. → дополнительные параметры → в «приостановить до» выберите нужную дату. pauseupdate100years.reg">
+          <div>
+            <h3 class="item-title"><a href="#pause-updates"><span class="lang-en">Pause Windows Updates for 100 years</span><span class="lang-ru">Пауза обновлений Windows на 100 лет</span></a></h3>
+            <p class="item-desc"><span class="lang-en">After applying the file: Settings → Update &amp; Security → Pause updates for 7 days → Advanced Options → scroll “Pause until” to the date you wish.</span><span class="lang-ru">После применения файла: Настройки → Обновление и безопасность → Приостановить обновления на 7 дн. → Дополнительные параметры → в «Приостановить до» выберите нужную дату.</span></p>
+            
+            
+            
+            
+            
+          </div>
+          <div class="item-action">
+            <span class="file-type">.reg</span>
+            <a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/PauseUpdate100Years.reg"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
+          </div>
+        </article>
+        <article class="item" id="disable-security-warning" data-category="privacy" data-search="disable “open file – security warning” отключить «открыть файл – предупреждение системы безопасности» disables this prompt when launching certain programs. run the file as administrator; a restart or signing out and back in may be required. отключает этот запрос при запуске некоторых программ. запустите файл от имени администратора; может потребоваться перезагрузка или повторный вход в систему. disable_security_warning.bat">
+          <div>
+            <h3 class="item-title"><a href="#disable-security-warning"><span class="lang-en">Disable “Open File – Security Warning”</span><span class="lang-ru">Отключить «Открыть файл – предупреждение системы безопасности»</span></a></h3>
+            <p class="item-desc"><span class="lang-en">Disables this prompt when launching certain programs. Run the file as Administrator; a restart or signing out and back in may be required.</span><span class="lang-ru">Отключает этот запрос при запуске некоторых программ. Запустите файл от имени администратора; может потребоваться перезагрузка или повторный вход в систему.</span></p>
+            <div class="item-tags"><span class="badge"><span class="lang-en">Run as administrator</span><span class="lang-ru">Нужны права администратора</span></span><span class="badge"><span class="lang-en">Restart required</span><span class="lang-ru">Нужна перезагрузка</span></span></div>
+            
+            
+            
+            
+          </div>
+          <div class="item-action">
+            <span class="file-type">.bat</span>
+            <a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/Disable_security_warning.bat"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
+          </div>
+        </article>
+        <article class="item" id="defender-remover" data-category="privacy" data-search="turn off windows defender completely полностью отключить защитник windows defender remover turns off windows defender completely. defender remover полностью отключает защитник windows. defenderremover.exe source code исходный код">
+          <div>
+            <h3 class="item-title"><a href="#defender-remover"><span class="lang-en">Turn off Windows Defender completely</span><span class="lang-ru">Полностью отключить Защитник Windows</span></a></h3>
+            <p class="item-desc"><span class="lang-en">Defender Remover turns off Windows Defender completely.</span><span class="lang-ru">Defender Remover полностью отключает Защитник Windows.</span></p>
+            
+            <div class="item-links"><a class="link" href="https://github.com/ionuttbara/windows-defender-remover/releases" target="_blank" rel="noopener"><span class="lang-en">Source code</span><span class="lang-ru">Исходный код</span></a></div>
+            
+            
+            
+          </div>
+          <div class="item-action">
+            <span class="file-type">.exe</span>
+            <a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/DefenderRemover.exe"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
+          </div>
+        </article>
+        <article class="item" id="miner-search" data-category="privacy" data-search="miner search miner search finds and destroys hidden miners. an auxiliary tool for checking suspicious files, directories and processes; it is not an antivirus. ищет и уничтожает скрытые майнеры. вспомогательный инструмент для проверки подозрительных файлов, каталогов и процессов; не является антивирусом. minersearch_v1.4.9.1.zip github how to use как пользоваться help on telegram помощь в telegram">
+          <div>
+            <h3 class="item-title"><a href="#miner-search">Miner Search</a></h3>
+            <p class="item-desc"><span class="lang-en">Finds and destroys hidden miners. An auxiliary tool for checking suspicious files, directories and processes; it is NOT an antivirus.</span><span class="lang-ru">Ищет и уничтожает скрытые майнеры. Вспомогательный инструмент для проверки подозрительных файлов, каталогов и процессов; НЕ является антивирусом.</span></p>
+            
+            <div class="item-links"><a class="link" href="https://github.com/BlendLog/MinerSearch" target="_blank" rel="noopener">GitHub</a><a class="link lang-en" href="https://github.com/BlendLog/MinerSearch?tab=readme-ov-file#how-to-use" target="_blank" rel="noopener">How to use</a><a class="link lang-ru" href="https://github.com/BlendLog/MinerSearch?tab=readme-ov-file#%D0%BA%D0%B0%D0%BA-%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D1%8C%D1%81%D1%8F" target="_blank" rel="noopener">Как пользоваться</a><a class="link" href="https://t.me/MinerSearch_blog" target="_blank" rel="noopener"><span class="lang-en">Help on Telegram</span><span class="lang-ru">Помощь в Telegram</span></a></div>
+            
+            
+            
+          </div>
+          <div class="item-action">
+            <span class="file-type">.zip</span>
+            <a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/MinerSearch_v1.4.9.1.zip"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
+          </div>
+        </article>
+        <article class="item" id="censor-tracker" data-category="privacy" data-search="censor tracker censor tracker a free browser extension by roskomsvoboda. helps bypass internet censorship using proxy servers and alerts you about websites sharing data with government authorities. бесплатное расширение для браузеров от роскомсвободы. помогает обходить интернет-цензуру с помощью прокси-серверов и уведомляет о сайтах, передающих данные государственным органам. install установить roskomsvoboda роскомсвобода guide инструкция help on telegram помощь в telegram">
+          <div class="item-full">
+            <h3 class="item-title"><a href="#censor-tracker">Censor Tracker</a></h3>
+            <p class="item-desc"><span class="lang-en">A free browser extension by Roskomsvoboda. Helps bypass internet censorship using proxy servers and alerts you about websites sharing data with government authorities.</span><span class="lang-ru">Бесплатное расширение для браузеров от Роскомсвободы. Помогает обходить интернет-цензуру с помощью прокси-серверов и уведомляет о сайтах, передающих данные государственным органам.</span></p>
+            
+            <div class="item-links"><a class="link lang-en" href="https://censortracker.org/en.html" target="_blank" rel="noopener">Install</a><a class="link lang-ru" href="https://censortracker.org" target="_blank" rel="noopener">Установить</a><a class="link lang-en" href="https://roskomsvoboda.org/en/" target="_blank" rel="noopener">Roskomsvoboda</a><a class="link lang-ru" href="https://roskomsvoboda.org/ru/" target="_blank" rel="noopener">Роскомсвобода</a><a class="link" href="https://www.youtube.com/watch?v=Sq8g9tu5BdM" target="_blank" rel="noopener"><span class="lang-en">Guide</span><span class="lang-ru">Инструкция</span></a><a class="link" href="https://t.me/CensorTracker_feedback" target="_blank" rel="noopener"><span class="lang-en">Help on Telegram</span><span class="lang-ru">Помощь в Telegram</span></a></div>
+            
+            
+            
+          </div>
+          
+        </article>
+        </div>
+      </section>
+      <section class="section group" data-group="store">
+        <h2 class="group-title">Microsoft Store</h2>
+        <div class="rows">
+        <article class="item" id="store-method-1" data-category="store" data-search="restore microsoft store: method 1 вернуть microsoft store: метод 1 run wsreset.bat. запустите wsreset.bat. wsreset.bat">
+          <div>
+            <h3 class="item-title"><a href="#store-method-1"><span class="lang-en">Restore Microsoft Store: method 1</span><span class="lang-ru">Вернуть Microsoft Store: метод 1</span></a></h3>
+            <p class="item-desc"><span class="lang-en">Run wsreset.bat.</span><span class="lang-ru">Запустите wsreset.bat.</span></p>
+            
+            
+            
+            
+            
+          </div>
+          <div class="item-action">
+            <span class="file-type">.bat</span>
+            <a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/wsreset.bat"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
+          </div>
+        </article>
+        <article class="item" id="store-method-2" data-category="store" data-search="restore microsoft store: method 2 вернуть microsoft store: метод 2 unpack the archive and launch add-store.cmd. распакуйте архив и запустите add-store.cmd. ltsc-add-microsoftstore-master.rar">
+          <div>
+            <h3 class="item-title"><a href="#store-method-2"><span class="lang-en">Restore Microsoft Store: method 2</span><span class="lang-ru">Вернуть Microsoft Store: метод 2</span></a></h3>
+            <p class="item-desc"><span class="lang-en">Unpack the archive and launch Add-Store.cmd.</span><span class="lang-ru">Распакуйте архив и запустите Add-Store.cmd.</span></p>
+            
+            
+            
+            
+            
+          </div>
+          <div class="item-action">
+            <span class="file-type">.rar</span>
+            <a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/LTSC-Add-MicrosoftStore-master.rar"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
+          </div>
+        </article>
+        <article class="item" id="alt-app-installer" data-category="store" data-search="alt app installer alt app installer installs apps from microsoft store without using the microsoft store. устанавливает программы из microsoft store без участия самого microsoft store. altappinstaller.exe guide инструкция github">
+          <div>
+            <h3 class="item-title"><a href="#alt-app-installer">Alt App Installer</a></h3>
+            <p class="item-desc"><span class="lang-en">Installs apps from Microsoft Store without using the Microsoft Store.</span><span class="lang-ru">Устанавливает программы из Microsoft Store без участия самого Microsoft Store.</span></p>
+            
+            <div class="item-links"><a class="link" href="https://www.youtube.com/watch?v=ayIilTc-6u4" target="_blank" rel="noopener"><span class="lang-en">Guide</span><span class="lang-ru">Инструкция</span></a><a class="link" href="https://github.com/mjishnu/alt-app-installer/releases" target="_blank" rel="noopener">GitHub</a></div>
+            
+            
+            
+          </div>
+          <div class="item-action">
+            <span class="file-type">.exe</span>
+            <a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/altappinstaller.exe"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
+          </div>
+        </article>
+        </div>
+      </section>
+      <section class="section group" data-group="apps">
+        <h2 class="group-title"><span class="lang-en">Apps</span><span class="lang-ru">Программы</span></h2>
+        <div class="rows">
+        <article class="item" id="browsers" data-category="apps" data-search="browsers браузеры the top browsers, gathered in one place. главные браузеры в одном месте. google chrome yandex browser opera mozilla firefox">
+          <div class="item-full">
+            <h3 class="item-title"><a href="#browsers"><span class="lang-en">Browsers</span><span class="lang-ru">Браузеры</span></a></h3>
+            <p class="item-desc"><span class="lang-en">The top browsers, gathered in one place.</span><span class="lang-ru">Главные браузеры в одном месте.</span></p>
+            
+            
+            
+            <div class="chip-links"><a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/ChromeSetup.exe"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> Google Chrome</a><a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/Yandex.exe"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> Yandex Browser</a><a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/OperaSetup.exe"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> Opera</a><a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/Firefox%20Installer.exe"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> Mozilla Firefox</a></div>
+            
+          </div>
+          
+        </article>
+        <article class="item" id="qbittorrent" data-category="apps" data-search="qbittorrent qbittorrent a fast, cross-platform bittorrent client, similar to utorrent but without the ad clutter. быстрый кроссплатформенный bittorrent-клиент, похожий на utorrent, но без навязчивой рекламы. qbittorrent_5.3.0_x64_setup.exe">
+          <div>
+            <h3 class="item-title"><a href="#qbittorrent">qBittorrent</a></h3>
+            <p class="item-desc"><span class="lang-en">A fast, cross-platform BitTorrent client, similar to uTorrent but without the ad clutter.</span><span class="lang-ru">Быстрый кроссплатформенный BitTorrent-клиент, похожий на uTorrent, но без навязчивой рекламы.</span></p>
+            
+            
+            
+            
+            
+          </div>
+          <div class="item-action">
+            <span class="file-type">.exe</span>
+            <a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/qbittorrent_5.3.0_x64_setup.exe"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
+          </div>
+        </article>
+        <article class="item" id="winrar" data-category="apps" data-search="winrar winrar a popular archiver with support for many formats, encryption and multi-volume archives. популярный архиватор с поддержкой множества форматов, шифрованием и многотомными архивами. winrar.v7.22.exe">
+          <div>
+            <h3 class="item-title"><a href="#winrar">WinRAR</a></h3>
+            <p class="item-desc"><span class="lang-en">A popular archiver with support for many formats, encryption and multi-volume archives.</span><span class="lang-ru">Популярный архиватор с поддержкой множества форматов, шифрованием и многотомными архивами.</span></p>
+            
+            
+            
+            
+            
+          </div>
+          <div class="item-action">
+            <span class="file-type">.exe</span>
+            <a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/WinRAR.v7.22.exe"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
+          </div>
+        </article>
+        <article class="item" id="acrobat-reader" data-category="apps" data-search="adobe acrobat reader adobe acrobat reader for reading, printing and commenting on pdf files. для чтения, печати и рецензирования файлов pdf. adobe.acrobat.reader.v2026.001.21651.zip">
+          <div>
+            <h3 class="item-title"><a href="#acrobat-reader">Adobe Acrobat Reader</a></h3>
+            <p class="item-desc"><span class="lang-en">For reading, printing and commenting on PDF files.</span><span class="lang-ru">Для чтения, печати и рецензирования файлов PDF.</span></p>
+            
+            
+            
+            
+            
+          </div>
+          <div class="item-action">
+            <span class="file-type">.zip</span>
+            <a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/Adobe.Acrobat.Reader.v2026.001.21651.zip"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
+          </div>
+        </article>
+        <article class="item" id="msedgeredirect" data-category="apps" data-search="msedgeredirect msedgeredirect stops windows 10/11 from forcing system links into microsoft edge and routes them to your default browser. can also replace bing in system search with another engine. не даёт windows 10/11 принудительно открывать системные ссылки в microsoft edge и перенаправляет их в браузер по умолчанию. также может заменить bing в системном поиске на другой поисковик. msedgeredirect.exe github описание на русском">
+          <div>
+            <h3 class="item-title"><a href="#msedgeredirect">MSEdgeRedirect</a></h3>
+            <p class="item-desc"><span class="lang-en">Stops Windows 10/11 from forcing system links into Microsoft Edge and routes them to your default browser. Can also replace Bing in system search with another engine.</span><span class="lang-ru">Не даёт Windows 10/11 принудительно открывать системные ссылки в Microsoft Edge и перенаправляет их в браузер по умолчанию. Также может заменить Bing в системном поиске на другой поисковик.</span></p>
+            
+            <div class="item-links"><a class="link" href="https://github.com/rcmaehl/MSEdgeRedirect" target="_blank" rel="noopener">GitHub</a><a class="link lang-ru" href="https://www.comss.ru/page.php?id=9848" target="_blank" rel="noopener">Описание на русском</a></div>
+            
+            
+            
+          </div>
+          <div class="item-action">
+            <span class="file-type">.exe</span>
+            <a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/MSEdgeRedirect.exe"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
+          </div>
+        </article>
+        <article class="item" id="super-god-mode" data-category="apps" data-search="windows super god mode windows super god mode a script that creates a folder with shortcuts to all windows system settings, including hidden and advanced ones. скрипт, который создаёт папку с ярлыками ко всем системным настройкам windows, включая скрытые и продвинутые. windows super god mode 1.2.3.zip github how to use video guide описание и инструкция">
+          <div>
+            <h3 class="item-title"><a href="#super-god-mode">Windows Super God Mode</a></h3>
+            <p class="item-desc"><span class="lang-en">A script that creates a folder with shortcuts to all Windows system settings, including hidden and advanced ones.</span><span class="lang-ru">Скрипт, который создаёт папку с ярлыками ко всем системным настройкам Windows, включая скрытые и продвинутые.</span></p>
+            
+            <div class="item-links"><a class="link" href="https://github.com/ThioJoe/Windows-Super-God-Mode" target="_blank" rel="noopener">GitHub</a><a class="link lang-en" href="https://github.com/ThioJoe/Windows-Super-God-Mode?tab=readme-ov-file#how-to-run" target="_blank" rel="noopener">How to use</a><a class="link lang-en" href="https://www.youtube.com/watch?v=CnATL9kJPn8" target="_blank" rel="noopener">Video guide</a><a class="link lang-ru" href="https://www.comss.ru/page.php?id=14513" target="_blank" rel="noopener">Описание и инструкция</a></div>
+            
+            
+            
+          </div>
+          <div class="item-action">
+            <span class="file-type">.zip</span>
+            <a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/Windows%20Super%20God%20Mode%201.2.3.zip"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
+          </div>
+        </article>
+        </div>
+      </section>
+      <section class="section group" data-group="drivers">
+        <h2 class="group-title"><span class="lang-en">Drivers and runtimes</span><span class="lang-ru">Драйверы и компоненты</span></h2>
+        <div class="rows">
+        <article class="item" id="vcpp-runtimes" data-category="drivers" data-search="visual c++ redistributable runtime all-in-one visual c++ redistributable runtime all-in-one libraries required to run programs built with visual c++. helps prevent errors caused by missing components. библиотеки для запуска программ, созданных на visual c++. помогают избежать ошибок из-за отсутствующих компонентов. visual-c-runtimes-all-in-one-may-2023.rar">
+          <div>
+            <h3 class="item-title"><a href="#vcpp-runtimes">Visual C++ Redistributable Runtime All-in-One</a></h3>
+            <p class="item-desc"><span class="lang-en">Libraries required to run programs built with Visual C++. Helps prevent errors caused by missing components.</span><span class="lang-ru">Библиотеки для запуска программ, созданных на Visual C++. Помогают избежать ошибок из-за отсутствующих компонентов.</span></p>
+            
+            
+            
+            
+            
+          </div>
+          <div class="item-action">
+            <span class="file-type">.rar</span>
+            <a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/Visual-C-Runtimes-All-in-One-May-2023.rar"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
+          </div>
+        </article>
+        <article class="item" id="directx" data-category="drivers" data-search="directx web setup directx web setup a microsoft tool that installs the latest directx components needed for games and multimedia apps. инструмент от microsoft, который устанавливает последние компоненты directx для игр и мультимедиа. dxwebsetup.exe">
+          <div>
+            <h3 class="item-title"><a href="#directx">DirectX Web Setup</a></h3>
+            <p class="item-desc"><span class="lang-en">A Microsoft tool that installs the latest DirectX components needed for games and multimedia apps.</span><span class="lang-ru">Инструмент от Microsoft, который устанавливает последние компоненты DirectX для игр и мультимедиа.</span></p>
+            
+            
+            
+            
+            
+          </div>
+          <div class="item-action">
+            <span class="file-type">.exe</span>
+            <a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/dxwebsetup.exe"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
+          </div>
+        </article>
+        <article class="item" id="snappy-driver-installer" data-category="drivers" data-search="snappy driver installer snappy driver installer the best driver installer in my experience. works offline and online, has a complete driver database, lets you choose versions and doesn’t need to be installed. лучший установщик драйверов, опираясь на мой опыт. работает офлайн и онлайн, содержит полную базу драйверов, позволяет выбирать версии и не требует установки. sdi_r2601.zip official site официальный сайт">
+          <div>
+            <h3 class="item-title"><a href="#snappy-driver-installer">Snappy Driver Installer</a></h3>
+            <p class="item-desc"><span class="lang-en">The best driver installer in my experience. Works offline and online, has a complete driver database, lets you choose versions and doesn’t need to be installed.</span><span class="lang-ru">Лучший установщик драйверов, опираясь на мой опыт. Работает офлайн и онлайн, содержит полную базу драйверов, позволяет выбирать версии и не требует установки.</span></p>
+            
+            <div class="item-links"><a class="link lang-en" href="https://sdi-tool.org/download/?lang=en" target="_blank" rel="noopener">Official site</a><a class="link lang-ru" href="https://sdi-tool.org/download/?lang=ru" target="_blank" rel="noopener">Официальный сайт</a></div>
+            
+            
+            
+          </div>
+          <div class="item-action">
+            <span class="file-type">.zip</span>
+            <a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/SDI_R2601.zip"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
+          </div>
+        </article>
+        <article class="item" id="backup-drivers" data-category="drivers" data-search="back up and restore drivers резервная копия и восстановление драйверов back up drivers from this pc (powershell) резервное копирование драйверов (powershell) export-windowsdriver -online -destination d:\your_folder restore drivers to this pc (cmd or powershell) восстановление драйверов (cmd или powershell) pnputil.exe /add-driver d:\your_folder\*.inf /subdirs /install">
+          <div class="item-full">
+            <h3 class="item-title"><a href="#backup-drivers"><span class="lang-en">Back up and restore drivers</span><span class="lang-ru">Резервная копия и восстановление драйверов</span></a></h3>
+            
+            
+            
+            <div class="commands"><div>
+              <div class="command-label"><span class="lang-en">Back up drivers from this PC (PowerShell)</span><span class="lang-ru">Резервное копирование драйверов (PowerShell)</span></div>
+              <div class="command"><code>Export-WindowsDriver -Online -Destination D:\your_folder</code><button type="button" class="icon-btn" data-copy="Export-WindowsDriver -Online -Destination D:\your_folder" aria-label="Copy command" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Copy command&quot;,&quot;ru&quot;:&quot;Скопировать команду&quot;}}"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button></div>
+            </div><div>
+              <div class="command-label"><span class="lang-en">Restore drivers to this PC (cmd or PowerShell)</span><span class="lang-ru">Восстановление драйверов (cmd или PowerShell)</span></div>
+              <div class="command"><code>pnputil.exe /add-driver D:\your_folder\*.inf /subdirs /install</code><button type="button" class="icon-btn" data-copy="pnputil.exe /add-driver D:\your_folder\*.inf /subdirs /install" aria-label="Copy command" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Copy command&quot;,&quot;ru&quot;:&quot;Скопировать команду&quot;}}"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button></div>
+            </div></div>
+            
+            
+          </div>
+          
+        </article>
+        </div>
+      </section>
+      <section class="section group" data-group="maintenance">
+        <h2 class="group-title"><span class="lang-en">Maintenance</span><span class="lang-ru">Обслуживание</span></h2>
+        <div class="rows">
+        <article class="item" id="clear-temp" data-category="maintenance" data-search="clean temporary files очистка временных файлов a very simple tool to clean all temporary files. without administrator rights it won’t do anything. очень простой инструмент для очистки всех временных файлов. без прав администратора ничего не произойдёт. clear(run as admin).bat">
+          <div>
+            <h3 class="item-title"><a href="#clear-temp"><span class="lang-en">Clean temporary files</span><span class="lang-ru">Очистка временных файлов</span></a></h3>
+            <p class="item-desc"><span class="lang-en">A very simple tool to clean all temporary files. Without administrator rights it won’t do anything.</span><span class="lang-ru">Очень простой инструмент для очистки всех временных файлов. Без прав администратора ничего не произойдёт.</span></p>
+            <div class="item-tags"><span class="badge"><span class="lang-en">Run as administrator</span><span class="lang-ru">Нужны права администратора</span></span></div>
+            
+            
+            
+            
+          </div>
+          <div class="item-action">
+            <span class="file-type">.bat</span>
+            <a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/Clear(Run%20As%20Admin).bat"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
+          </div>
+        </article>
+        <article class="item" id="optimize-volume" data-category="maintenance" data-search="optimize drives with powershell оптимизация дисков через powershell optimize the c: drive (ssd) оптимизация диска c: (ssd) optimize-volume -driveletter c -retrim -verbose analyze the d: drive (hdd) анализ диска d: (hdd) optimize-volume -driveletter d -analyze -verbose defragment the d: drive (hdd) дефрагментация диска d: (hdd) optimize-volume -driveletter d -defrag -verbose">
+          <div class="item-full">
+            <h3 class="item-title"><a href="#optimize-volume"><span class="lang-en">Optimize drives with PowerShell</span><span class="lang-ru">Оптимизация дисков через PowerShell</span></a></h3>
+            
+            
+            
+            <div class="commands"><div>
+              <div class="command-label"><span class="lang-en">Optimize the C: drive (SSD)</span><span class="lang-ru">Оптимизация диска C: (SSD)</span></div>
+              <div class="command"><code>Optimize-Volume -DriveLetter C -ReTrim -Verbose</code><button type="button" class="icon-btn" data-copy="Optimize-Volume -DriveLetter C -ReTrim -Verbose" aria-label="Copy command" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Copy command&quot;,&quot;ru&quot;:&quot;Скопировать команду&quot;}}"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button></div>
+            </div><div>
+              <div class="command-label"><span class="lang-en">Analyze the D: drive (HDD)</span><span class="lang-ru">Анализ диска D: (HDD)</span></div>
+              <div class="command"><code>Optimize-Volume -DriveLetter D -Analyze -Verbose</code><button type="button" class="icon-btn" data-copy="Optimize-Volume -DriveLetter D -Analyze -Verbose" aria-label="Copy command" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Copy command&quot;,&quot;ru&quot;:&quot;Скопировать команду&quot;}}"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button></div>
+            </div><div>
+              <div class="command-label"><span class="lang-en">Defragment the D: drive (HDD)</span><span class="lang-ru">Дефрагментация диска D: (HDD)</span></div>
+              <div class="command"><code>Optimize-Volume -DriveLetter D -Defrag -Verbose</code><button type="button" class="icon-btn" data-copy="Optimize-Volume -DriveLetter D -Defrag -Verbose" aria-label="Copy command" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Copy command&quot;,&quot;ru&quot;:&quot;Скопировать команду&quot;}}"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button></div>
+            </div></div>
+            
+            
+          </div>
+          
+        </article>
+        <article class="item" id="defrag-tools" data-category="maintenance" data-search="defragmentation tools программы для дефрагментации defragment only an hdd. дефрагментируйте только hdd. defraggler smart defrag auslogics disk defrag">
+          <div class="item-full">
+            <h3 class="item-title"><a href="#defrag-tools"><span class="lang-en">Defragmentation tools</span><span class="lang-ru">Программы для дефрагментации</span></a></h3>
+            <p class="item-desc"><span class="lang-en">Defragment only an HDD.</span><span class="lang-ru">Дефрагментируйте только HDD.</span></p>
+            
+            <div class="item-links"><a class="link" href="https://www.ccleaner.com/defraggler/download" target="_blank" rel="noopener">Defraggler</a><a class="link lang-en" href="https://www.iobit.com/en/iobitsmartdefrag.php" target="_blank" rel="noopener">Smart Defrag</a><a class="link lang-ru" href="https://ru.iobit.com/iobitsmartdefrag.php" target="_blank" rel="noopener">Smart Defrag</a><a class="link lang-en" href="https://www.auslogics.com/en/software/disk-defrag/" target="_blank" rel="noopener">Auslogics Disk Defrag</a><a class="link lang-ru" href="https://www.auslogics.com/ru/software/disk-defrag/" target="_blank" rel="noopener">Auslogics Disk Defrag</a></div>
+            
+            
+            
+          </div>
+          
+        </article>
+        <article class="item" id="keyboard-shortcuts" data-category="maintenance" data-search="keyboard shortcuts everyone should know горячие клавиши, о которых должен знать каждый win + period win + точка insert emoji anywhere вставить эмодзи куда угодно win + h voice typing голосовой ввод текста win + alt + r screen recording запись экрана win + e open file explorer открыть проводник win + m minimize all windows свернуть все окна">
+          <div class="item-full">
+            <h3 class="item-title"><a href="#keyboard-shortcuts"><span class="lang-en">Keyboard shortcuts everyone should know</span><span class="lang-ru">Горячие клавиши, о которых должен знать каждый</span></a></h3>
+            
+            
+            
+            
+            
+            <dl class="keys"><div><dt><span class="lang-en">Win + period</span><span class="lang-ru">Win + точка</span></dt><dd><span class="lang-en">insert emoji anywhere</span><span class="lang-ru">вставить эмодзи куда угодно</span></dd></div><div><dt>Win + H</dt><dd><span class="lang-en">voice typing</span><span class="lang-ru">голосовой ввод текста</span></dd></div><div><dt>Win + Alt + R</dt><dd><span class="lang-en">screen recording</span><span class="lang-ru">запись экрана</span></dd></div><div><dt>Win + E</dt><dd><span class="lang-en">open File Explorer</span><span class="lang-ru">открыть Проводник</span></dd></div><div><dt>Win + M</dt><dd><span class="lang-en">minimize all windows</span><span class="lang-ru">свернуть все окна</span></dd></div></dl>
+          </div>
+          
+        </article>
+        </div>
+      </section>
+    </div>
+  </main>
+  <footer class="footer">
+    <div class="container footer-inner">
+      <section>
+        <h2><span class="lang-en">Support the project</span><span class="lang-ru">Поддержать проект</span></h2>
+        <div class="footer-links">
+          <a href="/support"><span class="lang-en">Ways to support</span><span class="lang-ru">Способы поддержки</span> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+        </div>
+      </section>
+      <section>
+        <h2><span class="lang-en">Contact</span><span class="lang-ru">Контакты</span></h2>
+        <div class="footer-links">
+          <a href="https://t.me/+gmXk9-zXZ405YWY6" target="_blank" rel="noopener">Telegram</a>
+          <a href="mailto:me@somov.org">me@somov.org</a>
+        </div>
+      </section>
+      <div class="footer-end">&copy; somov.org</div>
+    </div>
+  </footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="/assets/site.js?v=72d97996" defer></script>
+</body>
+</html>

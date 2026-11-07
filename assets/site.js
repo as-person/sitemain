@@ -6,8 +6,8 @@
   const root = document.documentElement;
 
   const STRINGS = {
-    en: { copied: 'Copied', copyFailed: 'Could not copy', found: 'Found', clicks: 'Downloads', download: 'Download' },
-    ru: { copied: 'Скопировано', copyFailed: 'Не удалось скопировать', found: 'Найдено', clicks: 'Скачиваний', download: 'Скачать' },
+    en: { copied: 'Copied', copyFailed: 'Could not copy', found: 'Found', clicks: 'Downloads', download: 'Download', linkCopied: 'Link copied' },
+    ru: { copied: 'Скопировано', copyFailed: 'Не удалось скопировать', found: 'Найдено', clicks: 'Скачиваний', download: 'Скачать', linkCopied: 'Ссылка скопирована' },
   };
   const currentLang = () => (root.lang === 'ru' ? 'ru' : 'en');
   const t = key => STRINGS[currentLang()][key];
@@ -309,6 +309,60 @@
     });
     renderCrypto();
   }
+
+  /* Build page: share the page as it is open now, including the image language in the URL */
+  const shareUrl = () => location.origin + location.pathname;
+  const shareLinks = {
+    telegram: (url, title) => 'https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(title),
+    whatsapp: (url, title) => 'https://wa.me/?text=' + encodeURIComponent(title + ' ' + url),
+    vk: (url, title) => 'https://vk.com/share.php?url=' + encodeURIComponent(url) + '&title=' + encodeURIComponent(title),
+    x: (url, title) => 'https://x.com/intent/post?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(title),
+    facebook: url => 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url),
+    reddit: (url, title) => 'https://www.reddit.com/submit?url=' + encodeURIComponent(url) + '&title=' + encodeURIComponent(title),
+    email: (url, title) => 'mailto:?subject=' + encodeURIComponent(title) + '&body=' + encodeURIComponent(url),
+  };
+  $$('.share-more').forEach(box => {
+    const toggle = $('[data-share-toggle]', box);
+    const menu = $('.share-menu', box);
+    const native = $('[data-share-native]', box);
+    if (navigator.share) native.hidden = false;
+    const items = () => $$('[role="menuitem"]', menu).filter(item => !item.hidden);
+    function open() {
+      const url = shareUrl();
+      $$('[data-share-service]', menu).forEach(link => { link.href = shareLinks[link.dataset.shareService](url, document.title); });
+      menu.hidden = false;
+      toggle.setAttribute('aria-expanded', 'true');
+      items()[0].focus();
+    }
+    function close(returnFocus) {
+      if (menu.hidden) return;
+      menu.hidden = true;
+      toggle.setAttribute('aria-expanded', 'false');
+      if (returnFocus) toggle.focus();
+    }
+    toggle.addEventListener('click', () => (menu.hidden ? open() : close(false)));
+    menu.addEventListener('keydown', event => {
+      const list = items();
+      const index = list.indexOf(document.activeElement);
+      if (event.key === 'Escape') { event.preventDefault(); close(true); }
+      if (event.key === 'ArrowDown') { event.preventDefault(); list[(index + 1) % list.length].focus(); }
+      if (event.key === 'ArrowUp') { event.preventDefault(); list[(index - 1 + list.length) % list.length].focus(); }
+      if (event.key === 'Tab') close(false);
+    });
+    menu.addEventListener('click', event => {
+      const item = event.target.closest('[role="menuitem"]');
+      if (!item) return;
+      if (item.matches('[data-share-copy]')) {
+        copyText(shareUrl()).then(() => showToast(t('linkCopied'))).catch(() => showToast(t('copyFailed')));
+      } else if (item.matches('[data-share-native]')) {
+        navigator.share({ title: document.title, url: shareUrl() }).catch(() => {});
+      }
+      close(false);
+    });
+    document.addEventListener('click', event => {
+      if (!box.contains(event.target)) close(false);
+    });
+  });
 
   /* Build page: image language switch. Both languages are in the page; the URL follows the choice. */
   const imageSwitches = $$('[data-switch-image]');

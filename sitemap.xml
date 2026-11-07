@@ -1,9 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://somov.org/</loc></url>
-  <url><loc>https://somov.org/ghost-spectre</loc></url>
-  <url><loc>https://somov.org/settings-for-windows</loc></url>
-  <url><loc>https://somov.org/support</loc></url>
-  <url><loc>https://somov.org/windows-11</loc></url>
-  <url><loc>https://somov.org/windows-10</loc></url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://somov.org/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ghost-spectre</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/ghost-spectre"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/ghost-spectre"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/ghost-spectre</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/ghost-spectre"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/ghost-spectre"/>
+  </url>
+  <url>
+    <loc>https://somov.org/settings-for-windows</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/settings-for-windows"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/settings-for-windows"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/settings-for-windows</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/settings-for-windows"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/settings-for-windows"/>
+  </url>
+  <url>
+    <loc>https://somov.org/support</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/support"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/support"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/support</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/support"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/support"/>
+  </url>
+  <url>
+    <loc>https://somov.org/windows-11</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/windows-11"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/windows-11"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/windows-11</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/windows-11"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/windows-11"/>
+  </url>
+  <url>
+    <loc>https://somov.org/windows-10</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/windows-10"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/windows-10"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/windows-10</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/windows-10"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/windows-10"/>
+  </url>
 </urlset>
