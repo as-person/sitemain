@@ -290,6 +290,16 @@
     paint();
   }
 
+  /* Support page: tapping a QR code downloads it; a download icon confirms it for a moment */
+  $$('.qr-wrap').forEach(link => {
+    let timer;
+    link.addEventListener('click', () => {
+      link.classList.add('is-saved');
+      clearTimeout(timer);
+      timer = setTimeout(() => link.classList.remove('is-saved'), 2000);
+    });
+  });
+
   /* Support page: pick a coin, then a network when the coin has several */
   const cryptoCard = $('[data-crypto]');
   if (cryptoCard) {

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generates QR codes for the donation addresses on /support.
+"""Generates QR codes (SVG to show, PNG to save) for the donation addresses on /support.
 Needs segno (pip install segno). Run from the repo root after an address changes: python _src/qr.py
 The addresses must match CRYPTO in build.mjs."""
 import segno
@@ -15,5 +15,8 @@ CODES = {
 }
 
 for path, data in CODES.items():
-    segno.make(data, error='m').save(path, kind='svg', scale=4, border=2, dark='#0f1115', light='#ffffff', xmldecl=False, svgns=True)
-    print('saved', path)
+    qr = segno.make(data, error='m')
+    qr.save(path, kind='svg', scale=4, border=2, dark='#0f1115', light='#ffffff', xmldecl=False, svgns=True)
+    # PNG copy for the "save QR code" button: phones keep PNGs in the gallery, SVGs they often do not
+    qr.save(path[:-4] + '.png', kind='png', scale=12, border=3, dark='#000000', light='#ffffff')
+    print('saved', path, 'and .png')

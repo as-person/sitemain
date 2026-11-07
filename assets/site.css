@@ -947,6 +947,26 @@ html:not([data-image]) .img-ru { display: none !important; }
 .crypto-list { display: grid; gap: 8px; font-size: var(--fs-sm); }
 .crypto-list code { font-size: 12px; overflow-wrap: anywhere; }
 .qr { width: 160px; height: 160px; margin-top: 4px; border-radius: var(--r-sm); background: #fff; }
+.qr-wrap { position: relative; display: block; width: 160px; border-radius: var(--r-sm); }
+.qr-wrap:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 3px; }
+.qr-save {
+  position: absolute;
+  right: -10px;
+  bottom: -10px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 2px solid var(--surface);
+  border-radius: 50%;
+  background: var(--raised-hover);
+  color: var(--text);
+  opacity: 0;
+  transition: opacity var(--ease);
+}
+.qr-save .icon { width: 15px; height: 15px; }
+/* Nothing is drawn over the QR code; the icon only confirms a save for a moment */
+.qr-wrap.is-saved .qr-save { opacity: 1; }
 .address {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 40px;

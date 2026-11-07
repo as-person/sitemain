@@ -874,7 +874,10 @@ function cryptoCard(copyRow) {
             </div>`).join('\n            ')}
           </div>
           ${variants.map(v => `<div class="crypto-variant" data-variant="${v.key}"${isDefault(v) ? '' : ' hidden'}>
-            <img class="qr" src="/images/qr-${v.net.qr}.svg" width="160" height="160" ${attr('alt', `QR code of the ${v.coin.name} address`, `QR-код адреса ${v.coin.name}`)} loading="lazy">
+            <a class="qr-wrap" href="/images/qr-${v.net.qr}.png" download="somov-${v.key}-qr.png" ${attr('title', 'Save QR code', 'Сохранить QR-код')}>
+              <img class="qr" src="/images/qr-${v.net.qr}.svg" width="160" height="160" ${attr('alt', `QR code of the ${v.coin.name} address`, `QR-код адреса ${v.coin.name}`)} loading="lazy">
+              <span class="qr-save" aria-hidden="true">${icon('download')}</span>
+            </a>
             <div class="crypto-info">
               <p class="crypto-warning">${L(`Send only <b>${v.coin.name}</b> on the <b>${v.net.network}</b> network. A transfer on another network may be lost.`, `Отправляйте только <b>${v.coin.name}</b> в сети <b>${v.net.network}</b>. Перевод в другой сети может потеряться.`)}</p>
               ${copyRow(v.net.address, v.coin.name)}
