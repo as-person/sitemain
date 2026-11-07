@@ -5,17 +5,17 @@
     {
       "title": "Windows 11",
       "items": [
-        { "name": "Windows 11 Pro", "version": "25H2", "number": "26200.9711", "date": { "en": "October 2026", "ru": "Октябрь 2026" }, "file": "WIN11.PRO.25H2.U12.X64.(WPE).ISO", "size": 5852463104 },
-        { "name": "Windows 11 Pro", "version": "24H2", "number": "26100.9711", "date": { "en": "October 2026", "ru": "Октябрь 2026" }, "file": "WIN11.PRO.24H2.U32.X64.(WPE).ISO", "size": 5962469376 },
-        { "name": "Windows 11 IoT Enterprise LTSC", "version": "24H2", "number": "26100.9711", "date": { "en": "October 2026", "ru": "Октябрь 2026" }, "file": "WIN11.LTSC.24H2.U32.X64.(WPE).ISO", "size": 5939574784 },
-        { "name": "Windows 11 Pro", "version": "23H2", "number": "22631.7584", "date": { "en": "September 2026", "ru": "Сентябрь 2026" }, "file": "WIN11.PRO.23H2.U34.X64.(WPE).ISO", "size": 5984708608 },
-        { "name": "Windows 11 Pro", "version": "22H2", "number": "22621.6060", "date": { "en": "March 2026", "ru": "Март 2026" }, "file": "WIN11.PRO.22H2.U33-2.X64.(WPE).ISO", "size": 5821300736, "status": { "en": "End of Servicing", "ru": "Окончание срока поддержки" }, "muted": true }
+        { "name": "Windows 11 Pro", "version": "25H2", "number": "26200.9711", "date": { "en": "October 2026", "ru": "Октябрь 2026" }, "file": "WIN11.PRO.25H2.U12.X64.(WPE).ISO", "size": 5852463104, "sha256": "9e390045d208ac5cf2e8d1962565ed326af756bf699e5da32dd44fdcf3e9a7e1" },
+        { "name": "Windows 11 Pro", "version": "24H2", "number": "26100.9711", "date": { "en": "October 2026", "ru": "Октябрь 2026" }, "file": "WIN11.PRO.24H2.U32.X64.(WPE).ISO", "size": 5962469376, "sha256": "a8e920565653ee66dccefc92f4108e21af5684fceb5fbeb323ef6ae90d06ac9f" },
+        { "name": "Windows 11 IoT Enterprise LTSC", "version": "24H2", "number": "26100.9711", "date": { "en": "October 2026", "ru": "Октябрь 2026" }, "file": "WIN11.LTSC.24H2.U32.X64.(WPE).ISO", "size": 5939574784, "sha256": "1fede2a02603a2adbb3a0abdcb15e80295ca397da96a7dfa4076ae1eec947e8a" },
+        { "name": "Windows 11 Pro", "version": "23H2", "number": "22631.7584", "date": { "en": "September 2026", "ru": "Сентябрь 2026" }, "file": "WIN11.PRO.23H2.U34.X64.(WPE).ISO", "size": 5984708608, "sha256": "71ee3a83709a329b5b2e7f1e6999bc04fdf2f8acf6dce00c1a817fe255bad34e" },
+        { "name": "Windows 11 Pro", "version": "22H2", "number": "22621.6060", "date": { "en": "March 2026", "ru": "Март 2026" }, "file": "WIN11.PRO.22H2.U33-2.X64.(WPE).ISO", "size": 5821300736, "sha256": "3f6566e07a613546a67c4f75b6450aa963557029eb567188223589d3c0061f36", "status": { "en": "End of Servicing", "ru": "Окончание срока поддержки" }, "muted": true }
       ]
     },
     {
       "title": "Windows 10",
       "items": [
-        { "name": "Windows 10 Pro", "version": "20H1 – 22H2", "number": "1904X.7811", "date": { "en": "October 2026", "ru": "Октябрь 2026" }, "file": "WIN10.PRO.AIO.U43.X64.(WPE).ISO", "size": 5282295808, "status": { "en": "Extended Security Updates", "ru": "Программа расширенных обновлений" } }
+        { "name": "Windows 10 Pro", "version": "20H1 – 22H2", "number": "1904X.7811", "date": { "en": "October 2026", "ru": "Октябрь 2026" }, "file": "WIN10.PRO.AIO.U43.X64.(WPE).ISO", "size": 5282295808, "sha256": "d386cdf4cb14d8e44aba754a2c51b07cda352099d10a15cd975e2323724a0000", "status": { "en": "Extended Security Updates", "ru": "Программа расширенных обновлений" } }
       ]
     }
   ]

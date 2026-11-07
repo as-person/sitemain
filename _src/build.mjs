@@ -360,7 +360,7 @@ function buildPage(build, preset) {
     `<a${cls ? ` class="${cls}"` : ''} href="/windows-${build.id}-${l}" data-switch-image="${l}"${l === start ? ' aria-current="true"' : ''}>${content}</a>`;
 
   const sumsFor = l => [
-    ['SHA-256', images[l].sums.sha256], ['SHA-1', images[l].sums.sha1], ['MD5', images[l].sums.md5], ['CRC32', images[l].sums.crc32],
+    ['SHA-256', images[l].sums.sha256], ['SHA-1', images[l].sums.sha1], ['MD5', images[l].sums.md5],
   ].filter(([, value]) => value);
   const forImage = {
     en: L('For the English image', 'Для образа на английском'),
@@ -507,6 +507,7 @@ function ghostPage() {
               <span>${sizeL(item.size)}</span>
               ${item.status ? `<span class="badge">${T(item.status)}</span>` : ''}
             </div>
+            ${item.sha256 ? `<button type="button" class="hash-copy" data-copy="${item.sha256}" ${attr('title', 'Copy SHA-256', 'Скопировать SHA-256')}>SHA-256 <code>${item.sha256.slice(0, 8)}…${item.sha256.slice(-8)}</code> ${icon('copy')}</button>` : ''}
             ${statsLine(item.file, 'download,torrent')}
           </div>
           <div class="row-actions">

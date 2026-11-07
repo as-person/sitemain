@@ -672,17 +672,29 @@ html:not([data-image]) .img-ru { display: none !important; }
 }
 .footer h2 { margin-bottom: 6px; color: var(--text); font-size: var(--fs-sm); font-weight: 600; }
 .footer-links { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 16px; }
-.footer-links a, .footer-copy {
+.hash-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  transition: color var(--ease);
+}
+.hash-copy:hover { color: var(--text); }
+.hash-copy code { font-size: 12px; }
+.hash-copy .icon { width: 14px; height: 14px; }
+.hash-copy.is-copied { color: var(--success); }
+
+.footer-links a {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   min-height: 32px;
   transition: color var(--ease);
 }
-.footer-links a:hover, .footer-copy:hover { color: var(--text); }
-.footer-copy code { font-size: 12px; }
-.footer-copy .icon { width: 14px; height: 14px; }
-.footer-copy.is-copied { color: var(--success); }
+.footer-links a:hover { color: var(--text); }
 .footer-end { margin-left: auto; align-self: flex-end; }
 
 /* -- Toast --------------------------------------------------------------- */
