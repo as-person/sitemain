@@ -29,6 +29,7 @@ const EVM = '0x2842428a11e5c7e7b990e80adf019d7b40e57b9b';
 const CRYPTO = [
   { id: 'usdt', name: 'USDT', title: 'Tether', networks: [
     { id: 'trc20', label: 'TRC20', network: 'TRON (TRC20)', address: 'TV38U42SqsUZZKhkoqHtqDyzFrZU4eJsoW', qr: 'tron' },
+    { id: 'bep20', label: 'BEP20', network: 'BNB Smart Chain (BEP20)', address: EVM, qr: 'evm' },
     { id: 'ton', label: 'TON', network: 'TON', address: 'UQBFhtxcW-nCZ345ZteeNFN-KBAes5Qk0dcmnH9JGiXxuHlI', qr: 'ton' },
     { id: 'erc20', label: 'ERC20', network: 'Ethereum (ERC20)', address: EVM, qr: 'evm' },
   ] },
