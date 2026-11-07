@@ -163,7 +163,7 @@ const footer = `<footer class="footer">
       <section>
         <h2>${L('Support the project', 'Поддержать проект')}</h2>
         <div class="footer-links">
-          <a href="https://yoomoney.ru/to/4100118200965581" target="_blank" rel="noopener">${L('Tips via YooMoney', 'Чаевые через ЮMoney')}</a>
+          <a href="https://yoomoney.ru/to/4100118200965581" target="_blank" rel="noopener">${L('YooMoney', 'ЮMoney')}</a>
           <button type="button" class="footer-copy" data-copy="${BTC}" ${attr('aria-label', 'Copy BTC address', 'Скопировать адрес BTC')}>BTC <code>1Bf7A...gjMZgu</code> ${icon('copy')}</button>
         </div>
       </section>
