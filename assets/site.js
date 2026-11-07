@@ -6,8 +6,8 @@
   const root = document.documentElement;
 
   const STRINGS = {
-    en: { copied: 'Copied', copyFailed: 'Could not copy', found: 'Found', clicks: 'Clicks', download: 'Download' },
-    ru: { copied: 'Скопировано', copyFailed: 'Не удалось скопировать', found: 'Найдено', clicks: 'Нажатий', download: 'Скачать' },
+    en: { copied: 'Copied', copyFailed: 'Could not copy', found: 'Found', clicks: 'Downloads', download: 'Download' },
+    ru: { copied: 'Скопировано', copyFailed: 'Не удалось скопировать', found: 'Найдено', clicks: 'Скачиваний', download: 'Скачать' },
   };
   const currentLang = () => (root.lang === 'ru' ? 'ru' : 'en');
   const t = key => STRINGS[currentLang()][key];
@@ -153,9 +153,7 @@
       $('#download-size-ru').textContent = image.size.ru;
       $('#torrent-link').href = image.url + '.torrent';
       $('#magnet-link').href = image.magnet;
-      ['#download-link', '#torrent-link', '#magnet-link'].forEach(selector => {
-        $(selector).dataset.countFile = image.file;
-      });
+      $('#magnet-link').dataset.countFile = image.file;
       $('.composer [data-stats-file]').dataset.statsFile = image.file;
       renderStats();
     }

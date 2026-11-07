@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""Download click counter for somov.org. Standard library only.
+"""Download counter for somov.org. Standard library only.
 
-POST /api/count?file=<iso name>&kind=download|torrent|magnet  adds one click
-GET  /api/stats  returns the counts to the owner's IP, and {"owner": false} to everyone else
+POST /internal/hit   nginx reports every GET of an .iso or .torrent file (through `mirror`),
+                     whatever page or chat the link was opened from; not reachable from outside
+POST /api/count?file=<iso name>&kind=magnet   the site reports magnet clicks, which never reach the server
+GET  /api/stats      returns the counts to the owner's IP, and {"owner": false} to everyone else
 
-Each IP is counted once per 24 hours, across all files and buttons.
+Each IP is counted once per 24 hours, across all files and kinds.
 Runs behind nginx, which sets X-Real-IP. Visitor IPs are kept in memory only, never on disk,
 so a restart of the service forgets who has already been counted.
 """
@@ -15,7 +17,7 @@ import sqlite3
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from urllib.parse import parse_qs, urlsplit
+from urllib.parse import parse_qs, unquote, urlsplit
 
 FILES_DIR = os.environ.get('FILES_DIR', '/var/www/html')
 DB_PATH = os.environ.get('DB_PATH', '/var/lib/somov-counter/counts.db')
@@ -85,19 +87,30 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
-    def do_POST(self):
-        url = urlsplit(self.path)
-        if url.path != '/api/count':
-            return self.respond(404)
-        query = parse_qs(url.query)
-        file = query.get('file', [''])[0]
-        kind = query.get('kind', [''])[0]
+    def count(self, file, kind):
         if kind not in KINDS or not FILE_RE.match(file) or not os.path.isfile(os.path.join(FILES_DIR, file)):
             return self.respond(400)
         ip = self.headers.get('X-Real-IP', '')
         if ip and ip not in OWNER_IPS and first_click_today(ip):
             add_click(file, kind)
         return self.respond(204)
+
+    def do_POST(self):
+        url = urlsplit(self.path)
+        if url.path == '/internal/hit':
+            if self.headers.get('X-Original-Method') != 'GET':
+                return self.respond(204)
+            name = os.path.basename(unquote(urlsplit(self.headers.get('X-Original-URI', '')).path))
+            if name.lower().endswith('.torrent'):
+                return self.count(name[:-len('.torrent')], 'torrent')
+            return self.count(name, 'download')
+        if url.path == '/api/count':
+            query = parse_qs(url.query)
+            kind = query.get('kind', [''])[0]
+            if kind != 'magnet':
+                return self.respond(204)  # downloads and torrents are counted by the server itself
+            return self.count(query.get('file', [''])[0], kind)
+        return self.respond(404)
 
     def do_GET(self):
         if urlsplit(self.path).path != '/api/stats':

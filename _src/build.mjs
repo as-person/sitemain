@@ -272,11 +272,11 @@ function homePage() {
             </a>
           </div>
           <div class="dl-actions">
-            <a class="btn btn-primary btn-block" id="download-link" href="${image.url}" ${countAttr(image.file, 'download')}>
+            <a class="btn btn-primary btn-block" id="download-link" href="${image.url}">
               ${icon('download')} <span>${S.downloadIso} · <span class="lang-en" id="download-size-en">${formatSize(image.size, 'en')}</span><span class="lang-ru" id="download-size-ru">${formatSize(image.size, 'ru')}</span></span>
             </a>
             <div class="dl-alt">
-              <a class="btn btn-secondary btn-sm" id="torrent-link" href="${image.url}.torrent" ${countAttr(image.file, 'torrent')}>Torrent</a>
+              <a class="btn btn-secondary btn-sm" id="torrent-link" href="${image.url}.torrent">Torrent</a>
               <a class="btn btn-secondary btn-sm" id="magnet-link" href="${esc(image.magnet)}" ${countAttr(image.file, 'magnet')}>Magnet</a>
             </div>
             ${statsLine(image.file)}
@@ -372,9 +372,9 @@ function buildPage(build, imageLang) {
             <div><dt>${L('Format', 'Формат')}</dt><dd>ISO · x64</dd></div>
           </dl>
           <div class="dl-actions">
-            <a class="btn btn-primary btn-block" href="${image.url}" ${countAttr(image.file, 'download')}>${icon('download')} <span>${S.downloadIso}</span></a>
+            <a class="btn btn-primary btn-block" href="${image.url}">${icon('download')} <span>${S.downloadIso}</span></a>
             <div class="dl-alt">
-              <a class="btn btn-secondary btn-sm" href="${image.url}.torrent" ${countAttr(image.file, 'torrent')}>Torrent</a>
+              <a class="btn btn-secondary btn-sm" href="${image.url}.torrent">Torrent</a>
               <a class="btn btn-secondary btn-sm" href="${esc(image.magnet)}" ${countAttr(image.file, 'magnet')}>Magnet</a>
             </div>
             ${statsLine(image.file)}
@@ -438,7 +438,7 @@ function buildPage(build, imageLang) {
   </main>
 
   <div class="dl-bar" hidden>
-    <a class="btn btn-primary btn-block" href="${image.url}" ${countAttr(image.file, 'download')}>${icon('download')} <span>${S.downloadIso} · ${size}</span></a>
+    <a class="btn btn-primary btn-block" href="${image.url}">${icon('download')} <span>${S.downloadIso} · ${size}</span></a>
   </div>
 
   <dialog class="lightbox" id="lightbox" ${attr('aria-label', 'Screenshot', 'Скриншот')}>
@@ -479,8 +479,8 @@ function ghostPage() {
             ${statsLine(item.file, 'download,torrent')}
           </div>
           <div class="row-actions">
-            <a class="btn btn-secondary btn-sm" href="${url}" ${countAttr(item.file, 'download')}>${icon('download')} <span>${S.download}</span></a>
-            <a class="row-text-link" href="${url}.torrent" ${countAttr(item.file, 'torrent')}>Torrent</a>
+            <a class="btn btn-secondary btn-sm" href="${url}">${icon('download')} <span>${S.download}</span></a>
+            <a class="row-text-link" href="${url}.torrent">Torrent</a>
           </div>
         </article>`;
   };
