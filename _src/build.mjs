@@ -19,7 +19,12 @@ const SITE = 'https://somov.org';
 const CDN = 'https://dl3.somov.org/';
 const GA_ID = 'G-4RBN0G8775';
 const TELEGRAM = 'https://t.me/+gmXk9-zXZ405YWY6';
-const BTC = '1Bf7A9JZHuDzu7yTzNqEL9q8KHHfgjMZgu';
+// Donation methods for /support. QR codes come from _src/qr.py, keep the addresses in sync.
+const DONATE = {
+  patreon: '', // the Patreon page URL; the card appears on /support once it is set
+  usdtTon: 'UQBFhtxcW-nCZ345ZteeNFN-KBAes5Qk0dcmnH9JGiXxuHlI',
+  yoomoney: 'https://yoomoney.ru/to/4100118200965581',
+};
 const LANGS = ['en', 'ru'];
 const TRACKERS = [
   'udp://tracker.torrent.eu.org:451/announce',
@@ -56,6 +61,7 @@ const sizeL = bytes => L(formatSize(bytes, 'en'), formatSize(bytes, 'ru'));
 
 // Download click counter: buttons report clicks, the stats line is filled in only for the owner's IP.
 const countAttr = (file, kind) => `data-count-file="${esc(file)}" data-count-kind="${kind}"`;
+const supportNudge = `<p class="support-nudge">${L('The builds are free. If they helped you, you can <a class="link" href="/support">support the project</a>.', 'Сборки бесплатные. Если пригодились, можно <a class="link" href="/support">поддержать проект</a>.')}</p>`;
 const statsLine = (file, kinds = 'download,torrent,magnet') =>
   `<p class="stats-line" data-stats-file="${esc(file)}" data-stats-kinds="${kinds}" hidden></p>`;
 
@@ -104,7 +110,13 @@ const langScript = `<script>
 (function(){var s;try{s=localStorage.getItem('siteLanguage')}catch(e){}var l=s==='ru'||s==='en'?s:((navigator.language||'').toLowerCase().indexOf('ru')===0?'ru':'en');var r=document.documentElement;r.lang=l;r.classList.add('lang-'+l+'-active');if(l==='ru'){if(r.dataset.titleRu)document.title=r.dataset.titleRu;var k=document.createElement('link');k.rel='preload';k.as='font';k.type='font/woff2';k.crossOrigin='';k.href='/assets/fonts/inter-cyrillic-wght-normal.woff2';document.head.appendChild(k);}})();
 </script>`;
 
-function head({ path, title, description }) {
+// Build pages: which image language to show before first paint. An explicit URL (-en/-ru) wins,
+// otherwise the image follows the site language.
+const imageScript = preset => (preset === undefined ? '' : `<script>
+document.documentElement.dataset.image=${preset ? `'${preset}'` : "document.documentElement.lang==='ru'?'ru':'en'"};
+</script>`);
+
+function head({ path, title, description, imageDefault }) {
   const canonical = `${SITE}${path}`;
   return `<!DOCTYPE html>
 <html lang="en" data-title-en="${esc(title.en)}" data-title-ru="${esc(title.ru)}">
@@ -129,6 +141,7 @@ function head({ path, title, description }) {
   <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
   <link rel="preload" href="/assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   ${langScript}
+  ${imageScript(imageDefault)}
   ${analytics}
   <link rel="stylesheet" href="${CSS_URL}">
 </head>`;
@@ -163,8 +176,7 @@ const footer = `<footer class="footer">
       <section>
         <h2>${L('Support the project', 'Поддержать проект')}</h2>
         <div class="footer-links">
-          <a href="https://yoomoney.ru/to/4100118200965581" target="_blank" rel="noopener">${L('YooMoney', 'ЮMoney')}</a>
-          <button type="button" class="footer-copy" data-copy="${BTC}" ${attr('aria-label', 'Copy BTC address', 'Скопировать адрес BTC')}>BTC <code>1Bf7A...gjMZgu</code> ${icon('copy')}</button>
+          <a href="/support">${L('Ways to support', 'Способы поддержки')} ${icon('d')}</a>
         </div>
       </section>
       <section>
@@ -280,6 +292,7 @@ function homePage() {
               <a class="btn btn-secondary btn-sm" id="magnet-link" href="${esc(image.magnet)}" ${countAttr(image.file, 'magnet')}>Magnet</a>
             </div>
             ${statsLine(image.file)}
+            ${supportNudge}
           </div>
         </div>
       </section>
@@ -337,14 +350,26 @@ function gallery(build, imageLang) {
   }).join('\n          ');
 }
 
-function buildPage(build, imageLang) {
-  const image = imageFor(build, imageLang);
-  const otherImage = imageLang === 'ru' ? 'en' : 'ru';
-  const size = sizeL(image.size);
+function buildPage(build, preset) {
+  const images = Object.fromEntries(LANGS.map(l => [l, imageFor(build, l)]));
+  const other = l => (l === 'ru' ? 'en' : 'ru');
+  const start = preset || 'en';
+  // One block per image language; CSS shows the one chosen in <html data-image>.
+  const V = (fn, tag = 'div', cls = '') => LANGS.map(l => `<${tag} class="img-${l}${cls ? ' ' + cls : ''}">${fn(l)}</${tag}>`).join('');
+  const switchLink = (l, content, cls = '') =>
+    `<a${cls ? ` class="${cls}"` : ''} href="/windows-${build.id}-${l}" data-switch-image="${l}"${l === start ? ' aria-current="true"' : ''}>${content}</a>`;
 
-  const sums = [
-    ['SHA-256', image.sums.sha256], ['SHA-1', image.sums.sha1], ['MD5', image.sums.md5], ['CRC32', image.sums.crc32],
+  const sumsFor = l => [
+    ['SHA-256', images[l].sums.sha256], ['SHA-1', images[l].sums.sha1], ['MD5', images[l].sums.md5], ['CRC32', images[l].sums.crc32],
   ].filter(([, value]) => value);
+  const forImage = {
+    en: L('For the English image', 'Для образа на английском'),
+    ru: L('For the Russian image', 'Для образа на русском'),
+  };
+  const showFor = {
+    en: L('show for the English image', 'показать для английского'),
+    ru: L('show for the Russian image', 'показать для русского'),
+  };
 
   const body = `<main class="page" id="content">
     <div class="container build">
@@ -357,7 +382,6 @@ function buildPage(build, imageLang) {
           <span class="mono">${build.number}</span>
           <span aria-hidden="true">·</span>
           <span>${T(build.date)}</span>
-          <span class="badge">${imageLangName(imageLang)}</span>
           ${build.final ? `<span class="badge">${S.final}</span>` : ''}
         </div>
         <p class="lead">${T(build.lead)}</p>
@@ -366,20 +390,24 @@ function buildPage(build, imageLang) {
       <aside class="build-panel" ${attr('aria-label', 'Download', 'Скачать')}>
         <div class="panel">
           <div class="panel-title">${esc(build.title)}</div>
+          <div class="panel-label">${L('Image language', 'Язык образа')}</div>
+          <nav class="seg-links" ${attr('aria-label', 'Image language', 'Язык образа')}>
+            ${LANGS.map(l => switchLink(l, imageLangName(l))).join('\n            ')}
+          </nav>
           <dl class="panel-rows">
-            <div><dt>${L('Size', 'Размер')}</dt><dd>${size}</dd></div>
-            <div><dt>${L('Image language', 'Язык образа')}</dt><dd>${imageLangName(imageLang)}</dd></div>
+            <div><dt>${L('Size', 'Размер')}</dt><dd>${V(l => sizeL(images[l].size), 'span')}</dd></div>
             <div><dt>${L('Format', 'Формат')}</dt><dd>ISO · x64</dd></div>
           </dl>
           <div class="dl-actions">
-            <a class="btn btn-primary btn-block" href="${image.url}">${icon('download')} <span>${S.downloadIso}</span></a>
-            <div class="dl-alt">
-              <a class="btn btn-secondary btn-sm" href="${image.url}.torrent">Torrent</a>
-              <a class="btn btn-secondary btn-sm" href="${esc(image.magnet)}" ${countAttr(image.file, 'magnet')}>Magnet</a>
-            </div>
-            ${statsLine(image.file)}
+            ${V(l => `
+              <a class="btn btn-primary btn-block" href="${images[l].url}">${icon('download')} <span>${S.downloadIso}</span></a>
+              <div class="dl-alt">
+                <a class="btn btn-secondary btn-sm" href="${images[l].url}.torrent">Torrent</a>
+                <a class="btn btn-secondary btn-sm" href="${esc(images[l].magnet)}" ${countAttr(images[l].file, 'magnet')}>Magnet</a>
+              </div>
+              ${statsLine(images[l].file)}`, 'div', 'dl-variant')}
+            ${supportNudge}
           </div>
-          <a class="panel-other link" href="/windows-${build.id}-${otherImage}">${L('Image in another language', 'Образ на другом языке')}: ${imageLangName(otherImage)}</a>
         </div>
       </aside>
 
@@ -393,9 +421,9 @@ function buildPage(build, imageLang) {
 
         <section class="section">
           <h2>${L('Screenshots', 'Скриншоты')}</h2>
-          <div class="gallery">
-          ${gallery(build, imageLang)}
-          </div>
+          ${LANGS.map(l => `<div class="gallery img-${l}">
+          ${gallery(build, l)}
+          </div>`).join('\n          ')}
         </section>
 
         <section class="section">
@@ -417,14 +445,16 @@ function buildPage(build, imageLang) {
 
         <section class="section">
           <h2>${L('Checksums', 'Контрольные суммы')}</h2>
+          ${V(l => `
+          <p class="section-note">${forImage[l]} · ${switchLink(other(l), showFor[other(l)], 'link')}</p>
           <div class="sums">
-            ${sums.map(([label, value]) => `<div class="sum-row">
+            ${sumsFor(l).map(([label, value]) => `<div class="sum-row">
               <span class="sum-label">${label}</span>
               <span class="sum-val">${value}</span>
               <button type="button" class="icon-btn" data-copy="${value}" ${attr('aria-label', `Copy ${label}`, `Скопировать ${label}`)}>${icon('copy')}</button>
             </div>`).join('\n            ')}
           </div>
-          <p class="sums-file">${esc(image.file)}</p>
+          <p class="sums-file">${esc(images[l].file)}</p>`)}
         </section>
 
         ${build.history.length > 1 ? `<section class="section">
@@ -438,7 +468,7 @@ function buildPage(build, imageLang) {
   </main>
 
   <div class="dl-bar" hidden>
-    <a class="btn btn-primary btn-block" href="${image.url}">${icon('download')} <span>${S.downloadIso} · ${size}</span></a>
+    ${LANGS.map(l => `<a class="btn btn-primary btn-block img-${l}" href="${images[l].url}">${icon('download')} <span>${S.downloadIso} · ${sizeL(images[l].size)}</span></a>`).join('\n    ')}
   </div>
 
   <dialog class="lightbox" id="lightbox" ${attr('aria-label', 'Screenshot', 'Скриншот')}>
@@ -449,14 +479,15 @@ function buildPage(build, imageLang) {
     <div class="lb-count"></div>
   </dialog>`;
 
-  const tag = imageLang.toUpperCase();
-  write(`windows-${build.id}-${imageLang}.html`, shell({
-    path: image.path,
+  const sizes = LANGS.map(l => formatSize(images[l].size, 'en')).join(' / ');
+  write(`windows-${build.id}${preset ? '-' + preset : ''}.html`, shell({
+    path: `/windows-${build.id}`,
+    imageDefault: preset,
     title: {
-      en: `${build.title} [${tag}] - Windows by somov`,
-      ru: `${build.title} [${tag}] - Windows от somov`,
+      en: `${build.title} - Windows by somov`,
+      ru: `${build.title} - Windows от somov`,
     },
-    description: `${build.title} ${build.version}, build ${build.number}, ${imageLang === 'ru' ? 'Russian' : 'English'} image, ${formatSize(image.size, 'en')}. Direct download, torrent, magnet and checksums.`,
+    description: `${build.title} ${build.version}, build ${build.number}. English and Russian images (${sizes}). Direct download, torrent, magnet and checksums.`,
   }, 'builds', body, 'has-dl-bar'));
 }
 
@@ -631,11 +662,56 @@ function notFoundPage() {
 `);
 }
 
+/* -- Support ------------------------------------------------------------- */
+
+function supportPage() {
+  const copyRow = (value, label) => `<div class="address">
+            <code>${esc(value)}</code>
+            <button type="button" class="icon-btn" data-copy="${esc(value)}" ${attr('aria-label', `Copy ${label} address`, `Скопировать адрес ${label}`)}>${icon('copy')}</button>
+          </div>`;
+
+  const cards = [
+    DONATE.patreon && `<article class="support-card support-card-main">
+          <h2>Patreon</h2>
+          <p>${L('Any bank card, one-time or monthly.', 'Любая банковская карта, разово или ежемесячно.')}</p>
+          <a class="btn btn-primary" href="${esc(DONATE.patreon)}" target="_blank" rel="noopener">${L('Support on Patreon', 'Поддержать на Patreon')}</a>
+        </article>`,
+    `<article class="support-card">
+          <h2>USDT <span class="badge">TON</span></h2>
+          <p>${L('Send USDT on the TON network only, for example from Wallet in Telegram.', 'Отправляйте только USDT в сети TON, например из кошелька в Telegram.')}</p>
+          <img class="qr" src="/images/qr-usdt-ton.svg" width="160" height="160" ${attr('alt', 'QR code of the USDT address', 'QR-код адреса USDT')}>
+          ${copyRow(DONATE.usdtTon, 'USDT')}
+        </article>`,
+    `<article class="support-card">
+          <h2>${L('YooMoney', 'ЮMoney')}</h2>
+          <p>${L('Russian bank cards and YooMoney wallet.', 'Российские банковские карты и кошелёк ЮMoney.')}</p>
+          <a class="btn btn-secondary" href="${esc(DONATE.yoomoney)}" target="_blank" rel="noopener">${L('Open YooMoney', 'Перейти в ЮMoney')}</a>
+        </article>`,
+  ].filter(Boolean);
+
+  const body = `<main class="page" id="content">
+    <div class="container container-narrow">
+      <a href="/" class="back">${icon('back')} ${S.home}</a>
+      <h1 class="page-title">${L('Support the project', 'Поддержать проект')}</h1>
+      <p class="page-sub">${L('All builds and tools on somov.org are free. If they saved you time, you can support the project: it helps pay for the servers and keep the builds up to date. Thank you!', 'Все сборки и утилиты на somov.org бесплатные. Если они сэкономили вам время, можно поддержать проект: это помогает оплачивать серверы и обновлять сборки. Спасибо!')}</p>
+      <div class="support-grid">
+        ${cards.join('\n        ')}
+      </div>
+    </div>
+  </main>`;
+
+  write('support.html', shell({
+    path: '/support',
+    title: { en: 'Support the project - Windows by somov', ru: 'Поддержать проект - Windows от somov' },
+    description: 'Ways to support Windows by somov: USDT on TON and YooMoney.',
+  }, '', body));
+}
+
 /* -- Robots and sitemap -------------------------------------------------- */
 
 function sitemap() {
-  const paths = ['/', '/ghost-spectre', '/settings-for-windows',
-    ...builds.flatMap(b => LANGS.map(l => `/windows-${b.id}-${l}`))];
+  const paths = ['/', '/ghost-spectre', '/settings-for-windows', '/support',
+    ...builds.map(b => `/windows-${b.id}`)];
   write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${paths.map(path => `  <url><loc>${SITE}${path}</loc></url>`).join('\n')}
@@ -658,7 +734,9 @@ for (const build of builds) {
 homePage();
 ghostPage();
 settingsPage();
+supportPage();
 for (const build of builds) {
+  buildPage(build, null);
   for (const imageLang of LANGS) buildPage(build, imageLang);
 }
 notFoundPage();

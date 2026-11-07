@@ -408,7 +408,27 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 .panel-rows div { display: flex; justify-content: space-between; gap: 12px; }
 .panel-rows dt { color: var(--muted); }
 .panel-rows dd { font-weight: 500; text-align: right; }
-.panel-other { display: block; margin-top: 14px; color: var(--muted); font-size: var(--fs-sm); text-align: center; }
+.panel-label { margin-top: 14px; margin-bottom: 8px; color: var(--muted); font-size: var(--fs-sm); }
+.seg-links { display: grid; grid-template-columns: 1fr 1fr; padding: 4px; border-radius: var(--r-md); background: var(--bg); }
+.seg-links a {
+  display: grid;
+  place-items: center;
+  min-height: 38px;
+  border-radius: var(--r-sm);
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  transition: color var(--ease), background var(--ease);
+}
+.seg-links a:hover { color: var(--text); }
+.seg-links a[aria-current="true"] { background: var(--selected); color: var(--on-selected); }
+.dl-variant { display: grid; gap: 10px; }
+.section-note { margin: -4px 0 12px; color: var(--muted); font-size: var(--fs-sm); }
+
+/* Build pages hold both image languages; <html data-image> picks one. English without scripts. */
+[data-image="en"] .img-ru,
+[data-image="ru"] .img-en,
+html:not([data-image]) .img-ru { display: none !important; }
 
 .check-list { display: grid; gap: 10px; }
 .check-list li { display: flex; gap: 10px; }
@@ -744,4 +764,38 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+/* -- Support ------------------------------------------------------------- */
+
+.support-nudge { color: var(--muted); font-size: var(--fs-xs); text-align: center; }
+.support-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 12px; margin-top: 32px; }
+.support-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+.support-card h2 { display: flex; align-items: center; gap: 8px; font-size: var(--fs-lg); }
+.support-card p { color: var(--muted); font-size: var(--fs-sm); }
+.support-card-main { grid-column: 1 / -1; }
+.qr { width: 160px; height: 160px; margin-top: 4px; border-radius: var(--r-sm); background: #fff; }
+.address {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 40px;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: auto;
+  padding: 4px 4px 4px 12px;
+  border-radius: var(--r-sm);
+  background: var(--bg);
+}
+.address code { font-size: 12px; overflow-wrap: anywhere; }
+@media (max-width: 720px) {
+  .support-grid { grid-template-columns: 1fr; }
 }

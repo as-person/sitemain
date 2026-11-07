@@ -38,6 +38,10 @@ echo "OWNER_IPS=новый.ip" > /etc/somov-counter.env && systemctl restart som
 
 Чтобы показать цифры всем, нужно в `server.py` отдавать статистику без проверки IP и обновить файл на сервере.
 
+## Страница поддержки
+
+Способы поддержки на `/support` задаются в `DONATE` в `build.mjs`. Когда появится страница Patreon, впишите её адрес в `DONATE.patreon`: на странице появится главная кнопка. Если меняется адрес USDT, обновите его и в `_src/qr.py`, затем запустите `python _src/qr.py` (нужен `pip install segno`), чтобы перегенерировать QR-код.
+
 ## Другие данные
 
 - `data/ghost-spectre.json`: сборки Ghost Spectre.

@@ -23,6 +23,7 @@
   <script>
 (function(){var s;try{s=localStorage.getItem('siteLanguage')}catch(e){}var l=s==='ru'||s==='en'?s:((navigator.language||'').toLowerCase().indexOf('ru')===0?'ru':'en');var r=document.documentElement;r.lang=l;r.classList.add('lang-'+l+'-active');if(l==='ru'){if(r.dataset.titleRu)document.title=r.dataset.titleRu;var k=document.createElement('link');k.rel='preload';k.as='font';k.type='font/woff2';k.crossOrigin='';k.href='/assets/fonts/inter-cyrillic-wght-normal.woff2';document.head.appendChild(k);}})();
 </script>
+  
   <!-- Owner opt-out: open /?noga to stop counting this device, /?ga to resume -->
 <script>
 (function(){var ID='G-4RBN0G8775';try{var p=new URLSearchParams(location.search);if(p.has('noga'))localStorage.setItem('ga-optout','1');if(p.has('ga'))localStorage.removeItem('ga-optout');if(localStorage.getItem('ga-optout')==='1')window['ga-disable-'+ID]=true;}catch(e){}})();
@@ -31,7 +32,7 @@
 <script>
 window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-4RBN0G8775');
 </script>
-  <link rel="stylesheet" href="/assets/site.css?v=7d1ffb5e">
+  <link rel="stylesheet" href="/assets/site.css?v=937d55b5">
 </head>
 <body>
   <a class="skip-link" href="#content"><span class="lang-en">Skip to content</span><span class="lang-ru">Перейти к содержимому</span></a>
@@ -102,6 +103,7 @@ window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);
               <a class="btn btn-secondary btn-sm" id="magnet-link" href="magnet:?xt=urn:btih:8c5c4587ddf1f6ed46d841a4d5480263efc9fb2c&amp;dn=en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9711_by_somov.iso&amp;tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&amp;tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&amp;tr=udp%3A%2F%2Fopen.demonii.com%3A1337%2Fannounce&amp;tr=udp%3A%2F%2Ftracker.dler.org%3A6969%2Fannounce&amp;tr=udp%3A%2F%2Ftracker.theoks.net%3A6969%2Fannounce" data-count-file="en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9711_by_somov.iso" data-count-kind="magnet">Magnet</a>
             </div>
             <p class="stats-line" data-stats-file="en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9711_by_somov.iso" data-stats-kinds="download,torrent,magnet" hidden></p>
+            <p class="support-nudge"><span class="lang-en">The builds are free. If they helped you, you can <a class="link" href="/support">support the project</a>.</span><span class="lang-ru">Сборки бесплатные. Если пригодились, можно <a class="link" href="/support">поддержать проект</a>.</span></p>
           </div>
         </div>
       </section>
@@ -136,8 +138,7 @@ window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);
       <section>
         <h2><span class="lang-en">Support the project</span><span class="lang-ru">Поддержать проект</span></h2>
         <div class="footer-links">
-          <a href="https://yoomoney.ru/to/4100118200965581" target="_blank" rel="noopener"><span class="lang-en">YooMoney</span><span class="lang-ru">ЮMoney</span></a>
-          <button type="button" class="footer-copy" data-copy="1Bf7A9JZHuDzu7yTzNqEL9q8KHHfgjMZgu" aria-label="Copy BTC address" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Copy BTC address&quot;,&quot;ru&quot;:&quot;Скопировать адрес BTC&quot;}}">BTC <code>1Bf7A...gjMZgu</code> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button>
+          <a href="/support"><span class="lang-en">Ways to support</span><span class="lang-ru">Способы поддержки</span> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
         </div>
       </section>
       <section>
@@ -151,6 +152,6 @@ window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);
     </div>
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="/assets/site.js?v=cdde745a" defer></script>
+  <script src="/assets/site.js?v=d30fb700" defer></script>
 </body>
 </html>

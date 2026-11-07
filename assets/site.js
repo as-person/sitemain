@@ -168,10 +168,31 @@
     });
   }
 
+  /* Build page: image language switch. Both languages are in the page; the URL follows the choice. */
+  const imageSwitches = $$('[data-switch-image]');
+  if (imageSwitches.length) {
+    const syncImageSwitches = () => imageSwitches.forEach(link => {
+      link.setAttribute('aria-current', String(link.dataset.switchImage === root.dataset.image));
+    });
+    syncImageSwitches();
+    // On the shared /windows-NN address, name the shown language in the URL right away,
+    // so a copied link opens the same image for whoever receives it.
+    const shownLink = imageSwitches.find(link => link.dataset.switchImage === root.dataset.image);
+    if (shownLink && !/-(en|ru)$/.test(location.pathname)) {
+      history.replaceState(null, '', shownLink.getAttribute('href') + location.search + location.hash);
+    }
+    imageSwitches.forEach(link => link.addEventListener('click', event => {
+      event.preventDefault();
+      root.dataset.image = link.dataset.switchImage;
+      history.replaceState(null, '', link.getAttribute('href'));
+      syncImageSwitches();
+    }));
+  }
+
   /* Build page: screenshot lightbox on a native dialog */
   const lightbox = $('#lightbox');
   if (lightbox && lightbox.showModal) {
-    const shots = $$('.shot');
+    let shots = [];
     const image = $('img', lightbox);
     const counter = $('.lb-count', lightbox);
     let current = 0;
@@ -183,9 +204,11 @@
       counter.textContent = (current + 1) + ' / ' + shots.length;
     }
 
-    shots.forEach((shot, index) => shot.addEventListener('click', event => {
+    // Each image language has its own gallery; browse only the one that was clicked.
+    $$('.shot').forEach(shot => shot.addEventListener('click', event => {
       event.preventDefault();
-      show(index);
+      shots = $$('.shot', shot.closest('.gallery'));
+      show(shots.indexOf(shot));
       lightbox.showModal();
     }));
     $('.lb-close', lightbox).addEventListener('click', () => lightbox.close());
