@@ -60,4 +60,334 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/windows-10"/>
     <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/windows-10"/>
   </url>
+  <url>
+    <loc>https://somov.org/tweaks/drag-and-drop</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/drag-and-drop"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/drag-and-drop"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/drag-and-drop</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/drag-and-drop"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/drag-and-drop"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/explorer-tabs</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/explorer-tabs"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/explorer-tabs"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/explorer-tabs</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/explorer-tabs"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/explorer-tabs"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/old-context-menu</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/old-context-menu"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/old-context-menu"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/old-context-menu</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/old-context-menu"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/old-context-menu"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/classic-notepad</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/classic-notepad"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/classic-notepad"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/classic-notepad</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/classic-notepad"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/classic-notepad"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/classic-media-player</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/classic-media-player"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/classic-media-player"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/classic-media-player</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/classic-media-player"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/classic-media-player"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/classic-photo-viewer</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/classic-photo-viewer"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/classic-photo-viewer"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/classic-photo-viewer</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/classic-photo-viewer"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/classic-photo-viewer"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/num-lock</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/num-lock"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/num-lock"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/num-lock</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/num-lock"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/num-lock"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/russification</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/russification"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/russification"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/russification</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/russification"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/russification"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/remove-edge</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/remove-edge"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/remove-edge"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/remove-edge</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/remove-edge"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/remove-edge"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/turn-off-telemetry</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/turn-off-telemetry"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/turn-off-telemetry"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/turn-off-telemetry</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/turn-off-telemetry"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/turn-off-telemetry"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/donotspy11</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/donotspy11"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/donotspy11"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/donotspy11</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/donotspy11"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/donotspy11"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/pause-updates</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/pause-updates"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/pause-updates"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/pause-updates</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/pause-updates"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/pause-updates"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/disable-security-warning</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/disable-security-warning"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/disable-security-warning"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/disable-security-warning</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/disable-security-warning"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/disable-security-warning"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/defender-remover</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/defender-remover"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/defender-remover"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/defender-remover</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/defender-remover"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/defender-remover"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/miner-search</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/miner-search"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/miner-search"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/miner-search</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/miner-search"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/miner-search"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/censor-tracker</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/censor-tracker"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/censor-tracker"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/censor-tracker</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/censor-tracker"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/censor-tracker"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/store-method-1</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/store-method-1"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/store-method-1"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/store-method-1</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/store-method-1"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/store-method-1"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/store-method-2</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/store-method-2"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/store-method-2"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/store-method-2</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/store-method-2"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/store-method-2"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/alt-app-installer</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/alt-app-installer"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/alt-app-installer"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/alt-app-installer</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/alt-app-installer"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/alt-app-installer"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/browsers</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/browsers"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/browsers"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/browsers</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/browsers"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/browsers"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/qbittorrent</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/qbittorrent"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/qbittorrent"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/qbittorrent</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/qbittorrent"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/qbittorrent"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/winrar</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/winrar"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/winrar"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/winrar</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/winrar"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/winrar"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/acrobat-reader</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/acrobat-reader"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/acrobat-reader"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/acrobat-reader</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/acrobat-reader"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/acrobat-reader"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/msedgeredirect</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/msedgeredirect"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/msedgeredirect"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/msedgeredirect</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/msedgeredirect"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/msedgeredirect"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/super-god-mode</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/super-god-mode"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/super-god-mode"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/super-god-mode</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/super-god-mode"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/super-god-mode"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/vcpp-runtimes</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/vcpp-runtimes"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/vcpp-runtimes"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/vcpp-runtimes</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/vcpp-runtimes"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/vcpp-runtimes"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/directx</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/directx"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/directx"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/directx</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/directx"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/directx"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/snappy-driver-installer</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/snappy-driver-installer"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/snappy-driver-installer"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/snappy-driver-installer</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/snappy-driver-installer"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/snappy-driver-installer"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/backup-drivers</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/backup-drivers"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/backup-drivers"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/backup-drivers</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/backup-drivers"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/backup-drivers"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/clear-temp</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/clear-temp"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/clear-temp"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/clear-temp</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/clear-temp"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/clear-temp"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/optimize-volume</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/optimize-volume"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/optimize-volume"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/optimize-volume</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/optimize-volume"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/optimize-volume"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/defrag-tools</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/defrag-tools"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/defrag-tools"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/defrag-tools</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/defrag-tools"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/defrag-tools"/>
+  </url>
+  <url>
+    <loc>https://somov.org/tweaks/keyboard-shortcuts</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/keyboard-shortcuts"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/keyboard-shortcuts"/>
+  </url>
+  <url>
+    <loc>https://somov.org/ru/tweaks/keyboard-shortcuts</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://somov.org/tweaks/keyboard-shortcuts"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://somov.org/ru/tweaks/keyboard-shortcuts"/>
+  </url>
 </urlset>

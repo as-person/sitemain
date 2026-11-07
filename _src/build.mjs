@@ -434,21 +434,7 @@ function buildPage(build, preset) {
           <span>${T(build.date)}</span>
           ${build.final ? `<span class="badge">${S.final}</span>` : ''}
         </div>
-        <div class="share">
-          <div class="share-more">
-            <button type="button" class="share-btn" data-share-toggle aria-haspopup="menu" aria-expanded="false">${icon('share')} ${L('Share', 'Поделиться')}</button>
-            <div class="share-menu" role="menu" hidden>
-              <button type="button" role="menuitem" data-share-copy>${icon('link')} ${L('Copy link', 'Скопировать ссылку')}</button>
-              <button type="button" role="menuitem" data-share-native hidden>${icon('share')} ${L('Other apps…', 'Другие приложения…')}</button>
-              <span class="share-sep" role="separator"></span>
-              <a role="menuitem" href="#" target="_blank" rel="noopener" data-share-service="telegram">Telegram</a>
-              <a role="menuitem" href="#" target="_blank" rel="noopener" data-share-service="whatsapp">WhatsApp</a>
-              <a role="menuitem" href="#" target="_blank" rel="noopener" data-share-service="vk">${L('VK', 'ВКонтакте')}</a>
-              <a role="menuitem" href="#" target="_blank" rel="noopener" data-share-service="x">X</a>
-              <a role="menuitem" href="#" target="_blank" rel="noopener" data-share-service="facebook">Facebook</a>
-              <a role="menuitem" href="#" target="_blank" rel="noopener" data-share-service="reddit">Reddit</a>
-              <a role="menuitem" href="#" data-share-service="email">Email</a>
-            </div>
+        ${shareRow()}
           </div>
         </div>
         <p class="lead">${T(build.lead)}</p>
@@ -628,27 +614,82 @@ function ghostPage() {
 
 /* -- Settings ------------------------------------------------------------ */
 
-function settingsPage() {
-  const TAGS = {
-    admin: L('Run as administrator', 'Нужны права администратора'),
-    reboot: L('Restart required', 'Нужна перезагрузка'),
-  };
+const shareRow = () => `<div class="share">
+          <div class="share-more">
+            <button type="button" class="share-btn" data-share-toggle aria-haspopup="menu" aria-expanded="false">${icon('share')} ${L('Share', 'Поделиться')}</button>
+            <div class="share-menu" role="menu" hidden>
+              <button type="button" role="menuitem" data-share-copy>${icon('link')} ${L('Copy link', 'Скопировать ссылку')}</button>
+              <button type="button" role="menuitem" data-share-native hidden>${icon('share')} ${L('Other apps…', 'Другие приложения…')}</button>
+              <span class="share-sep" role="separator"></span>
+              <a role="menuitem" href="#" target="_blank" rel="noopener" data-share-service="telegram">Telegram</a>
+              <a role="menuitem" href="#" target="_blank" rel="noopener" data-share-service="whatsapp">WhatsApp</a>
+              <a role="menuitem" href="#" target="_blank" rel="noopener" data-share-service="vk">${L('VK', 'ВКонтакте')}</a>
+              <a role="menuitem" href="#" target="_blank" rel="noopener" data-share-service="x">X</a>
+              <a role="menuitem" href="#" target="_blank" rel="noopener" data-share-service="facebook">Facebook</a>
+              <a role="menuitem" href="#" target="_blank" rel="noopener" data-share-service="reddit">Reddit</a>
+              <a role="menuitem" href="#" data-share-service="email">Email</a>
+            </div>`;
 
-  const fileType = file => decodeURIComponent(file).match(/\.[a-z0-9]+$/i)?.[0].toLowerCase() ?? '';
+/* -- Tweaks: shared pieces of the settings list and the tweak pages ------- */
+
+const TWEAK_TAGS = {
+  admin: L('Run as administrator', 'Нужны права администратора'),
+  reboot: L('Restart required', 'Нужна перезагрузка'),
+};
+
+const fileTypeOf = file => decodeURIComponent(file).match(/\.[a-z0-9]+$/i)?.[0].toLowerCase() ?? '';
+
+// Plain text of a bilingual value in one language (for <title> and descriptions).
+const textIn = (value, lang) => (value && typeof value === 'object' ? value[lang] : value);
+
+// A link may exist in one language only, or point to a different URL per language.
+const tweakLinkHtml = link => {
+  const labelFor = lang => (typeof link.label === 'object' ? link.label[lang] : link.label);
+  const urlFor = lang => (typeof link.url === 'object' ? link.url[lang] : link.url);
+  if (labelFor('en') && labelFor('ru') && urlFor('en') === urlFor('ru')) {
+    return `<a class="link" href="${esc(urlFor('en'))}" target="_blank" rel="noopener">${T(link.label)}</a>`;
+  }
+  return LANGS.filter(labelFor).map(lang =>
+    `<a class="link lang-${lang}" href="${esc(urlFor(lang))}" target="_blank" rel="noopener">${esc(labelFor(lang))}</a>`).join('');
+};
+
+const tweakCommands = item => (item.commands ? `<div class="commands">${item.commands.map(c => `<div>
+              <div class="command-label">${T(c.label)}</div>
+              <div class="command"><code>${esc(c.code)}</code><button type="button" class="icon-btn" data-copy="${esc(c.code)}" ${attr('aria-label', 'Copy command', 'Скопировать команду')}>${icon('copy')}</button></div>
+            </div>`).join('')}</div>` : '');
+const tweakDownloads = item => (item.downloads ? `<div class="chip-links">${item.downloads.map(d => `<a class="btn btn-secondary btn-sm" href="${CDN}${d.file}">${icon('download')} ${esc(d.label)}</a>`).join('')}</div>` : '');
+const tweakKeys = item => (item.keys ? `<dl class="keys">${item.keys.map(k => `<div><dt>${T(k.combo)}</dt><dd>${T(k.desc)}</dd></div>`).join('')}</dl>` : '');
+const tweakTags = item => (item.tags?.length ? `<div class="item-tags">${item.tags.map(tag => `<span class="badge">${TWEAK_TAGS[tag]}</span>`).join('')}</div>` : '');
+
+// General "how to apply" steps by file type; only facts that hold for any file of that type.
+function applySteps(item) {
+  const type = fileTypeOf(item.file);
+  const admin = item.tags?.includes('admin');
+  const reboot = item.tags?.includes('reboot');
+  const download = L('Download the file.', 'Скачайте файл.');
+  let steps;
+  if (type === '.reg') {
+    steps = [download, L('Double-click it to run.', 'Запустите его двойным щелчком.'), L('Confirm adding the data to the registry.', 'Подтвердите добавление данных в реестр.')];
+  } else if (type === '.bat' || type === '.cmd') {
+    steps = [download, admin
+      ? L('Right-click it and choose “Run as administrator”.', 'Нажмите на него правой кнопкой и выберите «Запуск от имени администратора».')
+      : L('Run it with a double-click.', 'Запустите его двойным щелчком.')];
+  } else if (type === '.zip' || type === '.rar') {
+    steps = [L('Download the archive.', 'Скачайте архив.'), L('Unpack it to any folder.', 'Распакуйте его в любую папку.'), L('Run the program or script from that folder.', 'Запустите программу или скрипт из этой папки.')];
+  } else {
+    steps = [download, L('Run it and follow the instructions on the screen.', 'Запустите его и следуйте инструкциям на экране.')];
+  }
+  if (reboot) steps.push(L('Restart your computer.', 'Перезагрузите компьютер.'));
+  return steps;
+}
+
+function settingsPage() {
+  const TAGS = TWEAK_TAGS;
+  const fileType = fileTypeOf;
+  const linkHtml = tweakLinkHtml;
 
   // Both languages are searchable, whichever one is on screen.
   const plain = value => (value && typeof value === 'object' ? Object.values(value) : [value]);
-
-  // A link may exist in one language only, or point to a different URL per language.
-  const linkHtml = link => {
-    const labelFor = lang => (typeof link.label === 'object' ? link.label[lang] : link.label);
-    const urlFor = lang => (typeof link.url === 'object' ? link.url[lang] : link.url);
-    if (labelFor('en') && labelFor('ru') && urlFor('en') === urlFor('ru')) {
-      return `<a class="link" href="${esc(urlFor('en'))}" target="_blank" rel="noopener">${T(link.label)}</a>`;
-    }
-    return LANGS.filter(labelFor).map(lang =>
-      `<a class="link lang-${lang}" href="${esc(urlFor(lang))}" target="_blank" rel="noopener">${esc(labelFor(lang))}</a>`).join('');
-  };
 
   const itemHtml = item => {
     const searchText = [
@@ -662,7 +703,7 @@ function settingsPage() {
     const hasAction = Boolean(item.file);
     return `<article class="item" id="${item.id}" data-category="${item.category}" data-search="${esc(searchText)}">
           <div${hasAction ? '' : ' class="item-full"'}>
-            <h3 class="item-title"><a href="#${item.id}">${T(item.title)}</a></h3>
+            <h3 class="item-title"><a href="/tweaks/${item.id}">${T(item.title)}</a></h3>
             ${item.desc ? `<p class="item-desc">${T(item.desc)}</p>` : ''}
             ${item.tags?.length ? `<div class="item-tags">${item.tags.map(tag => `<span class="badge">${TAGS[tag]}</span>`).join('')}</div>` : ''}
             ${item.links?.length ? `<div class="item-links">${item.links.map(linkHtml).join('')}</div>` : ''}
@@ -717,6 +758,57 @@ function settingsPage() {
       en: 'Windows tweaks, drivers, PowerShell commands and useful tools, with search and categories.',
       ru: 'Твики Windows, драйверы, команды PowerShell и полезные утилиты, с поиском и категориями.',
     },
+  }, 'settings', body));
+}
+
+/* -- Tweak pages ------------------------------------------------------------ */
+
+function tweakPage(item) {
+  const category = settings.categories.find(c => c.id === item.category);
+  const related = settings.items.filter(i => i.category === item.category && i !== item).slice(0, 6);
+  const titleIn = lang => textIn(item.title, lang);
+  const descIn = lang => textIn(item.desc, lang)
+    || [titleIn(lang), ...(item.commands ?? []).map(c => textIn(c.label, lang))].join('. ');
+
+  const action = item.file ? `<section class="tweak-card">
+          <div class="tweak-download">
+            <a class="btn btn-primary" href="${CDN}${item.file}">${icon('download')} <span>${S.download}</span></a>
+            <span class="file-type">${fileTypeOf(item.file)}</span>
+          </div>
+          <h2>${L('How to apply', 'Как применить')}</h2>
+          <ol class="steps">
+            ${applySteps(item).map(step => `<li><span>${step}</span></li>`).join('\n            ')}
+          </ol>
+        </section>` : '';
+  const extras = [tweakCommands(item), tweakDownloads(item), tweakKeys(item)].filter(Boolean).join('');
+
+  const body = `<main class="page" id="content">
+    <div class="container container-narrow">
+      <a href="/settings-for-windows" class="back">${icon('back')} ${L('Settings for Windows', 'Настройки для Windows')}</a>
+      <p class="tweak-category">${T(category.title)}</p>
+      <h1 class="page-title">${T(item.title)}</h1>
+      ${shareRow()}
+      ${item.desc ? `<p class="lead">${T(item.desc)}</p>` : ''}
+      ${tweakTags(item)}
+      ${item.links?.length ? `<div class="item-links">${item.links.map(tweakLinkHtml).join('')}</div>` : ''}
+      ${action}
+      ${extras ? `<section class="tweak-card">${extras}</section>` : ''}
+      ${related.length ? `<section class="section">
+        <h2>${L('More in this category', 'Ещё в этой категории')}</h2>
+        <div class="rows">
+          ${related.map(r => `<a class="related" href="/tweaks/${r.id}"><span>${T(r.title)}</span>${icon('d')}</a>`).join('\n          ')}
+        </div>
+      </section>` : ''}
+    </div>
+  </main>`;
+
+  write(`tweaks/${item.id}.html`, shell({
+    path: `/tweaks/${item.id}`,
+    title: {
+      en: `${titleIn('en')} - Windows tweaks by somov`,
+      ru: `${titleIn('ru')} - настройки Windows от somov`,
+    },
+    description: { en: descIn('en'), ru: descIn('ru') },
   }, 'settings', body));
 }
 
@@ -841,7 +933,8 @@ function supportPage() {
 
 function sitemap() {
   const paths = ['/', '/ghost-spectre', '/settings-for-windows', '/support',
-    ...builds.map(b => `/windows-${b.id}`)];
+    ...builds.map(b => `/windows-${b.id}`),
+    ...settings.items.map(i => `/tweaks/${i.id}`)];
   const alternates = path => LANGS.map(l => `    <xhtml:link rel="alternate" hreflang="${l}" href="${SITE}${langPath(l, path)}"/>`).join('\n');
   write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
@@ -870,6 +963,7 @@ for (const lang of LANGS) {
   homePage();
   ghostPage();
   settingsPage();
+  for (const item of settings.items) tweakPage(item);
   supportPage();
   for (const build of builds) {
     buildPage(build, null);
