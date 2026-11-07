@@ -168,6 +168,148 @@
     });
   }
 
+  /* Dropdown in the site style on top of a native <select>. The <select> keeps the value,
+     so the page works without scripts; the list supports mouse, touch and keyboard. */
+  let dropdownId = 0;
+  function enhanceSelect(select) {
+    const wrap = select.closest('.select-wrap');
+    const label = $('.select-label', select.closest('.select-field'));
+    if (label) label.removeAttribute('for'); // the native <select> is hidden now
+    const id = 'dd' + (++dropdownId);
+    const check = '<svg class="dd-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>';
+    const content = option => {
+      const name = document.createElement('span');
+      name.className = 'dd-name';
+      name.textContent = option.dataset.name || option.text;
+      const sub = document.createElement('span');
+      sub.className = 'dd-sub';
+      sub.textContent = option.dataset.sub || '';
+      return [name, sub];
+    };
+
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'dd-button';
+    button.setAttribute('aria-haspopup', 'listbox');
+    button.setAttribute('aria-expanded', 'false');
+    if (label) {
+      label.id = id + '-label';
+      button.setAttribute('aria-labelledby', id + '-label ' + id + '-value');
+    }
+
+    const list = document.createElement('ul');
+    list.className = 'dd-list';
+    list.setAttribute('role', 'listbox');
+    list.tabIndex = -1;
+    list.hidden = true;
+    if (label) list.setAttribute('aria-labelledby', id + '-label');
+
+    const items = Array.from(select.options).map((option, index) => {
+      const item = document.createElement('li');
+      item.id = id + '-' + index;
+      item.setAttribute('role', 'option');
+      item.dataset.value = option.value;
+      item.append(...content(option));
+      item.insertAdjacentHTML('beforeend', check);
+      item.addEventListener('click', () => choose(index));
+      item.addEventListener('mousemove', () => highlight(index));
+      list.append(item);
+      return item;
+    });
+
+    let active = select.selectedIndex;
+    function paint() {
+      const value = document.createElement('span');
+      value.id = id + '-value';
+      value.style.display = 'contents';
+      value.append(...content(select.options[select.selectedIndex]));
+      button.replaceChildren(value);
+      items.forEach((item, i) => item.setAttribute('aria-selected', String(i === select.selectedIndex)));
+    }
+    function highlight(index) {
+      active = (index + items.length) % items.length;
+      items.forEach((item, i) => item.classList.toggle('is-active', i === active));
+      list.setAttribute('aria-activedescendant', items[active].id);
+      items[active].scrollIntoView({ block: 'nearest' });
+    }
+    function open() {
+      list.hidden = false;
+      wrap.classList.add('is-open');
+      button.setAttribute('aria-expanded', 'true');
+      highlight(select.selectedIndex);
+      list.focus();
+    }
+    function close(returnFocus) {
+      if (list.hidden) return;
+      list.hidden = true;
+      wrap.classList.remove('is-open');
+      button.setAttribute('aria-expanded', 'false');
+      if (returnFocus) button.focus();
+    }
+    function choose(index) {
+      if (index !== select.selectedIndex) {
+        select.selectedIndex = index;
+        select.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      paint();
+      close(true);
+    }
+
+    button.addEventListener('click', () => (list.hidden ? open() : close(false)));
+    button.addEventListener('keydown', event => {
+      if (['ArrowDown', 'ArrowUp', 'Enter', ' '].includes(event.key)) {
+        event.preventDefault();
+        open();
+      }
+    });
+    list.addEventListener('keydown', event => {
+      const keys = {
+        ArrowDown: () => highlight(active + 1),
+        ArrowUp: () => highlight(active - 1),
+        Home: () => highlight(0),
+        End: () => highlight(items.length - 1),
+        Enter: () => choose(active),
+        ' ': () => choose(active),
+        Escape: () => close(true),
+      };
+      if (keys[event.key]) {
+        event.preventDefault();
+        keys[event.key]();
+      } else if (event.key === 'Tab') {
+        close(false);
+      }
+    });
+    document.addEventListener('click', event => {
+      if (!wrap.contains(event.target)) close(false);
+    });
+    select.addEventListener('change', paint);
+
+    wrap.prepend(button);
+    wrap.append(list);
+    wrap.classList.add('is-enhanced');
+    paint();
+  }
+
+  /* Support page: pick a coin, then a network when the coin has several */
+  const cryptoCard = $('[data-crypto]');
+  if (cryptoCard) {
+    const coinSelect = $('[data-coin-select]', cryptoCard);
+    function renderCrypto() {
+      const coin = coinSelect.value;
+      let key = coin;
+      $$('[data-networks-for]', cryptoCard).forEach(field => {
+        field.hidden = field.dataset.networksFor !== coin;
+        if (!field.hidden) key = coin + '-' + $('select', field).value;
+      });
+      $$('[data-variant]', cryptoCard).forEach(v => { v.hidden = v.dataset.variant !== key; });
+    }
+    $$('select', cryptoCard).forEach(select => {
+      select.addEventListener('change', renderCrypto);
+      enhanceSelect(select);
+    });
+    renderCrypto();
+  }
+
   /* Build page: image language switch. Both languages are in the page; the URL follows the choice. */
   const imageSwitches = $$('[data-switch-image]');
   if (imageSwitches.length) {

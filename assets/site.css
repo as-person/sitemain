@@ -781,7 +781,7 @@ html:not([data-image]) .img-ru { display: none !important; }
 /* -- Support ------------------------------------------------------------- */
 
 .support-nudge { color: var(--muted); font-size: var(--fs-xs); text-align: center; }
-.support-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 12px; margin-top: 32px; }
+.support-grid { display: grid; gap: 12px; margin-top: 32px; }
 .support-card {
   display: flex;
   flex-direction: column;
@@ -795,6 +795,90 @@ html:not([data-image]) .img-ru { display: none !important; }
 .support-card h2 { display: flex; align-items: center; gap: 8px; font-size: var(--fs-lg); }
 .support-card p { color: var(--muted); font-size: var(--fs-sm); }
 .support-card-main { grid-column: 1 / -1; }
+.crypto-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; width: 100%; }
+.select-field { display: grid; gap: 6px; min-width: 0; }
+.select-label { color: var(--muted); font-size: var(--fs-xs); }
+.select-wrap { position: relative; display: block; }
+.select-wrap select {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 40px 0 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-md);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  cursor: pointer;
+  appearance: none;
+  transition: border-color var(--ease);
+}
+.select-wrap select:hover { border-color: var(--muted); }
+.select-wrap select:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 2px; }
+.select-chevron { position: absolute; top: 50%; right: 14px; width: 18px; height: 18px; color: var(--muted); translate: 0 -50%; pointer-events: none; transition: rotate var(--ease); }
+
+/* Custom dropdown built by site.js on top of the native <select> */
+.is-enhanced select { display: none; }
+.dd-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 40px 0 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-md);
+  background: var(--bg);
+  color: var(--text);
+  font-size: var(--fs-sm);
+  text-align: left;
+  transition: border-color var(--ease), box-shadow var(--ease);
+}
+.dd-button:hover, .is-open .dd-button { border-color: rgb(255 255 255 / .32); }
+.dd-button:focus-visible { outline: none; border-color: rgb(255 255 255 / .32); box-shadow: 0 0 0 3px rgb(255 255 255 / .07); border-radius: var(--r-md); }
+.is-open .select-chevron { rotate: 180deg; }
+.dd-name { font-weight: 600; white-space: nowrap; }
+.dd-sub { overflow: hidden; color: var(--muted); text-overflow: ellipsis; white-space: nowrap; }
+.dd-list {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  max-height: 280px;
+  margin: 0;
+  padding: 6px;
+  overflow: auto;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-md);
+  background: var(--raised);
+  box-shadow: 0 18px 40px -12px rgb(0 0 0 / .7);
+  outline: none;
+}
+.dd-list:not([hidden]) { animation: dd-in 140ms cubic-bezier(.2, 0, 0, 1); }
+@keyframes dd-in { from { opacity: 0; transform: translateY(-4px); } }
+.dd-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  padding: 0 10px;
+  border-radius: var(--r-sm);
+  font-size: var(--fs-sm);
+  cursor: pointer;
+}
+.dd-list li.is-active { background: var(--raised-hover); }
+.dd-check { flex: none; width: 16px; height: 16px; margin-left: auto; opacity: 0; }
+.dd-list li[aria-selected="true"] .dd-check { opacity: 1; }
+.crypto-variant { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 16px; align-items: center; width: 100%; margin-top: 6px; }
+.crypto-variant .qr { margin-top: 0; }
+.crypto-info { display: grid; gap: 10px; min-width: 0; }
+.support-card .crypto-warning { color: var(--muted); font-size: var(--fs-sm); }
+.crypto-warning b { color: var(--text); font-weight: 600; }
+.crypto-info .address { margin-top: 0; }
+.crypto-list { display: grid; gap: 8px; font-size: var(--fs-sm); }
+.crypto-list code { font-size: 12px; overflow-wrap: anywhere; }
 .qr { width: 160px; height: 160px; margin-top: 4px; border-radius: var(--r-sm); background: #fff; }
 .address {
   display: grid;
@@ -809,5 +893,6 @@ html:not([data-image]) .img-ru { display: none !important; }
 }
 .address code { font-size: 12px; overflow-wrap: anywhere; }
 @media (max-width: 720px) {
-  .support-grid { grid-template-columns: 1fr; }
+  .crypto-variant { grid-template-columns: 1fr; justify-items: start; }
+  .crypto-fields { grid-template-columns: 1fr; }
 }

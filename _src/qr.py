@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
 """Generates QR codes for the donation addresses on /support.
 Needs segno (pip install segno). Run from the repo root after an address changes: python _src/qr.py
-The addresses must match DONATE in build.mjs."""
+The addresses must match CRYPTO in build.mjs."""
 import segno
 
 CODES = {
-    'images/qr-usdt-ton.svg': 'UQBFhtxcW-nCZ345ZteeNFN-KBAes5Qk0dcmnH9JGiXxuHlI',
+    'images/qr-tron.svg': 'TV38U42SqsUZZKhkoqHtqDyzFrZU4eJsoW',
+    'images/qr-ton.svg': 'UQBFhtxcW-nCZ345ZteeNFN-KBAes5Qk0dcmnH9JGiXxuHlI',
+    'images/qr-evm.svg': '0x2842428a11e5c7e7b990e80adf019d7b40e57b9b',
+    'images/qr-btc.svg': 'bitcoin:1Bf7A9JZHuDzu7yTzNqEL9q8KHHfgjMZgu',
+    'images/qr-ltc.svg': 'litecoin:LU6zxeQq8atUEDW7Q4rBQZRPofMB64SRMj',
+    'images/qr-sol.svg': 'CDiaQtzZmhANXHGUmvg2RJKFtim212jWeey6JKxyQyEM',
+    'images/qr-doge.svg': 'dogecoin:D7YJ6E4M7H6pPXWQXJT5ubaw35ZqbmW4dA',
 }
 
 for path, data in CODES.items():

@@ -22,9 +22,37 @@ const TELEGRAM = 'https://t.me/+gmXk9-zXZ405YWY6';
 // Donation methods for /support. QR codes come from _src/qr.py, keep the addresses in sync.
 const DONATE = {
   patreon: '', // the Patreon page URL; the card appears on /support once it is set
-  usdtTon: 'UQBFhtxcW-nCZ345ZteeNFN-KBAes5Qk0dcmnH9JGiXxuHlI',
   yoomoney: 'https://yoomoney.ru/to/4100118200965581',
 };
+// Crypto on /support. The first network of a coin is its default. `qr` names images/qr-<qr>.svg from _src/qr.py.
+const EVM = '0x2842428a11e5c7e7b990e80adf019d7b40e57b9b';
+const CRYPTO = [
+  { id: 'usdt', name: 'USDT', title: 'Tether', networks: [
+    { id: 'trc20', label: 'TRC20', network: 'TRON (TRC20)', address: 'TV38U42SqsUZZKhkoqHtqDyzFrZU4eJsoW', qr: 'tron' },
+    { id: 'ton', label: 'TON', network: 'TON', address: 'UQBFhtxcW-nCZ345ZteeNFN-KBAes5Qk0dcmnH9JGiXxuHlI', qr: 'ton' },
+    { id: 'erc20', label: 'ERC20', network: 'Ethereum (ERC20)', address: EVM, qr: 'evm' },
+  ] },
+  { id: 'usdc', name: 'USDC', title: 'USD Coin', networks: [
+    { id: 'erc20', label: 'ERC20', network: 'Ethereum (ERC20)', address: EVM, qr: 'evm' },
+    { id: 'sol', network: 'Solana', address: 'CDiaQtzZmhANXHGUmvg2RJKFtim212jWeey6JKxyQyEM', qr: 'sol' },
+    { id: 'base', network: 'Base Mainnet', address: EVM, qr: 'evm' },
+    { id: 'polygon', network: 'Polygon PoS', address: EVM, qr: 'evm' },
+  ] },
+  { id: 'btc', name: 'BTC', title: 'Bitcoin', networks: [
+    { id: 'btc', network: 'Bitcoin', address: '1Bf7A9JZHuDzu7yTzNqEL9q8KHHfgjMZgu', qr: 'btc' },
+  ] },
+  { id: 'eth', name: 'ETH', title: 'Ethereum', networks: [
+    { id: 'erc20', label: 'ERC20', network: 'Ethereum (ERC20)', address: EVM, qr: 'evm' },
+    { id: 'bep20', label: 'BEP20', network: 'BNB Smart Chain (BEP20)', address: EVM, qr: 'evm' },
+    { id: 'arbitrum', network: 'Arbitrum One', address: EVM, qr: 'evm' },
+  ] },
+  { id: 'ltc', name: 'LTC', title: 'Litecoin', networks: [
+    { id: 'ltc', network: 'Litecoin', address: 'LU6zxeQq8atUEDW7Q4rBQZRPofMB64SRMj', qr: 'ltc' },
+  ] },
+  { id: 'doge', name: 'DOGE', title: 'Dogecoin', networks: [
+    { id: 'doge', network: 'Dogecoin', address: 'D7YJ6E4M7H6pPXWQXJT5ubaw35ZqbmW4dA', qr: 'doge' },
+  ] },
+];
 const LANGS = ['en', 'ru'];
 const TRACKERS = [
   'udp://tracker.torrent.eu.org:451/announce',
@@ -665,6 +693,53 @@ function notFoundPage() {
 
 /* -- Support ------------------------------------------------------------- */
 
+// One card for all coins: pick a coin from a list, then a network if the coin has several.
+function cryptoCard(copyRow) {
+  const first = CRYPTO[0];
+  const variants = CRYPTO.flatMap(coin => coin.networks.map(net => ({ coin, net, key: coin.networks.length > 1 ? `${coin.id}-${net.id}` : coin.id })));
+  const isDefault = v => v.coin === first && v.net === first.networks[0];
+  const chevron = `<svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>`;
+  return `<article class="support-card crypto" data-crypto>
+          <h2>${L('Crypto', 'Криптовалюта')}</h2>
+          <div class="crypto-fields">
+            <div class="select-field">
+              <label class="select-label" for="crypto-coin">${L('Coin', 'Монета')}</label>
+              <span class="select-wrap">
+                <select id="crypto-coin" data-coin-select>
+                  ${CRYPTO.map(coin => `<option value="${coin.id}" data-name="${coin.name}" data-sub="${coin.title}">${coin.name} · ${coin.title}</option>`).join('')}
+                </select>
+                ${chevron}
+              </span>
+            </div>
+            ${CRYPTO.filter(coin => coin.networks.length > 1).map(coin => `<div class="select-field" data-networks-for="${coin.id}"${coin === first ? '' : ' hidden'}>
+              <label class="select-label" for="crypto-network-${coin.id}">${L('Network', 'Сеть')}</label>
+              <span class="select-wrap">
+                <select id="crypto-network-${coin.id}" data-network-select>
+                  ${coin.networks.map(net => {
+                    const name = net.network.replace(/\s*\(.*\)$/, '');
+                    const sub = net.label && net.label !== name ? net.label : '';
+                    return `<option value="${net.id}" data-name="${name}" data-sub="${sub}">${net.network}</option>`;
+                  }).join('')}
+                </select>
+                ${chevron}
+              </span>
+            </div>`).join('\n            ')}
+          </div>
+          ${variants.map(v => `<div class="crypto-variant" data-variant="${v.key}"${isDefault(v) ? '' : ' hidden'}>
+            <img class="qr" src="/images/qr-${v.net.qr}.svg" width="160" height="160" ${attr('alt', `QR code of the ${v.coin.name} address`, `QR-код адреса ${v.coin.name}`)} loading="lazy">
+            <div class="crypto-info">
+              <p class="crypto-warning">${L(`Send only <b>${v.coin.name}</b> on the <b>${v.net.network}</b> network. A transfer on another network may be lost.`, `Отправляйте только <b>${v.coin.name}</b> в сети <b>${v.net.network}</b>. Перевод в другой сети может потеряться.`)}</p>
+              ${copyRow(v.net.address, v.coin.name)}
+            </div>
+          </div>`).join('\n          ')}
+          <noscript>
+            <ul class="crypto-list">
+              ${variants.map(v => `<li><b>${v.coin.name} · ${v.net.network}</b><br><code>${v.net.address}</code></li>`).join('')}
+            </ul>
+          </noscript>
+        </article>`;
+}
+
 function supportPage() {
   const copyRow = (value, label) => `<div class="address">
             <code>${esc(value)}</code>
@@ -677,12 +752,7 @@ function supportPage() {
           <p>${L('Any bank card, one-time or monthly.', 'Любая банковская карта, разово или ежемесячно.')}</p>
           <a class="btn btn-primary" href="${esc(DONATE.patreon)}" target="_blank" rel="noopener">${L('Support on Patreon', 'Поддержать на Patreon')}</a>
         </article>`,
-    `<article class="support-card">
-          <h2>USDT <span class="badge">TON</span></h2>
-          <p>${L('Send USDT on the TON network only, for example from Wallet in Telegram.', 'Отправляйте только USDT в сети TON, например из кошелька в Telegram.')}</p>
-          <img class="qr" src="/images/qr-usdt-ton.svg" width="160" height="160" ${attr('alt', 'QR code of the USDT address', 'QR-код адреса USDT')}>
-          ${copyRow(DONATE.usdtTon, 'USDT')}
-        </article>`,
+    cryptoCard(copyRow),
     `<article class="support-card">
           <h2>${L('YooMoney', 'ЮMoney')}</h2>
           <p>${L('Russian bank cards and YooMoney wallet.', 'Российские банковские карты и кошелёк ЮMoney.')}</p>
@@ -704,7 +774,7 @@ function supportPage() {
   write('support.html', shell({
     path: '/support',
     title: { en: 'Support the project - Windows by somov', ru: 'Поддержать проект - Windows от somov' },
-    description: 'Ways to support Windows by somov: USDT on TON and YooMoney.',
+    description: 'Ways to support Windows by somov: crypto (USDT, USDC, BTC, ETH, LTC, DOGE) and YooMoney.',
   }, '', body));
 }
 
