@@ -13,11 +13,17 @@ GET  /api/stats      returns the counts to the owner's IP, and {"owner": false} 
 Windows images (.iso and their .torrent): each IP is counted once per 24 hours across all images.
 Everything else (tweak files, commands, links): each IP is counted once per 24 hours per file or tweak,
 so someone taking three tweaks counts for all three.
-Runs behind nginx, which sets X-Real-IP. Visitor IPs are kept in memory only, never on disk,
-so a restart of the service forgets who has already been counted.
+Runs behind nginx, which sets X-Real-IP. Visitor IPs are never stored: the counter remembers who was
+already counted by a salted hash of the IP and the action. On stop (an update, a reboot) it saves these
+hashes to SEEN_PATH and on start reads them back and deletes the file, so nobody is counted twice and
+nothing about visitors stays on disk while the counter runs.
 """
+import hashlib
 import json
 import os
+import secrets
+import signal
+import sys
 import re
 import sqlite3
 import threading
@@ -29,6 +35,7 @@ FILES_DIR = os.environ.get('FILES_DIR', '/var/www/html')
 DB_PATH = os.environ.get('DB_PATH', '/var/lib/somov-counter/counts.db')
 PORT = int(os.environ.get('PORT', '8095'))
 ALLOWED_ORIGIN = os.environ.get('ALLOWED_ORIGIN', 'https://somov.org')
+SEEN_PATH = os.environ.get('SEEN_PATH', '')
 OWNER_IPS = {ip.strip() for ip in os.environ.get('OWNER_IPS', '').split(',') if ip.strip()}
 
 FILE_RE = re.compile(r'^[^/\\\x00-\x1f]{1,200}$')
@@ -43,11 +50,42 @@ db = sqlite3.connect(DB_PATH, check_same_thread=False)
 db.execute('CREATE TABLE IF NOT EXISTS counts (file TEXT, kind TEXT, n INTEGER NOT NULL, PRIMARY KEY (file, kind))')
 db.commit()
 lock = threading.Lock()
-last_counted = {}
+last_counted = {}  # hash of (ip, action) -> unix time it was counted
+salt = secrets.token_hex(16)
+
+
+def load_seen():
+    global salt
+    if not SEEN_PATH:
+        return
+    try:
+        with open(SEEN_PATH) as f:
+            data = json.load(f)
+        salt = data['salt']
+        now = time.time()
+        last_counted.update({k: t for k, t in data['seen'].items() if now - t < CLICK_WINDOW})
+    except (OSError, ValueError, KeyError, TypeError, AttributeError):
+        pass
+    try:
+        os.remove(SEEN_PATH)
+    except OSError:
+        pass
+
+
+def save_seen(*_):
+    if SEEN_PATH:
+        with lock:
+            data = {'salt': salt, 'seen': dict(last_counted)}
+        tmp = SEEN_PATH + '.tmp'
+        with open(tmp, 'w') as f:
+            json.dump(data, f)
+        os.replace(tmp, SEEN_PATH)
+    sys.exit(0)
 
 
 def first_today(key):
-    now = time.monotonic()
+    key = hashlib.sha256((salt + repr(key)).encode()).hexdigest()[:24]
+    now = time.time()
     with lock:
         last = last_counted.get(key)
         if last is not None and now - last < CLICK_WINDOW:
@@ -192,4 +230,6 @@ class Handler(BaseHTTPRequestHandler):
 
 
 if __name__ == '__main__':
+    load_seen()
+    signal.signal(signal.SIGTERM, save_seen)
     ThreadingHTTPServer(('127.0.0.1', PORT), Handler).serve_forever()

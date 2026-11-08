@@ -7,6 +7,8 @@ ExecStart=/usr/bin/python3 /opt/somov-counter/server.py
 EnvironmentFile=/etc/somov-counter.env
 DynamicUser=yes
 StateDirectory=somov-counter
+# Who was already counted today survives restarts and reboots (the file exists only while stopped)
+Environment=SEEN_PATH=/var/lib/somov-counter/seen.json
 Restart=on-failure
 NoNewPrivileges=yes
 ProtectSystem=strict
