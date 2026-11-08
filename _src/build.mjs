@@ -318,10 +318,9 @@ function homePage() {
 
         <div class="result">
           <div>
-            <h2 id="build-title">${esc(build.title)}</h2>
+            <h2><a id="build-title" href="${image.path}" tabindex="-1">${esc(build.title)}</a></h2>
             <div class="meta">
-              <span class="author">${L('Author: somov', 'Автор: somov')}</span>
-              <span aria-hidden="true">·</span>
+              <span class="author">${L('Author:', 'Автор:')} <b>somov</b></span>
               <span id="build-version">${build.version}</span>
               <span aria-hidden="true">·</span>
               <span class="mono" id="build-number">${build.number}</span>
@@ -329,8 +328,8 @@ function homePage() {
               <span><span class="lang-en" id="build-date-en">${build.date.en}</span><span class="lang-ru" id="build-date-ru">${build.date.ru}</span></span>
               <span class="badge" id="build-final" hidden>${S.final}</span>
             </div>
-            <a class="details-link" id="details-link" href="${image.path}">
-              ${L('Build details', 'Подробнее о сборке')} ${icon('d')}
+            <a class="btn btn-secondary btn-sm details-link" id="details-link" href="${image.path}">
+              <span>${L('Screenshots, checksums and details', 'Скриншоты, хэши и описание')}</span> ${icon('d')}
             </a>
           </div>
           <div class="dl-actions">
@@ -432,7 +431,7 @@ function buildPage(build, preset) {
         <a href="/" class="back">${icon('back')} ${S.home}</a>
         <h1 class="page-title">${esc(build.title)}</h1>
         <div class="meta">
-          <span class="author">${L('Author: somov', 'Автор: somov')}</span>
+          <span class="author">${L('Author:', 'Автор:')} <b>somov</b></span>
           <span aria-hidden="true">·</span>
           <span>${build.version}</span>
           <span aria-hidden="true">·</span>

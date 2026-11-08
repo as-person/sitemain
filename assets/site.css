@@ -314,8 +314,8 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 
 .result {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 280px;
-  gap: 28px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); /* the same columns as the selectors above */
+  gap: 28px 24px;
   align-items: start;
   margin-top: 28px;
   padding-top: 28px;
@@ -323,16 +323,9 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 }
 .result h2 { font-size: var(--fs-xl); line-height: 1.25; letter-spacing: -.015em; }
 .result .meta { margin-top: 8px; }
-.details-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 40px;
-  margin-top: 10px;
-  font-size: var(--fs-sm);
-  font-weight: 500;
-}
-.details-link .icon { width: 16px; height: 16px; transition: transform var(--ease); }
+.result .meta .author { flex-basis: 100%; } /* author on its own line, the build details below it */
+.details-link { gap: 8px; margin-top: 16px; max-width: 100%; white-space: normal; text-align: left; }
+.details-link .icon { flex: none; width: 16px; height: 16px; transition: transform var(--ease); }
 .details-link:hover .icon { transform: translateX(3px); }
 
 .dl-actions { display: grid; gap: 10px; }
@@ -441,7 +434,7 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 .share-menu > button:hover, .share-menu > a:hover, .share-menu > :focus-visible { background: var(--raised-hover); outline: none; }
 .share-menu .icon { width: 16px; height: 16px; color: var(--muted); }
 .share-sep { height: 1px; margin: 4px 6px; background: var(--border); }
-.meta .author { color: var(--text); font-weight: 600; }
+.meta .author b { color: var(--text); font-weight: 600; }
 .lead { margin-top: 20px; color: var(--muted); }
 
 .build-panel { position: sticky; top: 88px; align-self: start; display: grid; gap: 12px; }

@@ -227,6 +227,7 @@
       $('#build-date-ru').textContent = build.date.ru;
       $('#build-final').hidden = !build.final;
       $('#details-link').href = image.details;
+      $('#build-title').href = image.details; // the title leads to the build page too
       $('#download-link').href = image.url;
       $('#download-size-en').textContent = image.size.en;
       $('#download-size-ru').textContent = image.size.ru;
