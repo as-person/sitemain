@@ -652,19 +652,27 @@ const fileTypeOf = file => decodeURIComponent(file).match(/\.[a-z0-9]+$/i)?.[0].
 const textIn = (value, lang) => (value && typeof value === 'object' ? value[lang] : value);
 
 // A link may exist in one language only, or point to a different URL per language.
-const tweakLinkHtml = link => {
+// Owner-only counter line of a tweak: file downloads (counted by the server), copies and link clicks (reported by the site).
+const tweakStats = item => {
+  const files = [item.file, ...(item.downloads ?? []).map(d => d.file)].filter(Boolean).map(f => decodeURIComponent(f));
+  const kinds = [files.length && 'download', item.commands && 'copy', item.links?.length && 'link'].filter(Boolean);
+  return kinds.length ? `<p class="stats-line tweak-stats" data-tweak-stats="${item.id}" data-files="${esc(files.join('|'))}" data-kinds="${kinds.join(',')}" hidden></p>` : '';
+};
+const tweakCount = (id, kind) => `data-count-tweak="${id}" data-count-kind="${kind}"`;
+
+const tweakLinkHtml = (link, id) => {
   const labelFor = lang => (typeof link.label === 'object' ? link.label[lang] : link.label);
   const urlFor = lang => (typeof link.url === 'object' ? link.url[lang] : link.url);
   if (labelFor('en') && labelFor('ru') && urlFor('en') === urlFor('ru')) {
-    return `<a class="link" href="${esc(urlFor('en'))}" target="_blank" rel="noopener">${T(link.label)}</a>`;
+    return `<a class="link" href="${esc(urlFor('en'))}" target="_blank" rel="noopener" ${tweakCount(id, 'link')}>${T(link.label)}</a>`;
   }
   return LANGS.filter(labelFor).map(lang =>
-    `<a class="link lang-${lang}" href="${esc(urlFor(lang))}" target="_blank" rel="noopener">${esc(labelFor(lang))}</a>`).join('');
+    `<a class="link lang-${lang}" href="${esc(urlFor(lang))}" target="_blank" rel="noopener" ${tweakCount(id, 'link')}>${esc(labelFor(lang))}</a>`).join('');
 };
 
 const tweakCommands = item => (item.commands ? `<div class="commands">${item.commands.map(c => `<div>
               <div class="command-label">${T(c.label)}</div>
-              <div class="command"><code>${esc(c.code)}</code><button type="button" class="icon-btn" data-copy="${esc(c.code)}" ${attr('aria-label', 'Copy command', 'Скопировать команду')}>${icon('copy')}</button></div>
+              <div class="command"><code>${esc(c.code)}</code><button type="button" class="icon-btn" data-copy="${esc(c.code)}" ${tweakCount(item.id, 'copy')} ${attr('aria-label', 'Copy command', 'Скопировать команду')}>${icon('copy')}</button></div>
             </div>`).join('')}</div>` : '');
 const tweakDownloads = item => (item.downloads ? `<div class="chip-links">${item.downloads.map(d => `<a class="btn btn-secondary btn-sm" href="${CDN}${d.file}">${icon('download')} ${esc(d.label)}</a>`).join('')}</div>` : '');
 const tweakKeys = item => (item.keys ? `<dl class="keys">${item.keys.map(k => `<div><dt>${T(k.combo)}</dt><dd>${T(k.desc)}</dd></div>`).join('')}</dl>` : '');
@@ -715,13 +723,14 @@ function settingsPage() {
             <h3 class="item-title"><a href="/tweaks/${item.id}">${T(item.title)}</a></h3>
             ${item.desc ? `<p class="item-desc">${T(item.desc)}</p>` : ''}
             ${item.tags?.length ? `<div class="item-tags">${item.tags.map(tag => `<span class="badge">${TAGS[tag]}</span>`).join('')}</div>` : ''}
-            ${item.links?.length ? `<div class="item-links">${item.links.map(linkHtml).join('')}</div>` : ''}
+            ${item.links?.length ? `<div class="item-links">${item.links.map(l => linkHtml(l, item.id)).join('')}</div>` : ''}
             ${item.commands ? `<div class="commands">${item.commands.map(c => `<div>
               <div class="command-label">${T(c.label)}</div>
-              <div class="command"><code>${esc(c.code)}</code><button type="button" class="icon-btn" data-copy="${esc(c.code)}" ${attr('aria-label', 'Copy command', 'Скопировать команду')}>${icon('copy')}</button></div>
+              <div class="command"><code>${esc(c.code)}</code><button type="button" class="icon-btn" data-copy="${esc(c.code)}" ${tweakCount(item.id, 'copy')} ${attr('aria-label', 'Copy command', 'Скопировать команду')}>${icon('copy')}</button></div>
             </div>`).join('')}</div>` : ''}
             ${item.downloads ? `<div class="chip-links">${item.downloads.map(d => `<a class="btn btn-secondary btn-sm" href="${CDN}${d.file}">${icon('download')} ${esc(d.label)}</a>`).join('')}</div>` : ''}
             ${item.keys ? `<dl class="keys">${item.keys.map(k => `<div><dt>${T(k.combo)}</dt><dd>${T(k.desc)}</dd></div>`).join('')}</dl>` : ''}
+            ${tweakStats(item)}
           </div>
           ${hasAction ? `<div class="item-action">
             <span class="file-type">${fileType(item.file)}</span>
@@ -749,6 +758,10 @@ function settingsPage() {
       </div>
 
       <p class="result-count" id="result-count" role="status"></p>
+      <details class="owner-stats" id="owner-stats" hidden>
+        <summary>${L('Popularity (visible only to you)', 'Популярность (видно только вам)')}</summary>
+        <ol></ol>
+      </details>
       <p class="empty" id="empty" hidden>${L('Nothing found. Try another word or category.', 'Ничего не найдено. Попробуйте другое слово или категорию.')}</p>
 
       ${settings.categories.map(c => `<section class="section group" data-group="${c.id}">
@@ -799,7 +812,8 @@ function tweakPage(item) {
       ${shareRow()}
       ${item.desc ? `<p class="lead">${T(item.desc)}</p>` : ''}
       ${tweakTags(item)}
-      ${item.links?.length ? `<div class="item-links">${item.links.map(tweakLinkHtml).join('')}</div>` : ''}
+      ${item.links?.length ? `<div class="item-links">${item.links.map(l => tweakLinkHtml(l, item.id)).join('')}</div>` : ''}
+      ${tweakStats(item)}
       ${action}
       ${extras ? `<section class="tweak-card">${extras}</section>` : ''}
       ${related.length ? `<section class="section">

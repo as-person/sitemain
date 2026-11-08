@@ -6,8 +6,8 @@
   const root = document.documentElement;
 
   const STRINGS = {
-    en: { copied: 'Copied', copyFailed: 'Could not copy', found: 'Found', clicks: 'Downloads', download: 'Download', linkCopied: 'Link copied' },
-    ru: { copied: 'Скопировано', copyFailed: 'Не удалось скопировать', found: 'Найдено', clicks: 'Скачиваний', download: 'Скачать', linkCopied: 'Ссылка скопирована' },
+    en: { copied: 'Copied', copyFailed: 'Could not copy', found: 'Found', clicks: 'Downloads', download: 'Download', linkCopied: 'Link copied', copies: 'Copies', linkClicks: 'Link clicks', views: 'Page views', today: 'today', week: '7 days', month: '30 days', total: 'all time', onlyYou: 'visible only to you' },
+    ru: { copied: 'Скопировано', copyFailed: 'Не удалось скопировать', found: 'Найдено', clicks: 'Скачиваний', download: 'Скачать', linkCopied: 'Ссылка скопирована', copies: 'Копирований', linkClicks: 'Переходов', views: 'Просмотры страницы', today: 'сегодня', week: 'неделя', month: 'месяц', total: 'всего', onlyYou: 'видно только вам' },
   };
   const currentLang = () => (root.lang === 'ru' ? 'ru' : 'en');
   const t = key => STRINGS[currentLang()][key];
@@ -86,9 +86,10 @@
   const COUNTER = 'https://dl3.somov.org/api';
 
   function reportClick(event) {
-    const link = event.target.closest && event.target.closest('[data-count-file]');
+    const link = event.target.closest && event.target.closest('[data-count-file], [data-count-tweak]');
     if (!link) return;
-    const url = COUNTER + '/count?file=' + encodeURIComponent(link.dataset.countFile) + '&kind=' + link.dataset.countKind;
+    const target = link.dataset.countTweak ? 'tweak=' + link.dataset.countTweak : 'file=' + encodeURIComponent(link.dataset.countFile);
+    const url = COUNTER + '/count?' + target + '&kind=' + link.dataset.countKind;
     if (!(navigator.sendBeacon && navigator.sendBeacon(url))) {
       fetch(url, { method: 'POST', mode: 'no-cors', keepalive: true }).catch(() => {});
     }
@@ -111,8 +112,47 @@
       line.textContent = t('clicks') + ': ' + total + ' (' + parts.map(part => part.label + ' ' + part.value).join(' · ') + ')';
       line.hidden = false;
     });
+
+    // Tweaks: downloads of their files, copied commands and opened links
+    const tweakNumbers = line => {
+      const files = line.dataset.files ? line.dataset.files.split('|') : [];
+      const own = statsCounts['tweak:' + line.dataset.tweakStats] || {};
+      return {
+        download: files.reduce((sum, file) => sum + ((statsCounts[file] || {}).download || 0), 0),
+        copy: own.copy || 0,
+        link: own.link || 0,
+      };
+    };
+    const tweakText = (line, numbers) => line.dataset.kinds.split(',')
+      .map(kind => t(kind === 'download' ? 'clicks' : kind === 'copy' ? 'copies' : 'linkClicks') + ': ' + numbers[kind]).join(' · ');
+    $$('[data-tweak-stats]').forEach(line => {
+      line.textContent = tweakText(line, tweakNumbers(line));
+      line.hidden = false;
+    });
+
+    // Settings page: every tweak ranked by its total, for the owner only
+    const ranking = $('#owner-stats');
+    if (ranking) {
+      const rows = $$('.item [data-tweak-stats]').map(line => {
+        const numbers = tweakNumbers(line);
+        const link = $('.item-title a', line.closest('.item'));
+        return { numbers, line, total: numbers.download + numbers.copy + numbers.link, title: link.innerText, href: link.getAttribute('href') };
+      }).sort((a, b) => b.total - a.total);
+      $('ol', ranking).replaceChildren(...rows.map(row => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = row.href;
+        a.textContent = row.title;
+        const value = document.createElement('span');
+        value.textContent = row.total;
+        value.title = tweakText(row.line, row.numbers);
+        li.append(a, value);
+        return li;
+      }));
+      ranking.hidden = false;
+    }
   }
-  if ($('[data-stats-file]')) {
+  if ($('[data-stats-file], [data-tweak-stats]')) {
     languageListeners.push(renderStats);
     // The page asks the counter once, in <head>; see `analytics` in _src/build.mjs.
     (window.siteOwner || fetch(COUNTER + '/stats').then(response => response.json()))
@@ -123,6 +163,38 @@
         }
       })
       .catch(() => {});
+  }
+
+  /* Page views: one per IP per page per day, counted on the server (the owner is not counted).
+     /ru copies and the -en / -ru build URLs count as the same page. The owner sees the numbers under the header. */
+  if (!$('.not-found')) {
+    const pagePath = (location.pathname.toLowerCase()
+      .replace(/\.html$/, '').replace(/\/index$/, '/').replace(/^\/ru(?=\/|$)/, '')
+      .replace(/^(\/windows-1[01])-(en|ru)$/, '$1').replace(/(.)\/+$/, '$1')) || '/';
+    if (/^\/[a-z0-9/-]{0,100}$/.test(pagePath)) {
+      const url = COUNTER + '/count?page=' + encodeURIComponent(pagePath) + '&kind=view';
+      if (!(navigator.sendBeacon && navigator.sendBeacon(url))) {
+        fetch(url, { method: 'POST', mode: 'no-cors', keepalive: true }).catch(() => {});
+      }
+      (window.siteOwner || fetch(COUNTER + '/stats').then(response => response.json()))
+        .then(data => {
+          const topbar = $('.topbar');
+          if (!data.owner || !topbar) return;
+          const views = data.counts['page:' + pagePath] || {};
+          const bar = document.createElement('div');
+          bar.className = 'page-views';
+          bar.innerHTML = '<div class="container"></div>';
+          const render = () => {
+            bar.firstChild.textContent = t('views') + ': ' + ['today', 'week', 'month']
+              .map(key => t(key) + ' ' + (views[key] || 0)).join(' · ') + ' · ' + t('total') + ' ' + (views.view || 0)
+              + ' (' + t('onlyYou') + ')';
+          };
+          render();
+          languageListeners.push(render);
+          topbar.after(bar);
+        })
+        .catch(() => {});
+    }
   }
 
   /* Home: build picker */

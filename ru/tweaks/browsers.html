@@ -37,7 +37,7 @@ window.siteOwner.then(function(d){if(d&&d.owner)window['ga-disable-'+ID]=true;})
 Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({owner:false})},2500)})]).then(function(d){if(!(d&&d.owner))gtag('event','page_view');});})();
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-4RBN0G8775"></script>
-  <link rel="stylesheet" href="/assets/site.css?v=9e892111">
+  <link rel="stylesheet" href="/assets/site.css?v=7e0f0383">
 </head>
 <body>
   <a class="skip-link" href="#content"><span class="lang-en">Skip to content</span><span class="lang-ru">Перейти к содержимому</span></a>
@@ -84,6 +84,7 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
       <p class="lead"><span class="lang-en">The top browsers, gathered in one place.</span><span class="lang-ru">Главные браузеры в одном месте.</span></p>
       
       
+      <p class="stats-line tweak-stats" data-tweak-stats="browsers" data-files="ChromeSetup.exe|Yandex.exe|OperaSetup.exe|Firefox Installer.exe" data-kinds="download" hidden></p>
       
       <section class="tweak-card"><div class="chip-links"><a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/ChromeSetup.exe"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> Google Chrome</a><a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/Yandex.exe"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> Yandex Browser</a><a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/OperaSetup.exe"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> Opera</a><a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/Firefox%20Installer.exe"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> Mozilla Firefox</a></div></section>
       <section class="section">
@@ -117,6 +118,6 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
     </div>
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="/assets/site.js?v=f16a88d0" defer></script>
+  <script src="/assets/site.js?v=1e913a01" defer></script>
 </body>
 </html>

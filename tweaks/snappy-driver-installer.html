@@ -37,7 +37,7 @@ window.siteOwner.then(function(d){if(d&&d.owner)window['ga-disable-'+ID]=true;})
 Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({owner:false})},2500)})]).then(function(d){if(!(d&&d.owner))gtag('event','page_view');});})();
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-4RBN0G8775"></script>
-  <link rel="stylesheet" href="/assets/site.css?v=9e892111">
+  <link rel="stylesheet" href="/assets/site.css?v=7e0f0383">
 </head>
 <body>
   <a class="skip-link" href="#content"><span class="lang-en">Skip to content</span><span class="lang-ru">Перейти к содержимому</span></a>
@@ -83,7 +83,8 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
         </div>
       <p class="lead"><span class="lang-en">The best driver installer in my experience. Works offline and online, has a complete driver database, lets you choose versions and doesn’t need to be installed.</span><span class="lang-ru">Лучший установщик драйверов, опираясь на мой опыт. Работает офлайн и онлайн, содержит полную базу драйверов, позволяет выбирать версии и не требует установки.</span></p>
       
-      <div class="item-links"><a class="link lang-en" href="https://sdi-tool.org/download/?lang=en" target="_blank" rel="noopener">Official site</a><a class="link lang-ru" href="https://sdi-tool.org/download/?lang=ru" target="_blank" rel="noopener">Официальный сайт</a></div>
+      <div class="item-links"><a class="link lang-en" href="https://sdi-tool.org/download/?lang=en" target="_blank" rel="noopener" data-count-tweak="snappy-driver-installer" data-count-kind="link">Official site</a><a class="link lang-ru" href="https://sdi-tool.org/download/?lang=ru" target="_blank" rel="noopener" data-count-tweak="snappy-driver-installer" data-count-kind="link">Официальный сайт</a></div>
+      <p class="stats-line tweak-stats" data-tweak-stats="snappy-driver-installer" data-files="SDI_R2601.zip" data-kinds="download,link" hidden></p>
       <section class="tweak-card">
           <div class="tweak-download">
             <a class="btn btn-primary" href="https://dl3.somov.org/SDI_R2601.zip"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
@@ -126,6 +127,6 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
     </div>
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="/assets/site.js?v=f16a88d0" defer></script>
+  <script src="/assets/site.js?v=1e913a01" defer></script>
 </body>
 </html>

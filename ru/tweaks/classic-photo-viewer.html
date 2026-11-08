@@ -37,7 +37,7 @@ window.siteOwner.then(function(d){if(d&&d.owner)window['ga-disable-'+ID]=true;})
 Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({owner:false})},2500)})]).then(function(d){if(!(d&&d.owner))gtag('event','page_view');});})();
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-4RBN0G8775"></script>
-  <link rel="stylesheet" href="/assets/site.css?v=9e892111">
+  <link rel="stylesheet" href="/assets/site.css?v=7e0f0383">
 </head>
 <body>
   <a class="skip-link" href="#content"><span class="lang-en">Skip to content</span><span class="lang-ru">Перейти к содержимому</span></a>
@@ -84,6 +84,7 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
       <p class="lead"><span class="lang-en">Brings back the classic Windows Photo Viewer.</span><span class="lang-ru">Возвращает классический Windows Photo Viewer.</span></p>
       
       
+      <p class="stats-line tweak-stats" data-tweak-stats="classic-photo-viewer" data-files="WinPhotoViewer.reg" data-kinds="download" hidden></p>
       <section class="tweak-card">
           <div class="tweak-download">
             <a class="btn btn-primary" href="https://dl3.somov.org/WinPhotoViewer.reg"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
@@ -129,6 +130,6 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
     </div>
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="/assets/site.js?v=f16a88d0" defer></script>
+  <script src="/assets/site.js?v=1e913a01" defer></script>
 </body>
 </html>

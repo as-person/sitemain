@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 """Adds the counter to the dl3 nginx site. Safe to run again. Runs on the server as root.
 
-- /api/      public endpoints of the counter (magnet clicks, stats)
-- .iso and .torrent downloads are mirrored to the counter, the download itself is untouched
+- /api/      public endpoints of the counter (magnet clicks, tweak copies and links, stats)
+- every file download (images, torrents, tweak files) is mirrored to the counter; the download itself is untouched
 """
 import shutil
 import subprocess
 import time
 
 SITE = '/etc/nginx/sites-available/dl3.somov.org'
-ANCHOR = '    location / {\n        try_files $uri $uri/ =404;'
+ROOT_PLAIN = '    location / {\n        try_files $uri $uri/ =404;'
+ROOT_COUNTED = '    location / {\n        mirror /_count_hit;\n        mirror_request_body off;\n        try_files $uri $uri/ =404;'
 
 API = '''    location ^~ /api/ {
         proxy_pass http://127.0.0.1:8095;
@@ -42,12 +43,14 @@ DOWNLOADS = '''    location ~* \\.(iso|torrent)$ {
 '''
 
 text = open(SITE).read()
-assert text.count(ANCHOR) == 1, 'unexpected nginx config'
+assert text.count(ROOT_PLAIN) + text.count(ROOT_COUNTED) == 1, 'unexpected nginx config'
 changed = text
+anchor = ROOT_PLAIN if ROOT_PLAIN in changed else ROOT_COUNTED
 if 'location ^~ /api/' not in changed:
-    changed = changed.replace(ANCHOR, API + ANCHOR)
+    changed = changed.replace(anchor, API + anchor)
 if 'location = /_count_hit' not in changed:
-    changed = changed.replace(ANCHOR, DOWNLOADS + ANCHOR)
+    changed = changed.replace(anchor, DOWNLOADS + anchor)
+changed = changed.replace(ROOT_PLAIN, ROOT_COUNTED)
 
 if changed == text:
     print('nginx: already configured')

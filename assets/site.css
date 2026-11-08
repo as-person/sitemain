@@ -1021,3 +1021,17 @@ html:not([data-image]) .img-ru { display: none !important; }
 .related + .related { border-top: 1px solid var(--border); }
 .related:hover { background: var(--raised); }
 .related .icon { color: var(--muted); }
+
+/* Owner-only counters on the settings and tweak pages */
+.tweak-stats { margin-top: 8px; }
+.page-views { border-bottom: 1px dashed var(--border-strong); color: var(--muted); font-size: 12px; line-height: 1.4; }
+.page-views .container { padding-block: 5px; text-align: right; }
+.owner-stats { margin-top: 20px; padding: 12px 20px; border: 1px dashed var(--border-strong); border-radius: var(--r-lg); }
+.owner-stats summary { color: var(--muted); font-size: var(--fs-sm); font-weight: 600; cursor: pointer; }
+.owner-stats summary:hover { color: var(--text); }
+.owner-stats[open] summary { margin-bottom: 10px; }
+.owner-stats ol { display: grid; gap: 2px; padding-left: 22px; list-style: decimal; color: var(--muted); font-size: var(--fs-sm); }
+.owner-stats li::marker { font-size: var(--fs-xs); }
+.owner-stats li a { color: var(--text); }
+.owner-stats li a:hover { color: var(--accent-text); }
+.owner-stats li span { float: right; font-variant-numeric: tabular-nums; }

@@ -37,7 +37,7 @@ window.siteOwner.then(function(d){if(d&&d.owner)window['ga-disable-'+ID]=true;})
 Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({owner:false})},2500)})]).then(function(d){if(!(d&&d.owner))gtag('event','page_view');});})();
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-4RBN0G8775"></script>
-  <link rel="stylesheet" href="/assets/site.css?v=9e892111">
+  <link rel="stylesheet" href="/assets/site.css?v=7e0f0383">
 </head>
 <body>
   <a class="skip-link" href="#content"><span class="lang-en">Skip to content</span><span class="lang-ru">Перейти к содержимому</span></a>
@@ -83,6 +83,10 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
       </div>
 
       <p class="result-count" id="result-count" role="status"></p>
+      <details class="owner-stats" id="owner-stats" hidden>
+        <summary><span class="lang-en">Popularity (visible only to you)</span><span class="lang-ru">Популярность (видно только вам)</span></summary>
+        <ol></ol>
+      </details>
       <p class="empty" id="empty" hidden><span class="lang-en">Nothing found. Try another word or category.</span><span class="lang-ru">Ничего не найдено. Попробуйте другое слово или категорию.</span></p>
 
       <section class="section group" data-group="tweaks">
@@ -97,6 +101,7 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             
             
             
+            <p class="stats-line tweak-stats" data-tweak-stats="drag-and-drop" data-files="enable_dragdrop.reg" data-kinds="download" hidden></p>
           </div>
           <div class="item-action">
             <span class="file-type">.reg</span>
@@ -112,6 +117,7 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             
             
             
+            <p class="stats-line tweak-stats" data-tweak-stats="explorer-tabs" data-files="DisableExplorersTabs.reg" data-kinds="download" hidden></p>
           </div>
           <div class="item-action">
             <span class="file-type">.reg</span>
@@ -127,6 +133,7 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             
             
             
+            <p class="stats-line tweak-stats" data-tweak-stats="old-context-menu" data-files="OldContextMenu.reg" data-kinds="download" hidden></p>
           </div>
           <div class="item-action">
             <span class="file-type">.reg</span>
@@ -142,6 +149,7 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             
             
             
+            <p class="stats-line tweak-stats" data-tweak-stats="classic-notepad" data-files="notepad.reg" data-kinds="download" hidden></p>
           </div>
           <div class="item-action">
             <span class="file-type">.reg</span>
@@ -157,6 +165,7 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             
             
             
+            <p class="stats-line tweak-stats" data-tweak-stats="classic-media-player" data-files="WinMediaPlayer.cmd" data-kinds="download" hidden></p>
           </div>
           <div class="item-action">
             <span class="file-type">.cmd</span>
@@ -172,6 +181,7 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             
             
             
+            <p class="stats-line tweak-stats" data-tweak-stats="classic-photo-viewer" data-files="WinPhotoViewer.reg" data-kinds="download" hidden></p>
           </div>
           <div class="item-action">
             <span class="file-type">.reg</span>
@@ -187,6 +197,7 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             
             
             
+            <p class="stats-line tweak-stats" data-tweak-stats="num-lock" data-files="NumLockOnDefault.reg" data-kinds="download" hidden></p>
           </div>
           <div class="item-action">
             <span class="file-type">.reg</span>
@@ -202,6 +213,7 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             
             
             
+            <p class="stats-line tweak-stats" data-tweak-stats="russification" data-files="Russification.bat" data-kinds="download" hidden></p>
           </div>
           <div class="item-action">
             <span class="file-type">.bat</span>
@@ -217,6 +229,7 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             
             
             
+            <p class="stats-line tweak-stats" data-tweak-stats="remove-edge" data-files="RemoveMicrosoftEdge.bat" data-kinds="download" hidden></p>
           </div>
           <div class="item-action">
             <span class="file-type">.bat</span>
@@ -237,6 +250,7 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             
             
             
+            <p class="stats-line tweak-stats" data-tweak-stats="turn-off-telemetry" data-files="Turn Off Telemetry in Windows 10.cmd" data-kinds="download" hidden></p>
           </div>
           <div class="item-action">
             <span class="file-type">.cmd</span>
@@ -248,10 +262,11 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             <h3 class="item-title"><a href="/tweaks/donotspy11">DoNotSpy11</a></h3>
             <p class="item-desc"><span class="lang-en">One of the ways to disable telemetry (spying and advertisement) after installing Windows 10 and 11.</span><span class="lang-ru">Один из способов отключить телеметрию (слежку и рекламу) после установки Windows 10 и 11.</span></p>
             
-            <div class="item-links"><a class="link" href="https://pxc-coding.com/donotspy11/donotspy-11-download/" target="_blank" rel="noopener"><span class="lang-en">Site</span><span class="lang-ru">Сайт</span></a><a class="link" href="https://www.youtube.com/watch?v=uc_ouoPYFzE" target="_blank" rel="noopener"><span class="lang-en">Guide</span><span class="lang-ru">Инструкция</span></a></div>
+            <div class="item-links"><a class="link" href="https://pxc-coding.com/donotspy11/donotspy-11-download/" target="_blank" rel="noopener" data-count-tweak="donotspy11" data-count-kind="link"><span class="lang-en">Site</span><span class="lang-ru">Сайт</span></a><a class="link" href="https://www.youtube.com/watch?v=uc_ouoPYFzE" target="_blank" rel="noopener" data-count-tweak="donotspy11" data-count-kind="link"><span class="lang-en">Guide</span><span class="lang-ru">Инструкция</span></a></div>
             
             
             
+            <p class="stats-line tweak-stats" data-tweak-stats="donotspy11" data-files="DoNotSpy11-1.3.0.0-Setup.exe" data-kinds="download,link" hidden></p>
           </div>
           <div class="item-action">
             <span class="file-type">.exe</span>
@@ -267,6 +282,7 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             
             
             
+            <p class="stats-line tweak-stats" data-tweak-stats="pause-updates" data-files="PauseUpdate100Years.reg" data-kinds="download" hidden></p>
           </div>
           <div class="item-action">
             <span class="file-type">.reg</span>
@@ -282,6 +298,7 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             
             
             
+            <p class="stats-line tweak-stats" data-tweak-stats="disable-security-warning" data-files="Disable_security_warning.bat" data-kinds="download" hidden></p>
           </div>
           <div class="item-action">
             <span class="file-type">.bat</span>
@@ -293,10 +310,11 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             <h3 class="item-title"><a href="/tweaks/defender-remover"><span class="lang-en">Turn off Windows Defender completely</span><span class="lang-ru">Полностью отключить Защитник Windows</span></a></h3>
             <p class="item-desc"><span class="lang-en">Defender Remover turns off Windows Defender completely.</span><span class="lang-ru">Defender Remover полностью отключает Защитник Windows.</span></p>
             
-            <div class="item-links"><a class="link" href="https://github.com/ionuttbara/windows-defender-remover/releases" target="_blank" rel="noopener"><span class="lang-en">Source code</span><span class="lang-ru">Исходный код</span></a></div>
+            <div class="item-links"><a class="link" href="https://github.com/ionuttbara/windows-defender-remover/releases" target="_blank" rel="noopener" data-count-tweak="defender-remover" data-count-kind="link"><span class="lang-en">Source code</span><span class="lang-ru">Исходный код</span></a></div>
             
             
             
+            <p class="stats-line tweak-stats" data-tweak-stats="defender-remover" data-files="DefenderRemover.exe" data-kinds="download,link" hidden></p>
           </div>
           <div class="item-action">
             <span class="file-type">.exe</span>
@@ -308,10 +326,11 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             <h3 class="item-title"><a href="/tweaks/miner-search">Miner Search</a></h3>
             <p class="item-desc"><span class="lang-en">Finds and destroys hidden miners. An auxiliary tool for checking suspicious files, directories and processes; it is NOT an antivirus.</span><span class="lang-ru">Ищет и уничтожает скрытые майнеры. Вспомогательный инструмент для проверки подозрительных файлов, каталогов и процессов; НЕ является антивирусом.</span></p>
             
-            <div class="item-links"><a class="link" href="https://github.com/BlendLog/MinerSearch" target="_blank" rel="noopener">GitHub</a><a class="link lang-en" href="https://github.com/BlendLog/MinerSearch?tab=readme-ov-file#how-to-use" target="_blank" rel="noopener">How to use</a><a class="link lang-ru" href="https://github.com/BlendLog/MinerSearch?tab=readme-ov-file#%D0%BA%D0%B0%D0%BA-%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D1%8C%D1%81%D1%8F" target="_blank" rel="noopener">Как пользоваться</a><a class="link" href="https://t.me/MinerSearch_blog" target="_blank" rel="noopener"><span class="lang-en">Help on Telegram</span><span class="lang-ru">Помощь в Telegram</span></a></div>
+            <div class="item-links"><a class="link" href="https://github.com/BlendLog/MinerSearch" target="_blank" rel="noopener" data-count-tweak="miner-search" data-count-kind="link">GitHub</a><a class="link lang-en" href="https://github.com/BlendLog/MinerSearch?tab=readme-ov-file#how-to-use" target="_blank" rel="noopener" data-count-tweak="miner-search" data-count-kind="link">How to use</a><a class="link lang-ru" href="https://github.com/BlendLog/MinerSearch?tab=readme-ov-file#%D0%BA%D0%B0%D0%BA-%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D1%8C%D1%81%D1%8F" target="_blank" rel="noopener" data-count-tweak="miner-search" data-count-kind="link">Как пользоваться</a><a class="link" href="https://t.me/MinerSearch_blog" target="_blank" rel="noopener" data-count-tweak="miner-search" data-count-kind="link"><span class="lang-en">Help on Telegram</span><span class="lang-ru">Помощь в Telegram</span></a></div>
             
             
             
+            <p class="stats-line tweak-stats" data-tweak-stats="miner-search" data-files="MinerSearch_v1.4.9.1.zip" data-kinds="download,link" hidden></p>
           </div>
           <div class="item-action">
             <span class="file-type">.zip</span>
@@ -323,10 +342,11 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             <h3 class="item-title"><a href="/tweaks/censor-tracker">Censor Tracker</a></h3>
             <p class="item-desc"><span class="lang-en">A free browser extension by Roskomsvoboda. Helps bypass internet censorship using proxy servers and alerts you about websites sharing data with government authorities.</span><span class="lang-ru">Бесплатное расширение для браузеров от Роскомсвободы. Помогает обходить интернет-цензуру с помощью прокси-серверов и уведомляет о сайтах, передающих данные государственным органам.</span></p>
             
-            <div class="item-links"><a class="link lang-en" href="https://censortracker.org/en.html" target="_blank" rel="noopener">Install</a><a class="link lang-ru" href="https://censortracker.org" target="_blank" rel="noopener">Установить</a><a class="link lang-en" href="https://roskomsvoboda.org/en/" target="_blank" rel="noopener">Roskomsvoboda</a><a class="link lang-ru" href="https://roskomsvoboda.org/ru/" target="_blank" rel="noopener">Роскомсвобода</a><a class="link" href="https://www.youtube.com/watch?v=Sq8g9tu5BdM" target="_blank" rel="noopener"><span class="lang-en">Guide</span><span class="lang-ru">Инструкция</span></a><a class="link" href="https://t.me/CensorTracker_feedback" target="_blank" rel="noopener"><span class="lang-en">Help on Telegram</span><span class="lang-ru">Помощь в Telegram</span></a></div>
+            <div class="item-links"><a class="link lang-en" href="https://censortracker.org/en.html" target="_blank" rel="noopener" data-count-tweak="censor-tracker" data-count-kind="link">Install</a><a class="link lang-ru" href="https://censortracker.org" target="_blank" rel="noopener" data-count-tweak="censor-tracker" data-count-kind="link">Установить</a><a class="link lang-en" href="https://roskomsvoboda.org/en/" target="_blank" rel="noopener" data-count-tweak="censor-tracker" data-count-kind="link">Roskomsvoboda</a><a class="link lang-ru" href="https://roskomsvoboda.org/ru/" target="_blank" rel="noopener" data-count-tweak="censor-tracker" data-count-kind="link">Роскомсвобода</a><a class="link" href="https://www.youtube.com/watch?v=Sq8g9tu5BdM" target="_blank" rel="noopener" data-count-tweak="censor-tracker" data-count-kind="link"><span class="lang-en">Guide</span><span class="lang-ru">Инструкция</span></a><a class="link" href="https://t.me/CensorTracker_feedback" target="_blank" rel="noopener" data-count-tweak="censor-tracker" data-count-kind="link"><span class="lang-en">Help on Telegram</span><span class="lang-ru">Помощь в Telegram</span></a></div>
             
             
             
+            <p class="stats-line tweak-stats" data-tweak-stats="censor-tracker" data-files="" data-kinds="link" hidden></p>
           </div>
           
         </article>
@@ -344,6 +364,7 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             
             
             
+            <p class="stats-line tweak-stats" data-tweak-stats="store-method-1" data-files="wsreset.bat" data-kinds="download" hidden></p>
           </div>
           <div class="item-action">
             <span class="file-type">.bat</span>
@@ -359,6 +380,7 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             
             
             
+            <p class="stats-line tweak-stats" data-tweak-stats="store-method-2" data-files="LTSC-Add-MicrosoftStore-master.rar" data-kinds="download" hidden></p>
           </div>
           <div class="item-action">
             <span class="file-type">.rar</span>
@@ -370,10 +392,11 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             <h3 class="item-title"><a href="/tweaks/alt-app-installer">Alt App Installer</a></h3>
             <p class="item-desc"><span class="lang-en">Installs apps from Microsoft Store without using the Microsoft Store.</span><span class="lang-ru">Устанавливает программы из Microsoft Store без участия самого Microsoft Store.</span></p>
             
-            <div class="item-links"><a class="link" href="https://www.youtube.com/watch?v=ayIilTc-6u4" target="_blank" rel="noopener"><span class="lang-en">Guide</span><span class="lang-ru">Инструкция</span></a><a class="link" href="https://github.com/mjishnu/alt-app-installer/releases" target="_blank" rel="noopener">GitHub</a></div>
+            <div class="item-links"><a class="link" href="https://www.youtube.com/watch?v=ayIilTc-6u4" target="_blank" rel="noopener" data-count-tweak="alt-app-installer" data-count-kind="link"><span class="lang-en">Guide</span><span class="lang-ru">Инструкция</span></a><a class="link" href="https://github.com/mjishnu/alt-app-installer/releases" target="_blank" rel="noopener" data-count-tweak="alt-app-installer" data-count-kind="link">GitHub</a></div>
             
             
             
+            <p class="stats-line tweak-stats" data-tweak-stats="alt-app-installer" data-files="altappinstaller.exe" data-kinds="download,link" hidden></p>
           </div>
           <div class="item-action">
             <span class="file-type">.exe</span>
@@ -394,6 +417,7 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             
             <div class="chip-links"><a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/ChromeSetup.exe"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> Google Chrome</a><a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/Yandex.exe"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> Yandex Browser</a><a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/OperaSetup.exe"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> Opera</a><a class="btn btn-secondary btn-sm" href="https://dl3.somov.org/Firefox%20Installer.exe"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> Mozilla Firefox</a></div>
             
+            <p class="stats-line tweak-stats" data-tweak-stats="browsers" data-files="ChromeSetup.exe|Yandex.exe|OperaSetup.exe|Firefox Installer.exe" data-kinds="download" hidden></p>
           </div>
           
         </article>
@@ -406,6 +430,7 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             
             
             
+            <p class="stats-line tweak-stats" data-tweak-stats="qbittorrent" data-files="qbittorrent_5.3.0_x64_setup.exe" data-kinds="download" hidden></p>
           </div>
           <div class="item-action">
             <span class="file-type">.exe</span>
@@ -421,6 +446,7 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             
             
             
+            <p class="stats-line tweak-stats" data-tweak-stats="winrar" data-files="WinRAR.v7.23.exe" data-kinds="download" hidden></p>
           </div>
           <div class="item-action">
             <span class="file-type">.exe</span>
@@ -436,6 +462,7 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             
             
             
+            <p class="stats-line tweak-stats" data-tweak-stats="acrobat-reader" data-files="Adobe.Acrobat.Reader.v2026.001.21651.zip" data-kinds="download" hidden></p>
           </div>
           <div class="item-action">
             <span class="file-type">.zip</span>
@@ -447,10 +474,11 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             <h3 class="item-title"><a href="/tweaks/msedgeredirect">MSEdgeRedirect</a></h3>
             <p class="item-desc"><span class="lang-en">Stops Windows 10/11 from forcing system links into Microsoft Edge and routes them to your default browser. Can also replace Bing in system search with another engine.</span><span class="lang-ru">Не даёт Windows 10/11 принудительно открывать системные ссылки в Microsoft Edge и перенаправляет их в браузер по умолчанию. Также может заменить Bing в системном поиске на другой поисковик.</span></p>
             
-            <div class="item-links"><a class="link" href="https://github.com/rcmaehl/MSEdgeRedirect" target="_blank" rel="noopener">GitHub</a><a class="link lang-ru" href="https://www.comss.ru/page.php?id=9848" target="_blank" rel="noopener">Описание на русском</a></div>
+            <div class="item-links"><a class="link" href="https://github.com/rcmaehl/MSEdgeRedirect" target="_blank" rel="noopener" data-count-tweak="msedgeredirect" data-count-kind="link">GitHub</a><a class="link lang-ru" href="https://www.comss.ru/page.php?id=9848" target="_blank" rel="noopener" data-count-tweak="msedgeredirect" data-count-kind="link">Описание на русском</a></div>
             
             
             
+            <p class="stats-line tweak-stats" data-tweak-stats="msedgeredirect" data-files="MSEdgeRedirect.exe" data-kinds="download,link" hidden></p>
           </div>
           <div class="item-action">
             <span class="file-type">.exe</span>
@@ -462,10 +490,11 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             <h3 class="item-title"><a href="/tweaks/super-god-mode">Windows Super God Mode</a></h3>
             <p class="item-desc"><span class="lang-en">A script that creates a folder with shortcuts to all Windows system settings, including hidden and advanced ones.</span><span class="lang-ru">Скрипт, который создаёт папку с ярлыками ко всем системным настройкам Windows, включая скрытые и продвинутые.</span></p>
             
-            <div class="item-links"><a class="link" href="https://github.com/ThioJoe/Windows-Super-God-Mode" target="_blank" rel="noopener">GitHub</a><a class="link lang-en" href="https://github.com/ThioJoe/Windows-Super-God-Mode?tab=readme-ov-file#how-to-run" target="_blank" rel="noopener">How to use</a><a class="link lang-en" href="https://www.youtube.com/watch?v=CnATL9kJPn8" target="_blank" rel="noopener">Video guide</a><a class="link lang-ru" href="https://www.comss.ru/page.php?id=14513" target="_blank" rel="noopener">Описание и инструкция</a></div>
+            <div class="item-links"><a class="link" href="https://github.com/ThioJoe/Windows-Super-God-Mode" target="_blank" rel="noopener" data-count-tweak="super-god-mode" data-count-kind="link">GitHub</a><a class="link lang-en" href="https://github.com/ThioJoe/Windows-Super-God-Mode?tab=readme-ov-file#how-to-run" target="_blank" rel="noopener" data-count-tweak="super-god-mode" data-count-kind="link">How to use</a><a class="link lang-en" href="https://www.youtube.com/watch?v=CnATL9kJPn8" target="_blank" rel="noopener" data-count-tweak="super-god-mode" data-count-kind="link">Video guide</a><a class="link lang-ru" href="https://www.comss.ru/page.php?id=14513" target="_blank" rel="noopener" data-count-tweak="super-god-mode" data-count-kind="link">Описание и инструкция</a></div>
             
             
             
+            <p class="stats-line tweak-stats" data-tweak-stats="super-god-mode" data-files="Windows Super God Mode 1.2.3.zip" data-kinds="download,link" hidden></p>
           </div>
           <div class="item-action">
             <span class="file-type">.zip</span>
@@ -486,6 +515,7 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             
             
             
+            <p class="stats-line tweak-stats" data-tweak-stats="vcpp-runtimes" data-files="Visual-C-Runtimes-All-in-One-May-2023.rar" data-kinds="download" hidden></p>
           </div>
           <div class="item-action">
             <span class="file-type">.rar</span>
@@ -501,6 +531,7 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             
             
             
+            <p class="stats-line tweak-stats" data-tweak-stats="directx" data-files="dxwebsetup.exe" data-kinds="download" hidden></p>
           </div>
           <div class="item-action">
             <span class="file-type">.exe</span>
@@ -512,10 +543,11 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             <h3 class="item-title"><a href="/tweaks/snappy-driver-installer">Snappy Driver Installer</a></h3>
             <p class="item-desc"><span class="lang-en">The best driver installer in my experience. Works offline and online, has a complete driver database, lets you choose versions and doesn’t need to be installed.</span><span class="lang-ru">Лучший установщик драйверов, опираясь на мой опыт. Работает офлайн и онлайн, содержит полную базу драйверов, позволяет выбирать версии и не требует установки.</span></p>
             
-            <div class="item-links"><a class="link lang-en" href="https://sdi-tool.org/download/?lang=en" target="_blank" rel="noopener">Official site</a><a class="link lang-ru" href="https://sdi-tool.org/download/?lang=ru" target="_blank" rel="noopener">Официальный сайт</a></div>
+            <div class="item-links"><a class="link lang-en" href="https://sdi-tool.org/download/?lang=en" target="_blank" rel="noopener" data-count-tweak="snappy-driver-installer" data-count-kind="link">Official site</a><a class="link lang-ru" href="https://sdi-tool.org/download/?lang=ru" target="_blank" rel="noopener" data-count-tweak="snappy-driver-installer" data-count-kind="link">Официальный сайт</a></div>
             
             
             
+            <p class="stats-line tweak-stats" data-tweak-stats="snappy-driver-installer" data-files="SDI_R2601.zip" data-kinds="download,link" hidden></p>
           </div>
           <div class="item-action">
             <span class="file-type">.zip</span>
@@ -530,13 +562,14 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             
             <div class="commands"><div>
               <div class="command-label"><span class="lang-en">Back up drivers from this PC (PowerShell)</span><span class="lang-ru">Резервное копирование драйверов (PowerShell)</span></div>
-              <div class="command"><code>Export-WindowsDriver -Online -Destination D:\your_folder</code><button type="button" class="icon-btn" data-copy="Export-WindowsDriver -Online -Destination D:\your_folder" aria-label="Copy command" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Copy command&quot;,&quot;ru&quot;:&quot;Скопировать команду&quot;}}"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button></div>
+              <div class="command"><code>Export-WindowsDriver -Online -Destination D:\your_folder</code><button type="button" class="icon-btn" data-copy="Export-WindowsDriver -Online -Destination D:\your_folder" data-count-tweak="backup-drivers" data-count-kind="copy" aria-label="Copy command" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Copy command&quot;,&quot;ru&quot;:&quot;Скопировать команду&quot;}}"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button></div>
             </div><div>
               <div class="command-label"><span class="lang-en">Restore drivers to this PC (cmd or PowerShell)</span><span class="lang-ru">Восстановление драйверов (cmd или PowerShell)</span></div>
-              <div class="command"><code>pnputil.exe /add-driver D:\your_folder\*.inf /subdirs /install</code><button type="button" class="icon-btn" data-copy="pnputil.exe /add-driver D:\your_folder\*.inf /subdirs /install" aria-label="Copy command" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Copy command&quot;,&quot;ru&quot;:&quot;Скопировать команду&quot;}}"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button></div>
+              <div class="command"><code>pnputil.exe /add-driver D:\your_folder\*.inf /subdirs /install</code><button type="button" class="icon-btn" data-copy="pnputil.exe /add-driver D:\your_folder\*.inf /subdirs /install" data-count-tweak="backup-drivers" data-count-kind="copy" aria-label="Copy command" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Copy command&quot;,&quot;ru&quot;:&quot;Скопировать команду&quot;}}"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button></div>
             </div></div>
             
             
+            <p class="stats-line tweak-stats" data-tweak-stats="backup-drivers" data-files="" data-kinds="copy" hidden></p>
           </div>
           
         </article>
@@ -554,6 +587,7 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             
             
             
+            <p class="stats-line tweak-stats" data-tweak-stats="clear-temp" data-files="Clear(Run As Admin).bat" data-kinds="download" hidden></p>
           </div>
           <div class="item-action">
             <span class="file-type">.bat</span>
@@ -568,16 +602,17 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             
             <div class="commands"><div>
               <div class="command-label"><span class="lang-en">Optimize the C: drive (SSD)</span><span class="lang-ru">Оптимизация диска C: (SSD)</span></div>
-              <div class="command"><code>Optimize-Volume -DriveLetter C -ReTrim -Verbose</code><button type="button" class="icon-btn" data-copy="Optimize-Volume -DriveLetter C -ReTrim -Verbose" aria-label="Copy command" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Copy command&quot;,&quot;ru&quot;:&quot;Скопировать команду&quot;}}"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button></div>
+              <div class="command"><code>Optimize-Volume -DriveLetter C -ReTrim -Verbose</code><button type="button" class="icon-btn" data-copy="Optimize-Volume -DriveLetter C -ReTrim -Verbose" data-count-tweak="optimize-volume" data-count-kind="copy" aria-label="Copy command" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Copy command&quot;,&quot;ru&quot;:&quot;Скопировать команду&quot;}}"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button></div>
             </div><div>
               <div class="command-label"><span class="lang-en">Analyze the D: drive (HDD)</span><span class="lang-ru">Анализ диска D: (HDD)</span></div>
-              <div class="command"><code>Optimize-Volume -DriveLetter D -Analyze -Verbose</code><button type="button" class="icon-btn" data-copy="Optimize-Volume -DriveLetter D -Analyze -Verbose" aria-label="Copy command" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Copy command&quot;,&quot;ru&quot;:&quot;Скопировать команду&quot;}}"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button></div>
+              <div class="command"><code>Optimize-Volume -DriveLetter D -Analyze -Verbose</code><button type="button" class="icon-btn" data-copy="Optimize-Volume -DriveLetter D -Analyze -Verbose" data-count-tweak="optimize-volume" data-count-kind="copy" aria-label="Copy command" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Copy command&quot;,&quot;ru&quot;:&quot;Скопировать команду&quot;}}"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button></div>
             </div><div>
               <div class="command-label"><span class="lang-en">Defragment the D: drive (HDD)</span><span class="lang-ru">Дефрагментация диска D: (HDD)</span></div>
-              <div class="command"><code>Optimize-Volume -DriveLetter D -Defrag -Verbose</code><button type="button" class="icon-btn" data-copy="Optimize-Volume -DriveLetter D -Defrag -Verbose" aria-label="Copy command" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Copy command&quot;,&quot;ru&quot;:&quot;Скопировать команду&quot;}}"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button></div>
+              <div class="command"><code>Optimize-Volume -DriveLetter D -Defrag -Verbose</code><button type="button" class="icon-btn" data-copy="Optimize-Volume -DriveLetter D -Defrag -Verbose" data-count-tweak="optimize-volume" data-count-kind="copy" aria-label="Copy command" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Copy command&quot;,&quot;ru&quot;:&quot;Скопировать команду&quot;}}"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button></div>
             </div></div>
             
             
+            <p class="stats-line tweak-stats" data-tweak-stats="optimize-volume" data-files="" data-kinds="copy" hidden></p>
           </div>
           
         </article>
@@ -586,10 +621,11 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             <h3 class="item-title"><a href="/tweaks/defrag-tools"><span class="lang-en">Defragmentation tools</span><span class="lang-ru">Программы для дефрагментации</span></a></h3>
             <p class="item-desc"><span class="lang-en">Defragment only an HDD.</span><span class="lang-ru">Дефрагментируйте только HDD.</span></p>
             
-            <div class="item-links"><a class="link" href="https://www.ccleaner.com/defraggler/download" target="_blank" rel="noopener">Defraggler</a><a class="link lang-en" href="https://www.iobit.com/en/iobitsmartdefrag.php" target="_blank" rel="noopener">Smart Defrag</a><a class="link lang-ru" href="https://ru.iobit.com/iobitsmartdefrag.php" target="_blank" rel="noopener">Smart Defrag</a><a class="link lang-en" href="https://www.auslogics.com/en/software/disk-defrag/" target="_blank" rel="noopener">Auslogics Disk Defrag</a><a class="link lang-ru" href="https://www.auslogics.com/ru/software/disk-defrag/" target="_blank" rel="noopener">Auslogics Disk Defrag</a></div>
+            <div class="item-links"><a class="link" href="https://www.ccleaner.com/defraggler/download" target="_blank" rel="noopener" data-count-tweak="defrag-tools" data-count-kind="link">Defraggler</a><a class="link lang-en" href="https://www.iobit.com/en/iobitsmartdefrag.php" target="_blank" rel="noopener" data-count-tweak="defrag-tools" data-count-kind="link">Smart Defrag</a><a class="link lang-ru" href="https://ru.iobit.com/iobitsmartdefrag.php" target="_blank" rel="noopener" data-count-tweak="defrag-tools" data-count-kind="link">Smart Defrag</a><a class="link lang-en" href="https://www.auslogics.com/en/software/disk-defrag/" target="_blank" rel="noopener" data-count-tweak="defrag-tools" data-count-kind="link">Auslogics Disk Defrag</a><a class="link lang-ru" href="https://www.auslogics.com/ru/software/disk-defrag/" target="_blank" rel="noopener" data-count-tweak="defrag-tools" data-count-kind="link">Auslogics Disk Defrag</a></div>
             
             
             
+            <p class="stats-line tweak-stats" data-tweak-stats="defrag-tools" data-files="" data-kinds="link" hidden></p>
           </div>
           
         </article>
@@ -602,6 +638,7 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             
             
             <dl class="keys"><div><dt><span class="lang-en">Win + period</span><span class="lang-ru">Win + точка</span></dt><dd><span class="lang-en">insert emoji anywhere</span><span class="lang-ru">вставить эмодзи куда угодно</span></dd></div><div><dt>Win + H</dt><dd><span class="lang-en">voice typing</span><span class="lang-ru">голосовой ввод текста</span></dd></div><div><dt>Win + Alt + R</dt><dd><span class="lang-en">screen recording</span><span class="lang-ru">запись экрана</span></dd></div><div><dt>Win + E</dt><dd><span class="lang-en">open File Explorer</span><span class="lang-ru">открыть Проводник</span></dd></div><div><dt>Win + M</dt><dd><span class="lang-en">minimize all windows</span><span class="lang-ru">свернуть все окна</span></dd></div></dl>
+            
           </div>
           
         </article>
@@ -628,6 +665,6 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
     </div>
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="/assets/site.js?v=f16a88d0" defer></script>
+  <script src="/assets/site.js?v=1e913a01" defer></script>
 </body>
 </html>
