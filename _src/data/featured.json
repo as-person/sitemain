@@ -1,16 +1,16 @@
 {
   "show": true,
   "heading": {
-    "en": "Test1",
-    "ru": "Тест1"
+    "en": "Activation",
+    "ru": "Активация"
   },
   "title": {
-    "en": "Test title",
-    "ru": "Тестовое название"
+    "en": "Windows Activation",
+    "ru": "Активация Windows"
   },
   "desc": {
-    "en": "Test description: one or two sentences about what this is.",
-    "ru": "Тестовое описание: одно-два предложения о том, что это."
+    "en": "The file downloads and runs the Microsoft Activation Scripts (MAS) script, designed to automatically activate Windows and Office.",
+    "ru": "Файл загружает и запускает скрипт Microsoft Activation Scripts (MAS), предназначенный для автоматической активации Windows и Office."
   },
   "link": {
     "url": "",
@@ -19,5 +19,5 @@
       "ru": ""
     }
   },
-  "file": "NumLockOnDefault.reg"
+  "file": "MAS_AIO.cmd"
 }
