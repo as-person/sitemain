@@ -209,7 +209,7 @@ function header(current) {
         ${navLink('builds', '/', L('Builds', 'Сборки'))}
         ${navLink('ghost', '/ghost-spectre', 'Ghost Spectre')}
         ${navLink('settings', '/settings-for-windows', L('Settings', 'Настройки'))}
-        <a class="nav-external" href="${TELEGRAM}" target="_blank" rel="noopener">Telegram</a>
+        <a class="nav-external" href="${TELEGRAM}" target="_blank" rel="noopener" data-tg-placement="header">Telegram</a>
       </nav>
       <div class="lang-switch" role="group" aria-label="Site language / Язык сайта">
         <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
@@ -230,7 +230,7 @@ const footer = `<footer class="footer">
       <section>
         <h2>${L('Contact', 'Контакты')}</h2>
         <div class="footer-links">
-          <a href="${TELEGRAM}" target="_blank" rel="noopener">Telegram</a>
+          <a href="${TELEGRAM}" target="_blank" rel="noopener" data-tg-placement="footer">Telegram</a>
           <a href="mailto:me@somov.org">me@somov.org</a>
         </div>
       </section>
@@ -637,7 +637,8 @@ const tgCard = placement => `<a class="tg-card" href="${TELEGRAM}" target="_blan
             <span class="tg-sub">${L('Updates, tweaks and answers to questions on Telegram', 'Обновления, твики и ответы на вопросы — в Telegram')}</span>
           </span>
           <span class="tg-action" ${attr('aria-label', 'Subscribe', 'Подписаться')}>${icon('d')}</span>
-        </a>`;
+        </a>
+        <p class="stats-line tg-stats" data-tg-stats="${placement}" hidden></p>`;
 
 /* -- Tweaks: shared pieces of the settings list and the tweak pages ------- */
 

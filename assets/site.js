@@ -6,8 +6,8 @@
   const root = document.documentElement;
 
   const STRINGS = {
-    en: { copied: 'Copied', copyFailed: 'Could not copy', found: 'Found', clicks: 'Downloads', download: 'Download', linkCopied: 'Link copied', copies: 'Copies', linkClicks: 'Link clicks', views: 'Page views', today: 'today', week: '7 days', month: '30 days', total: 'all time', onlyYou: 'visible only to you' },
-    ru: { copied: 'Скопировано', copyFailed: 'Не удалось скопировать', found: 'Найдено', clicks: 'Скачиваний', download: 'Скачать', linkCopied: 'Ссылка скопирована', copies: 'Копирований', linkClicks: 'Переходов', views: 'Просмотры страницы', today: 'сегодня', week: 'неделя', month: 'месяц', total: 'всего', onlyYou: 'видно только вам' },
+    en: { copied: 'Copied', copyFailed: 'Could not copy', found: 'Found', clicks: 'Downloads', download: 'Download', linkCopied: 'Link copied', copies: 'Copies', linkClicks: 'Link clicks', tgClicks: 'Telegram clicks', fromHere: 'from here', views: 'Page views', today: 'today', week: '7 days', month: '30 days', total: 'all time', onlyYou: 'visible only to you' },
+    ru: { copied: 'Скопировано', copyFailed: 'Не удалось скопировать', found: 'Найдено', clicks: 'Скачиваний', download: 'Скачать', linkCopied: 'Ссылка скопирована', copies: 'Копирований', linkClicks: 'Переходов', tgClicks: 'Переходов в Telegram', fromHere: 'отсюда', views: 'Просмотры страницы', today: 'сегодня', week: 'неделя', month: 'месяц', total: 'всего', onlyYou: 'видно только вам' },
   };
   const currentLang = () => (root.lang === 'ru' ? 'ru' : 'en');
   const t = key => STRINGS[currentLang()][key];
@@ -130,6 +130,13 @@
       line.hidden = false;
     });
 
+    // Telegram cards: clicks on any channel link on the site, and on this card's place
+    $$('[data-tg-stats]').forEach(line => {
+      const here = (statsCounts['tg:' + line.dataset.tgStats] || {}).click || 0;
+      line.textContent = t('tgClicks') + ': ' + ((statsCounts.tg || {}).click || 0) + ' · ' + t('fromHere') + ' ' + here;
+      line.hidden = false;
+    });
+
     // Settings page: every tweak ranked by its total, for the owner only
     const ranking = $('#owner-stats');
     if (ranking) {
@@ -152,7 +159,7 @@
       ranking.hidden = false;
     }
   }
-  if ($('[data-stats-file], [data-tweak-stats]')) {
+  if ($('[data-stats-file], [data-tweak-stats], [data-tg-stats]')) {
     languageListeners.push(renderStats);
     // The page asks the counter once, in <head>; see `analytics` in _src/build.mjs.
     (window.siteOwner || fetch(COUNTER + '/stats').then(response => response.json()))
@@ -362,12 +369,21 @@
     paint();
   }
 
-  /* Telegram card: report clicks to Analytics with the place they came from */
-  $$('[data-tg-placement]').forEach(link => link.addEventListener('click', () => {
+  /* Telegram links: report clicks to Analytics and to the counter with the place they came from */
+  const reportTelegram = (link, event) => {
+    if (event.type === 'auxclick' && event.button !== 1) return;
     if (typeof window.gtag === 'function') {
       window.gtag('event', 'telegram_click', { placement: link.dataset.tgPlacement, transport_type: 'beacon' });
     }
-  }));
+    const url = COUNTER + '/count?tg=' + link.dataset.tgPlacement + '&kind=click';
+    if (!(navigator.sendBeacon && navigator.sendBeacon(url))) {
+      fetch(url, { method: 'POST', mode: 'no-cors', keepalive: true }).catch(() => {});
+    }
+  };
+  $$('[data-tg-placement]').forEach(link => {
+    link.addEventListener('click', event => reportTelegram(link, event));
+    link.addEventListener('auxclick', event => reportTelegram(link, event));
+  });
 
   /* Support page: tapping a QR code downloads it; a download icon confirms it for a moment */
   $$('.qr-wrap').forEach(link => {

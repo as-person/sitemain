@@ -37,7 +37,7 @@ window.siteOwner.then(function(d){if(d&&d.owner)window['ga-disable-'+ID]=true;})
 Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({owner:false})},2500)})]).then(function(d){if(!(d&&d.owner))gtag('event','page_view');});})();
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-4RBN0G8775"></script>
-  <link rel="stylesheet" href="/assets/site.css?v=7e0f0383">
+  <link rel="stylesheet" href="/assets/site.css?v=314f7347">
 </head>
 <body>
   <a class="skip-link" href="#content"><span class="lang-en">Skip to content</span><span class="lang-ru">Перейти к содержимому</span></a>
@@ -51,7 +51,7 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
         <a href="/"><span class="lang-en">Builds</span><span class="lang-ru">Сборки</span></a>
         <a href="/ghost-spectre">Ghost Spectre</a>
         <a href="/settings-for-windows" aria-current="page"><span class="lang-en">Settings</span><span class="lang-ru">Настройки</span></a>
-        <a class="nav-external" href="https://t.me/+gmXk9-zXZ405YWY6" target="_blank" rel="noopener">Telegram</a>
+        <a class="nav-external" href="https://t.me/+gmXk9-zXZ405YWY6" target="_blank" rel="noopener" data-tg-placement="header">Telegram</a>
       </nav>
       <div class="lang-switch" role="group" aria-label="Site language / Язык сайта">
         <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
@@ -118,7 +118,7 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
       <section>
         <h2><span class="lang-en">Contact</span><span class="lang-ru">Контакты</span></h2>
         <div class="footer-links">
-          <a href="https://t.me/+gmXk9-zXZ405YWY6" target="_blank" rel="noopener">Telegram</a>
+          <a href="https://t.me/+gmXk9-zXZ405YWY6" target="_blank" rel="noopener" data-tg-placement="footer">Telegram</a>
           <a href="mailto:me@somov.org">me@somov.org</a>
         </div>
       </section>
@@ -126,6 +126,6 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
     </div>
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="/assets/site.js?v=1e913a01" defer></script>
+  <script src="/assets/site.js?v=a0aae17f" defer></script>
 </body>
 </html>

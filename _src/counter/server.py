@@ -7,6 +7,7 @@ POST /api/count      the site reports what never reaches the server:
                        ?file=<iso name>&kind=magnet       a magnet link was clicked
                        ?tweak=<id>&kind=copy|link         a tweak command was copied / a tweak link was opened
                        ?page=<path>&kind=view             a page was opened (once per IP per page per day)
+                       ?tg=<place>&kind=click             a link to the Telegram channel was clicked
 GET  /api/stats      returns the counts to the owner's IP, and {"owner": false} to everyone else
 
 Windows images (.iso and their .torrent): each IP is counted once per 24 hours across all images.
@@ -34,6 +35,7 @@ FILE_RE = re.compile(r'^[^/\\\x00-\x1f]{1,200}$')
 TWEAK_RE = re.compile(r'^[a-z0-9-]{1,60}$')
 TWEAK_KINDS = {'copy', 'link'}
 PAGE_RE = re.compile(r'^/[a-z0-9/-]{0,100}$')
+PLACE_RE = re.compile(r'^[a-z0-9-]{1,30}$')
 CLICK_WINDOW = int(os.environ.get('CLICK_WINDOW', '86400'))  # seconds between counted actions from one IP
 MAX_TRACKED = 300000
 
@@ -155,6 +157,18 @@ class Handler(BaseHTTPRequestHandler):
                 ip = self.headers.get('X-Real-IP', '')
                 if ip and ip not in OWNER_IPS and first_today((ip, 'page', page)):
                     add_view('page:' + page)
+                return self.respond(204)
+            place = query.get('tg', [''])[0]
+            if place:
+                if kind != 'click' or not PLACE_RE.match(place):
+                    return self.respond(400)
+                ip = self.headers.get('X-Real-IP', '')
+                if ip and ip not in OWNER_IPS:
+                    # 'tg' is the site-wide total (one per IP per day), 'tg:<place>' the clicks from one place
+                    if first_today((ip, 'tg')):
+                        add('tg', 'click')
+                    if first_today((ip, 'tg', place)):
+                        add('tg:' + place, 'click')
                 return self.respond(204)
             tweak = query.get('tweak', [''])[0]
             if tweak:

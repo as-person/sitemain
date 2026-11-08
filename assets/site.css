@@ -1024,6 +1024,7 @@ html:not([data-image]) .img-ru { display: none !important; }
 
 /* Owner-only counters on the settings and tweak pages */
 .tweak-stats { margin-top: 8px; }
+.tg-stats { margin-top: 6px; padding-inline: 4px; }
 .page-views { border-bottom: 1px dashed var(--border-strong); color: var(--muted); font-size: 12px; line-height: 1.4; }
 .page-views .container { padding-block: 5px; text-align: right; }
 .owner-stats { margin-top: 20px; padding: 12px 20px; border: 1px dashed var(--border-strong); border-radius: var(--r-lg); }
