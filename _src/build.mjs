@@ -521,7 +521,7 @@ function buildPage(build, preset) {
                choosing the image for the whole page, not just for this block -->
           <div class="sums-head">
             <span class="sums-head-label">${L('Image', 'Образ')}</span>
-            <nav class="seg-links seg-inline" data-switch-note ${attr('aria-label', 'Image language', 'Язык образа')}>
+            <nav class="seg-links seg-inline" ${attr('aria-label', 'Image language', 'Язык образа')}>
               ${LANGS.map(l => switchLink(l, imageLangName(l))).join('\n              ')}
             </nav>
           </div>
