@@ -553,8 +553,10 @@ html:not([data-image]) .img-ru { display: none !important; }
 /* Image switch above the checksums, the same control as in the download panel */
 .sums-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
 .sums-head-label { color: var(--muted); font-size: var(--fs-sm); }
-.seg-inline { width: min(280px, 100%); }
+/* On the page background the track would be invisible: give it the panel look */
+.seg-inline { width: min(280px, 100%); background: var(--surface); border: 1px solid var(--border); }
 .seg-inline a { min-height: 32px; }
+.sums-hint { margin: -2px 0 12px; color: var(--muted); font-size: var(--fs-sm); }
 
 .icon-btn {
   display: grid;

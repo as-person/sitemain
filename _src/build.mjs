@@ -122,6 +122,8 @@ const S = {
   home: L('Home', 'На главную'),
   download: L('Download', 'Скачать'),
   downloadIso: L('Download ISO', 'Скачать ISO'),
+  // Build pages: the button names the image language chosen above it
+  downloadIsoIn: { en: L('Download English ISO', 'Скачать английский ISO'), ru: L('Download Russian ISO', 'Скачать русский ISO') },
   english: L('English', 'Английский'),
   russian: L('Russian', 'Русский'),
   final: L('Final', 'Финальная'),
@@ -415,6 +417,24 @@ function buildPage(build, preset) {
   const switchLink = (l, content, cls = '') =>
     `<a${cls ? ` class="${cls}"` : ''} href="/windows-${build.id}-${l}" data-switch-image="${l}"${l === start ? ' aria-current="true"' : ''}>${content}</a>`;
 
+  // Hover and screen-reader hint on Torrent / Magnet: which image they are for
+  const altTitle = {
+    torrent: {
+      en: attr('title', 'Torrent of the English image', 'Торрент английского образа'),
+      ru: attr('title', 'Torrent of the Russian image', 'Торрент русского образа'),
+    },
+    magnet: {
+      en: attr('title', 'Magnet link of the English image', 'Magnet-ссылка английского образа'),
+      ru: attr('title', 'Magnet link of the Russian image', 'Magnet-ссылка русского образа'),
+    },
+  };
+  // Under the image switch at the checksums: what is shown and what the other button does
+  const sumsHint = {
+    en: L('Checksums of the English image. For the Russian one, press “Russian”: the download button switches too.',
+      'Показаны суммы английского образа. Для русского нажмите «Русский» — кнопка скачивания тоже переключится.'),
+    ru: L('Checksums of the Russian image. For the English one, press “English”: the download button switches too.',
+      'Показаны суммы русского образа. Для английского нажмите «Английский» — кнопка скачивания тоже переключится.'),
+  };
   const sumsFor = l => [
     ['SHA-256', images[l].sums.sha256], ['SHA-1', images[l].sums.sha1], ['MD5', images[l].sums.md5],
   ].filter(([, value]) => value);
@@ -451,10 +471,10 @@ function buildPage(build, preset) {
           </dl>
           <div class="dl-actions">
             ${V(l => `
-              <a class="btn btn-primary btn-block" href="${images[l].url}">${icon('download')} <span>${S.downloadIso}</span></a>
+              <a class="btn btn-primary btn-block" href="${images[l].url}">${icon('download')} <span>${S.downloadIsoIn[l]}</span></a>
               <div class="dl-alt">
-                <a class="btn btn-secondary btn-sm" href="${images[l].url}.torrent">Torrent</a>
-                <a class="btn btn-secondary btn-sm" href="${esc(images[l].magnet)}" ${countAttr(images[l].file, 'magnet')}>Magnet</a>
+                <a class="btn btn-secondary btn-sm" href="${images[l].url}.torrent" ${altTitle.torrent[l]}>Torrent</a>
+                <a class="btn btn-secondary btn-sm" href="${esc(images[l].magnet)}" ${countAttr(images[l].file, 'magnet')} ${altTitle.magnet[l]}>Magnet</a>
               </div>
               ${statsLine(images[l].file)}`, 'div', 'dl-variant')}
             ${supportNudge}
@@ -506,6 +526,7 @@ function buildPage(build, preset) {
             </nav>
           </div>
           ${V(l => `
+          <p class="sums-hint">${sumsHint[l]}</p>
           <div class="sums">
             ${sumsFor(l).map(([label, value]) => `<div class="sum-row">
               <span class="sum-label">${label}</span>
@@ -527,7 +548,7 @@ function buildPage(build, preset) {
   </main>
 
   <div class="dl-bar" hidden>
-    ${LANGS.map(l => `<a class="btn btn-primary btn-block img-${l}" href="${images[l].url}">${icon('download')} <span>${S.downloadIso} · ${sizeL(images[l].size)}</span></a>`).join('\n    ')}
+    ${LANGS.map(l => `<a class="btn btn-primary btn-block img-${l}" href="${images[l].url}">${icon('download')} <span>${S.downloadIsoIn[l]} · ${sizeL(images[l].size)}</span></a>`).join('\n    ')}
   </div>
 
   <dialog class="lightbox" id="lightbox" ${attr('aria-label', 'Screenshot', 'Скриншот')}>
