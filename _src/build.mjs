@@ -328,7 +328,7 @@ function homePage() {
               <span><span class="lang-en" id="build-date-en">${build.date.en}</span><span class="lang-ru" id="build-date-ru">${build.date.ru}</span></span>
               <span class="badge" id="build-final" hidden>${S.final}</span>
             </div>
-            <a class="btn btn-secondary btn-sm details-link" id="details-link" href="${image.path}">
+            <a class="details-link" id="details-link" href="${image.path}">
               <span>${L('Screenshots, checksums and details', 'Скриншоты, хэши и описание')}</span> ${icon('d')}
             </a>
           </div>
