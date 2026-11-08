@@ -48,7 +48,7 @@ echo "OWNER_IPS=новый.ip" > /etc/somov-counter.env && systemctl restart som
 
 ## Страница поддержки
 
-Способы поддержки на `/support` задаются в `DONATE` в `build.mjs`. Когда появится страница Patreon, впишите её адрес в `DONATE.patreon`: на странице появится главная кнопка. Если меняется адрес USDT, обновите его и в `_src/qr.py`, затем запустите `python _src/qr.py` (нужен `pip install segno`), чтобы перегенерировать QR-код.
+Способы поддержки на `/support` задаются в `DONATE` в `build.mjs`. `DONATE.tribute` — веб-ссылка на донаты Tribute (карты любых стран), пустая строка убирает карточку. Когда появится страница Patreon, впишите её адрес в `DONATE.patreon`: на странице появится главная кнопка. Если меняется адрес USDT, обновите его и в `_src/qr.py`, затем запустите `python _src/qr.py` (нужен `pip install segno`), чтобы перегенерировать QR-код.
 
 ## Другие данные
 

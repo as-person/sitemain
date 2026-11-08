@@ -884,12 +884,19 @@ html:not([data-image]) .img-ru { display: none !important; }
 }
 .support-card h2 { display: flex; align-items: center; gap: 8px; font-size: var(--fs-lg); }
 .support-card p { color: var(--muted); font-size: var(--fs-sm); }
-.support-card-main { grid-column: 1 / -1; }
-/* Order by site language: Russian visitors mostly have Russian cards, so YooMoney goes first for them;
-   everyone else starts with Patreon (when set) and crypto. */
-.support-card-main { order: -1; }
-.support-card-yoomoney { order: 2; }
+/* Layout like the Telegram post: the two card payments side by side, crypto below across the full width.
+   Russian visitors mostly have Russian cards, so YooMoney comes first for them, the card payment
+   (Tribute) first for everyone else. Patreon (when set) goes on top. */
+.support-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.support-card-main { grid-column: 1 / -1; order: -3; }
+.support-card-tribute { order: -1; }
+.support-card-yoomoney { order: 0; }
 .lang-ru-active .support-card-yoomoney { order: -2; }
+.support-card.crypto { grid-column: 1 / -1; order: 1; }
+.support-card-tribute .btn, .support-card-yoomoney .btn { margin-top: auto; }
+@media (max-width: 720px) {
+  .support-grid { grid-template-columns: 1fr; }
+}
 .crypto-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; width: 100%; }
 .select-field { display: grid; gap: 6px; min-width: 0; }
 .select-label { color: var(--muted); font-size: var(--fs-xs); }
