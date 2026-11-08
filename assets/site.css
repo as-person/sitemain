@@ -586,7 +586,7 @@ html:not([data-image]) .img-ru { display: none !important; }
 }
 .lightbox[open] { display: grid; place-items: center; overflow: hidden; touch-action: pinch-zoom; }
 .lightbox::backdrop { background: transparent; }
-.lightbox img { max-width: min(100vw - 32px, 1600px); max-height: calc(100dvh - 120px); width: auto; border-radius: var(--r-sm); user-select: none; -webkit-user-select: none; -webkit-user-drag: none; -webkit-touch-callout: none; }
+.lightbox img { width: min(100vw - 32px, 1600px, (100dvh - 120px) * var(--ar, 1.6)); height: auto; aspect-ratio: var(--ar, 1.6); max-height: calc(100dvh - 120px); border-radius: var(--r-sm); user-select: none; -webkit-user-select: none; -webkit-user-drag: none; -webkit-touch-callout: none; }
 .lb-btn {
   position: absolute;
   display: grid;

@@ -416,11 +416,40 @@
     const counter = $('.lb-count', lightbox);
     let current = 0;
 
+    // Full-size screenshots that are downloaded and decoded, by URL.
+    const ready = new Set();
+    const loading = new Map();
+    function preload(url) {
+      if (ready.has(url)) return Promise.resolve();
+      if (!loading.has(url)) {
+        const loader = new Image();
+        loader.src = url;
+        loading.set(url, loader.decode().then(() => { ready.add(url); }).finally(() => loading.delete(url)));
+      }
+      return loading.get(url);
+    }
+
     function show(index) {
       current = (index + shots.length) % shots.length;
-      image.src = shots[current].href;
-      image.alt = $('img', shots[current]).alt;
+      const url = shots[current].href;
+      const thumb = $('img', shots[current]);
+      image.alt = thumb.alt;
+      // Fixed proportions, so swapping the thumbnail for the full size does not change the size on screen.
+      image.style.setProperty('--ar', thumb.getAttribute('width') / thumb.getAttribute('height'));
       counter.textContent = (current + 1) + ' / ' + shots.length;
+      if (ready.has(url)) {
+        image.src = url;
+      } else {
+        // Show the thumbnail the page already has at once, then swap in the full size when it is ready.
+        image.src = thumb.currentSrc || thumb.src;
+        preload(url).then(() => {
+          if (shots[current] && shots[current].href === url) image.src = url;
+        }).catch(() => {
+          if (shots[current] && shots[current].href === url) image.src = url;
+        });
+      }
+      // Fetch the neighbours too, so browsing on does not wait.
+      [current + 1, current - 1].forEach(i => preload(shots[(i + shots.length) % shots.length].href).catch(() => {}));
     }
 
     // Each image language has its own gallery; browse only the one that was clicked.
