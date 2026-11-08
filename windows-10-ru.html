@@ -39,7 +39,7 @@ window.siteOwner.then(function(d){if(d&&d.owner)window['ga-disable-'+ID]=true;})
 Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({owner:false})},2500)})]).then(function(d){if(!(d&&d.owner))gtag('event','page_view');});})();
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-4RBN0G8775"></script>
-  <link rel="stylesheet" href="/assets/site.css?v=8a8e5c84">
+  <link rel="stylesheet" href="/assets/site.css?v=dbb19cf6">
 </head>
 <body class="has-dl-bar">
   <a class="skip-link" href="#content"><span class="lang-en">Skip to content</span><span class="lang-ru">Перейти к содержимому</span></a>
@@ -188,8 +188,16 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
 
         <section class="section">
           <h2><span class="lang-en">Checksums</span><span class="lang-ru">Контрольные суммы</span></h2>
+          <!-- The same image switch as in the download panel (they stay in sync), so it reads as
+               choosing the image for the whole page, not just for this block -->
+          <div class="sums-head">
+            <span class="sums-head-label"><span class="lang-en">Image</span><span class="lang-ru">Образ</span></span>
+            <nav class="seg-links seg-inline" data-switch-note aria-label="Image language" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Image language&quot;,&quot;ru&quot;:&quot;Язык образа&quot;}}">
+              <a href="/windows-10-en" data-switch-image="en"><span class="lang-en">English</span><span class="lang-ru">Английский</span></a>
+              <a href="/windows-10-ru" data-switch-image="ru" aria-current="true"><span class="lang-en">Russian</span><span class="lang-ru">Русский</span></a>
+            </nav>
+          </div>
           <div class="img-en">
-          <p class="section-note"><span class="lang-en">For the English image</span><span class="lang-ru">Для образа на английском</span> · <a class="link" href="/windows-10-ru" data-switch-image="ru" aria-current="true"><span class="lang-en">show for the Russian image</span><span class="lang-ru">показать для русского</span></a></p>
           <div class="sums">
             <div class="sum-row">
               <span class="sum-label">SHA-256</span>
@@ -208,7 +216,6 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
             </div>
           </div>
           <p class="sums-file">en-us_windows_10_iot_enterprise_ltsc_2021_x64_19044.6456_by_somov.iso</p></div><div class="img-ru">
-          <p class="section-note"><span class="lang-en">For the Russian image</span><span class="lang-ru">Для образа на русском</span> · <a class="link" href="/windows-10-en" data-switch-image="en"><span class="lang-en">show for the English image</span><span class="lang-ru">показать для английского</span></a></p>
           <div class="sums">
             <div class="sum-row">
               <span class="sum-label">SHA-256</span>
@@ -265,6 +272,6 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
     </div>
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="/assets/site.js?v=bee9eebc" defer></script>
+  <script src="/assets/site.js?v=fa950dc0" defer></script>
 </body>
 </html>

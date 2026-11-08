@@ -550,6 +550,11 @@ html:not([data-image]) .img-ru { display: none !important; }
 .sum-label { color: var(--muted); font-size: var(--fs-xs); font-weight: 600; }
 .sum-val { font-family: var(--mono); font-size: var(--fs-xs); overflow-wrap: anywhere; }
 .sums-file { margin-top: 10px; color: var(--muted); font-family: var(--mono); font-size: 12px; overflow-wrap: anywhere; }
+/* Image switch above the checksums, the same control as in the download panel */
+.sums-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.sums-head-label { color: var(--muted); font-size: var(--fs-sm); }
+.seg-inline { width: min(280px, 100%); }
+.seg-inline a { min-height: 32px; }
 
 .icon-btn {
   display: grid;

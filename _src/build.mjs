@@ -418,14 +418,6 @@ function buildPage(build, preset) {
   const sumsFor = l => [
     ['SHA-256', images[l].sums.sha256], ['SHA-1', images[l].sums.sha1], ['MD5', images[l].sums.md5],
   ].filter(([, value]) => value);
-  const forImage = {
-    en: L('For the English image', 'Для образа на английском'),
-    ru: L('For the Russian image', 'Для образа на русском'),
-  };
-  const showFor = {
-    en: L('show for the English image', 'показать для английского'),
-    ru: L('show for the Russian image', 'показать для русского'),
-  };
 
   const body = `<main class="page" id="content">
     <div class="container build">
@@ -505,8 +497,15 @@ function buildPage(build, preset) {
 
         <section class="section">
           <h2>${L('Checksums', 'Контрольные суммы')}</h2>
+          <!-- The same image switch as in the download panel (they stay in sync), so it reads as
+               choosing the image for the whole page, not just for this block -->
+          <div class="sums-head">
+            <span class="sums-head-label">${L('Image', 'Образ')}</span>
+            <nav class="seg-links seg-inline" data-switch-note ${attr('aria-label', 'Image language', 'Язык образа')}>
+              ${LANGS.map(l => switchLink(l, imageLangName(l))).join('\n              ')}
+            </nav>
+          </div>
           ${V(l => `
-          <p class="section-note">${forImage[l]} · ${switchLink(other(l), showFor[other(l)], 'link')}</p>
           <div class="sums">
             ${sumsFor(l).map(([label, value]) => `<div class="sum-row">
               <span class="sum-label">${label}</span>

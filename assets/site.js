@@ -6,8 +6,8 @@
   const root = document.documentElement;
 
   const STRINGS = {
-    en: { copied: 'Copied', copyFailed: 'Could not copy', found: 'Found', clicks: 'Downloads', download: 'Download', linkCopied: 'Link copied', copies: 'Copies', linkClicks: 'Link clicks', tgClicks: 'Telegram clicks', fromHere: 'from here', views: 'Page views', today: 'today', week: '7 days', month: '30 days', total: 'all time', onlyYou: 'visible only to you' },
-    ru: { copied: 'Скопировано', copyFailed: 'Не удалось скопировать', found: 'Найдено', clicks: 'Скачиваний', download: 'Скачать', linkCopied: 'Ссылка скопирована', copies: 'Копирований', linkClicks: 'Переходов', tgClicks: 'Переходов в Telegram', fromHere: 'отсюда', views: 'Просмотры страницы', today: 'сегодня', week: 'неделя', month: 'месяц', total: 'всего', onlyYou: 'видно только вам' },
+    en: { copied: 'Copied', copyFailed: 'Could not copy', found: 'Found', clicks: 'Downloads', download: 'Download', linkCopied: 'Link copied', copies: 'Copies', linkClicks: 'Link clicks', tgClicks: 'Telegram clicks', fromHere: 'from here', views: 'Page views', today: 'today', week: '7 days', month: '30 days', total: 'all time', onlyYou: 'visible only to you', imageSwitched_en: 'English image, for download too', imageSwitched_ru: 'Russian image, for download too' },
+    ru: { copied: 'Скопировано', copyFailed: 'Не удалось скопировать', found: 'Найдено', clicks: 'Скачиваний', download: 'Скачать', linkCopied: 'Ссылка скопирована', copies: 'Копирований', linkClicks: 'Переходов', tgClicks: 'Переходов в Telegram', fromHere: 'отсюда', views: 'Просмотры страницы', today: 'сегодня', week: 'неделя', month: 'месяц', total: 'всего', onlyYou: 'видно только вам', imageSwitched_en: 'Английский образ — и для скачивания', imageSwitched_ru: 'Русский образ — и для скачивания' },
   };
   const currentLang = () => (root.lang === 'ru' ? 'ru' : 'en');
   const t = key => STRINGS[currentLang()][key];
@@ -497,7 +497,10 @@
     };
     imageSwitches.forEach(link => link.addEventListener('click', event => {
       event.preventDefault();
+      const changed = link.dataset.switchImage !== root.dataset.image;
       showImage(link.dataset.switchImage);
+      // The switch above the checksums is far from the download button: say that it changed too
+      if (changed && link.closest('[data-switch-note]')) showToast(t('imageSwitched_' + link.dataset.switchImage));
     }));
     // Same as on the home page: switching the site language switches the image language too.
     languageListeners.push(showImage);
