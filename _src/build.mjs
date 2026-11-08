@@ -128,14 +128,19 @@ const imageLangName = lang => (lang === 'ru' ? S.russian : S.english);
 
 /* -- Layout -------------------------------------------------------------- */
 
-const analytics = `<!-- Owner opt-out: open /?noga to stop counting this device, /?ga to resume -->
+// The owner is not counted in Analytics: on a device opened with /?noga (/?ga undoes it), and from the IPs
+// in OWNER_IPS of the download counter. The page view is sent once the counter has answered that this is
+// not the owner's IP; window.siteOwner holds that answer for site.js too.
+const COUNTER_API = 'https://dl3.somov.org/api';
+const analytics = `<!-- Owner opt-out: open /?noga to stop counting this device, /?ga to resume. The owner's IPs are set on the counter. -->
 <script>
-(function(){var ID='${GA_ID}';try{var p=new URLSearchParams(location.search);if(p.has('noga'))localStorage.setItem('ga-optout','1');if(p.has('ga'))localStorage.removeItem('ga-optout');if(localStorage.getItem('ga-optout')==='1')window['ga-disable-'+ID]=true;}catch(e){}})();
+(function(){var ID='${GA_ID}';try{var p=new URLSearchParams(location.search);if(p.has('noga'))localStorage.setItem('ga-optout','1');if(p.has('ga'))localStorage.removeItem('ga-optout');if(localStorage.getItem('ga-optout')==='1')window['ga-disable-'+ID]=true;}catch(e){}
+window.siteOwner=window.fetch?fetch('${COUNTER_API}/stats').then(function(r){return r.json()}).catch(function(){return{owner:false}}):Promise.resolve({owner:false});
+window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments);};gtag('js',new Date());gtag('config',ID,{send_page_view:false});
+window.siteOwner.then(function(d){if(d&&d.owner)window['ga-disable-'+ID]=true;});
+Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({owner:false})},2500)})]).then(function(d){if(!(d&&d.owner))gtag('event','page_view');});})();
 </script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=${GA_ID}"></script>
-<script>
-window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');
-</script>`;
+<script async src="https://www.googletagmanager.com/gtag/js?id=${GA_ID}"></script>`;
 
 // Before first paint: use the saved language, otherwise the page language (/ru copies are Russian),
 // otherwise the browser language. Visitors of a /ru copy keep the usual address: the prefix is removed

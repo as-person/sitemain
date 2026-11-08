@@ -114,8 +114,8 @@
   }
   if ($('[data-stats-file]')) {
     languageListeners.push(renderStats);
-    fetch(COUNTER + '/stats')
-      .then(response => response.json())
+    // The page asks the counter once, in <head>; see `analytics` in _src/build.mjs.
+    (window.siteOwner || fetch(COUNTER + '/stats').then(response => response.json()))
       .then(data => {
         if (data.owner) {
           statsCounts = data.counts;
