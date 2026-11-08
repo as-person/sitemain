@@ -975,7 +975,7 @@ function supportPage() {
         </article>`,
     DONATE.tribute && `<article class="support-card support-card-tribute" id="tribute">
           <h2>${L('Bank card', 'Банковская карта')}</h2>
-          <p>${L('Cards from any country, through Tribute.', 'Карты любых стран, через Tribute.')}</p>
+          <p>${L('Cards from any country, through Tribute.', 'Карты любых стран и СБП, через Tribute.')}</p>
           <a class="btn btn-secondary" href="${esc(DONATE.tribute)}" target="_blank" rel="noopener">${L('Support by card', 'Поддержать картой')}</a>
         </article>`,
     cryptoCard(copyRow),
