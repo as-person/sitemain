@@ -9,6 +9,8 @@ DynamicUser=yes
 StateDirectory=somov-counter
 # Who was already counted today survives restarts and reboots (the file exists only while stopped)
 Environment=SEEN_PATH=/var/lib/somov-counter/seen.json
+# "Today" / week / month on the site start at midnight in Vietnam (UTC+7), where the owner lives
+Environment=TZ=Asia/Ho_Chi_Minh
 Restart=on-failure
 NoNewPrivileges=yes
 ProtectSystem=strict

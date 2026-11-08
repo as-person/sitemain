@@ -751,8 +751,10 @@ function settingsPage() {
     const searchText = [...plain(f.heading), ...plain(f.title), ...plain(f.desc), ...plain(f.link?.label), fileName]
       .filter(Boolean).join(' ').toLowerCase();
     // Owner-only line, like the tweaks: downloads of a file on dl3 and clicks on the link
-    const statsFile = f.file && !/^https?:\/\//.test(f.file) ? fileName : '';
-    const kinds = [statsFile && 'download', f.link?.url && 'link'].filter(Boolean);
+    // A file elsewhere never reaches dl3, so its button reports the click instead (counted with the link clicks)
+    const external = Boolean(f.file && /^https?:\/\//.test(f.file));
+    const statsFile = f.file && !external ? fileName : '';
+    const kinds = [statsFile && 'download', (f.link?.url || external) && 'link'].filter(Boolean);
     const featuredStats = kinds.length
       ? `<p class="stats-line tweak-stats" data-tweak-stats="featured" data-files="${esc(statsFile)}" data-kinds="${kinds.join(',')}" hidden></p>`
       : '';
@@ -768,7 +770,7 @@ function settingsPage() {
           </div>
           ${fileUrl ? `<div class="item-action">
             <span class="file-type">${fileTypeOf(fileName)}</span>
-            <a class="btn btn-secondary btn-sm" href="${esc(fileUrl)}">${icon('download')} <span>${S.download}</span></a>
+            <a class="btn btn-secondary btn-sm" href="${esc(fileUrl)}"${external ? ' ' + tweakCount('featured', 'link') : ''}>${icon('download')} <span>${S.download}</span></a>
           </div>` : ''}
         </article>
         </div>
