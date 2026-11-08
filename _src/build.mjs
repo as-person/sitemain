@@ -913,7 +913,7 @@ function supportPage() {
           <a class="btn btn-primary" href="${esc(DONATE.patreon)}" target="_blank" rel="noopener">${L('Support on Patreon', 'Поддержать на Patreon')}</a>
         </article>`,
     cryptoCard(copyRow),
-    `<article class="support-card">
+    `<article class="support-card support-card-yoomoney">
           <h2>${L('YooMoney', 'ЮMoney')}</h2>
           <p>${L('Russian bank cards and YooMoney wallet.', 'Российские банковские карты и кошелёк ЮMoney.')}</p>
           <a class="btn btn-secondary" href="${esc(DONATE.yoomoney)}" target="_blank" rel="noopener">${L('Open YooMoney', 'Перейти в ЮMoney')}</a>
