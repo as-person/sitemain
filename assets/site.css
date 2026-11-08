@@ -584,7 +584,11 @@ html:not([data-image]) .img-ru { display: none !important; }
   background: rgb(8 9 12 / .94);
   color: var(--text);
 }
-.lightbox[open] { display: grid; place-items: center; overflow: hidden; touch-action: pinch-zoom; }
+/* site.js handles every gesture here, so a pinch zooms the screenshot and not the page */
+.lightbox[open] { display: grid; place-items: center; overflow: hidden; touch-action: none; overscroll-behavior: contain; }
+.lightbox img { cursor: zoom-in; transform-origin: center; will-change: transform; }
+.lightbox.is-zoomed img { cursor: grab; }
+.lightbox.is-zoomed img:active { cursor: grabbing; }
 .lightbox::backdrop { background: transparent; }
 .lightbox img { width: min(100vw - 32px, 1600px, (100dvh - 120px) * var(--ar, 1.6)); height: auto; aspect-ratio: var(--ar, 1.6); max-height: calc(100dvh - 120px); border-radius: var(--r-sm); user-select: none; -webkit-user-select: none; -webkit-user-drag: none; -webkit-touch-callout: none; }
 .lb-btn {

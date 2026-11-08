@@ -430,6 +430,7 @@
     }
 
     function show(index) {
+      resetZoom();
       current = (index + shots.length) % shots.length;
       const url = shots[current].href;
       const thumb = $('img', shots[current]);
@@ -470,11 +471,19 @@
       if (event.key === 'ArrowRight') show(current + 1);
     });
 
-    // Touch: swipe left or right to browse, up or down to close. The image follows the finger.
+    // Gestures on the screenshot, not the page. Touch: swipe left or right to browse, up or down to close,
+    // pinch or double-tap to zoom, drag to move a zoomed screenshot. Mouse: wheel or double-click to zoom, drag to move.
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const EASE = '220ms cubic-bezier(.2, 0, 0, 1)';
-    let drag = null;
+    const MAX_ZOOM = 4;
+    const DOUBLE_TAP_ZOOM = 2.5;
+    const zoom = { s: 1, x: 0, y: 0 };
+    const pointers = new Map();
+    let gesture = null;
+    let lastTap = null;
+    let lastPointerType = 'mouse';
     let suppressClick = false;
+    image.draggable = false;
 
     function setDrag(x, y, fade) {
       image.style.translate = x + 'px ' + y + 'px';
@@ -482,7 +491,7 @@
     }
     function animate(apply, done) {
       const ms = reduceMotion.matches ? 0 : 220;
-      image.style.transition = ms ? 'translate ' + EASE + ', opacity ' + EASE : 'none';
+      image.style.transition = ms ? ['translate', 'transform', 'opacity'].map(p => p + ' ' + EASE).join(', ') : 'none';
       lightbox.style.transition = ms ? 'background-color ' + EASE : 'none';
       apply();
       setTimeout(() => {
@@ -495,32 +504,141 @@
       image.style.translate = image.style.opacity = '';
       lightbox.style.backgroundColor = '';
     }
-    lightbox.addEventListener('close', resetDrag);
 
-    lightbox.addEventListener('pointerdown', event => {
-      if (event.pointerType === 'mouse' || !event.isPrimary || event.target.closest('.lb-btn')) return;
-      // Leave the gesture to the browser while the page is pinch-zoomed in.
-      if (window.visualViewport && window.visualViewport.scale > 1.01) return;
-      drag = { id: event.pointerId, x: event.clientX, y: event.clientY, dx: 0, dy: 0, axis: null, t: event.timeStamp };
-      image.style.transition = lightbox.style.transition = 'none';
-    });
-    lightbox.addEventListener('pointermove', event => {
-      if (!drag || event.pointerId !== drag.id) return;
-      drag.dx = event.clientX - drag.x;
-      drag.dy = event.clientY - drag.y;
-      if (!drag.axis && Math.hypot(drag.dx, drag.dy) > 10) {
-        drag.axis = Math.abs(drag.dx) > Math.abs(drag.dy) ? 'x' : 'y';
-      }
-      if (drag.axis === 'x') setDrag(drag.dx, 0);
-      if (drag.axis === 'y') setDrag(0, drag.dy, Math.max(0.3, 1 - Math.abs(drag.dy) / 400));
-    });
-    function endDrag(event) {
-      if (!drag || event.pointerId !== drag.id) return;
-      const { axis, dx, dy, t } = drag;
-      drag = null;
-      if (!axis) return resetDrag();
+    function applyZoom() {
+      image.style.transform = zoom.s === 1 ? '' : 'translate(' + zoom.x + 'px, ' + zoom.y + 'px) scale(' + zoom.s + ')';
+      lightbox.classList.toggle('is-zoomed', zoom.s > 1);
+    }
+    function resetZoom() {
+      zoom.s = 1;
+      zoom.x = zoom.y = 0;
+      applyZoom();
+    }
+    // The image box as laid out, without the zoom.
+    function baseRect() {
+      const r = image.getBoundingClientRect();
+      return { cx: r.left + r.width / 2 - zoom.x, cy: r.top + r.height / 2 - zoom.y, w: r.width / zoom.s, h: r.height / zoom.s };
+    }
+    // A zoomed screenshot moves only as far as its edges reach the edges of the screen.
+    function clampPan(base) {
+      const mx = Math.max(0, (base.w * zoom.s - window.innerWidth) / 2);
+      const my = Math.max(0, (base.h * zoom.s - window.innerHeight) / 2);
+      zoom.x = Math.min(mx, Math.max(-mx, zoom.x));
+      zoom.y = Math.min(my, Math.max(-my, zoom.y));
+    }
+    // Zoom to `s`, keeping the point under (px, py) in place.
+    function zoomAt(s, px, py, base) {
+      base = base || baseRect();
+      s = Math.min(MAX_ZOOM, Math.max(1, s));
+      zoom.x = px - base.cx - (px - base.cx - zoom.x) * s / zoom.s;
+      zoom.y = py - base.cy - (py - base.cy - zoom.y) * s / zoom.s;
+      zoom.s = s;
+      if (s === 1) zoom.x = zoom.y = 0;
+      else clampPan(base);
+      applyZoom();
+    }
+    function toggleZoom(px, py) {
+      animate(() => (zoom.s > 1 ? resetZoom() : zoomAt(DOUBLE_TAP_ZOOM, px, py)));
+    }
+    // After a pinch: back to the allowed zoom range and inside the edges.
+    function settleZoom(base) {
+      animate(() => {
+        if (zoom.s <= 1.02) return resetZoom();
+        zoom.s = Math.min(MAX_ZOOM, zoom.s);
+        clampPan(base);
+        applyZoom();
+      });
+    }
+    function swallowClick() {
       suppressClick = true;
       setTimeout(() => { suppressClick = false; }, 0);
+    }
+
+    lightbox.addEventListener('close', () => {
+      pointers.clear();
+      gesture = lastTap = null;
+      resetDrag();
+      resetZoom();
+    });
+
+    function startSingle(event) {
+      const start = { id: event.pointerId, x: event.clientX, y: event.clientY, t: event.timeStamp, moved: false };
+      gesture = zoom.s > 1
+        ? Object.assign(start, { type: 'pan', x0: zoom.x, y0: zoom.y, base: baseRect() })
+        : Object.assign(start, { type: 'swipe', dx: 0, dy: 0, axis: null });
+    }
+    function startPinch() {
+      if (gesture && gesture.type === 'swipe') setDrag(0, 0);
+      const [a, b] = Array.from(pointers.values());
+      gesture = {
+        type: 'pinch',
+        d0: Math.max(1, Math.hypot(a.x - b.x, a.y - b.y)),
+        m0: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 },
+        s0: zoom.s, x0: zoom.x, y0: zoom.y, base: baseRect(),
+      };
+    }
+
+    lightbox.addEventListener('pointerdown', event => {
+      lastPointerType = event.pointerType;
+      if (event.target.closest('.lb-btn')) return;
+      // The mouse drags only a zoomed screenshot; browsing is on the buttons and arrow keys.
+      if (event.pointerType === 'mouse' && (event.button !== 0 || zoom.s === 1)) return;
+      if (event.pointerType === 'mouse') event.preventDefault();
+      pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      image.style.transition = lightbox.style.transition = 'none';
+      if (pointers.size === 2) startPinch();
+      else if (pointers.size === 1) startSingle(event);
+    });
+
+    lightbox.addEventListener('pointermove', event => {
+      const point = pointers.get(event.pointerId);
+      if (!point || !gesture) return;
+      point.x = event.clientX;
+      point.y = event.clientY;
+      if (gesture.type === 'pinch') {
+        if (pointers.size < 2) return;
+        const [a, b] = Array.from(pointers.values());
+        const m = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+        const s = Math.min(MAX_ZOOM * 1.25, Math.max(0.6, gesture.s0 * Math.hypot(a.x - b.x, a.y - b.y) / gesture.d0));
+        zoom.x = m.x - gesture.base.cx - (gesture.m0.x - gesture.base.cx - gesture.x0) * s / gesture.s0;
+        zoom.y = m.y - gesture.base.cy - (gesture.m0.y - gesture.base.cy - gesture.y0) * s / gesture.s0;
+        zoom.s = s;
+        image.style.transform = 'translate(' + zoom.x + 'px, ' + zoom.y + 'px) scale(' + s + ')';
+        return;
+      }
+      if (event.pointerId !== gesture.id) return;
+      const dx = event.clientX - gesture.x;
+      const dy = event.clientY - gesture.y;
+      if (Math.hypot(dx, dy) > 8) gesture.moved = true;
+      if (gesture.type === 'pan') {
+        zoom.x = gesture.x0 + dx;
+        zoom.y = gesture.y0 + dy;
+        clampPan(gesture.base);
+        applyZoom();
+        return;
+      }
+      gesture.dx = dx;
+      gesture.dy = dy;
+      if (!gesture.axis && gesture.moved) gesture.axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+      if (gesture.axis === 'x') setDrag(dx, 0);
+      if (gesture.axis === 'y') setDrag(0, dy, Math.max(0.3, 1 - Math.abs(dy) / 400));
+    });
+
+    function tap(event) {
+      if (event.pointerType === 'mouse') return;
+      const isDouble = lastTap && event.timeStamp - lastTap.t < 300
+        && Math.hypot(event.clientX - lastTap.x, event.clientY - lastTap.y) < 30;
+      if (isDouble) {
+        lastTap = null;
+        swallowClick();
+        toggleZoom(event.clientX, event.clientY);
+      } else {
+        lastTap = { t: event.timeStamp, x: event.clientX, y: event.clientY };
+      }
+    }
+
+    function endSwipe(event, g) {
+      const { axis, dx, dy, t } = g;
       const distance = axis === 'x' ? dx : dy;
       const speed = Math.abs(distance) / Math.max(1, event.timeStamp - t);
       const passed = event.type === 'pointerup' && (Math.abs(distance) > 60 || (speed > 0.5 && Math.abs(distance) > 20));
@@ -539,9 +657,46 @@
         animate(() => { setDrag(0, 0); image.style.opacity = ''; });
       });
     }
-    lightbox.addEventListener('pointerup', endDrag);
-    lightbox.addEventListener('pointercancel', endDrag);
-    // A swipe must not count as a tap on the backdrop.
+
+    function endPointer(event) {
+      if (!pointers.delete(event.pointerId) || !gesture) return;
+      const g = gesture;
+      if (g.type === 'pinch') {
+        swallowClick();
+        lastTap = null;
+        settleZoom(g.base);
+        // One finger still down: it goes on moving the zoomed screenshot.
+        const [rest] = Array.from(pointers.entries());
+        gesture = null;
+        if (rest && zoom.s > 1.02) {
+          gesture = { type: 'pan', id: rest[0], x: rest[1].x, y: rest[1].y, t: event.timeStamp, moved: true, x0: zoom.x, y0: zoom.y, base: g.base };
+        }
+        return;
+      }
+      if (event.pointerId !== g.id) return;
+      gesture = null;
+      if (!g.moved) {
+        if (g.type === 'swipe') resetDrag();
+        return tap(event);
+      }
+      swallowClick();
+      lastTap = null;
+      if (g.type === 'swipe' && g.axis) endSwipe(event, g);
+    }
+    lightbox.addEventListener('pointerup', endPointer);
+    lightbox.addEventListener('pointercancel', endPointer);
+
+    // Mouse: double-click zooms in at the cursor and back out; the wheel zooms smoothly.
+    image.addEventListener('dblclick', event => {
+      if (lastPointerType === 'mouse') toggleZoom(event.clientX, event.clientY);
+    });
+    lightbox.addEventListener('wheel', event => {
+      event.preventDefault();
+      image.style.transition = 'none';
+      zoomAt(zoom.s * Math.exp(-event.deltaY * 0.002), event.clientX, event.clientY);
+    }, { passive: false });
+
+    // A swipe, pinch or drag must not count as a tap on the backdrop.
     lightbox.addEventListener('click', event => {
       if (suppressClick) event.stopImmediatePropagation();
     }, true);
