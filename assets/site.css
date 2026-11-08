@@ -869,6 +869,8 @@ html:not([data-image]) .img-ru { display: none !important; }
 
 .support-nudge { color: var(--muted); font-size: var(--fs-xs); text-align: center; }
 .support-grid { display: grid; gap: 12px; margin-top: 32px; }
+/* Links like /support#crypto from Telegram posts: keep the card clear of the sticky header */
+.support-card[id] { scroll-margin-top: 88px; }
 .support-card {
   display: flex;
   flex-direction: column;

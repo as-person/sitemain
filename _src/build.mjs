@@ -870,7 +870,7 @@ function cryptoCard(copyRow) {
   const variants = CRYPTO.flatMap(coin => coin.networks.map(net => ({ coin, net, key: coin.networks.length > 1 ? `${coin.id}-${net.id}` : coin.id })));
   const isDefault = v => v.coin === first && v.net === first.networks[0];
   const chevron = `<svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>`;
-  return `<article class="support-card crypto" data-crypto>
+  return `<article class="support-card crypto" id="crypto" data-crypto>
           <h2>${L('Crypto', 'Криптовалюта')}</h2>
           <div class="crypto-fields">
             <div class="select-field">
@@ -927,7 +927,7 @@ function supportPage() {
           <a class="btn btn-primary" href="${esc(DONATE.patreon)}" target="_blank" rel="noopener">${L('Support on Patreon', 'Поддержать на Patreon')}</a>
         </article>`,
     cryptoCard(copyRow),
-    `<article class="support-card support-card-yoomoney">
+    `<article class="support-card support-card-yoomoney" id="yoomoney">
           <h2>${L('YooMoney', 'ЮMoney')}</h2>
           <p>${L('Russian bank cards and YooMoney wallet.', 'Российские банковские карты и кошелёк ЮMoney.')}</p>
           <a class="btn btn-secondary" href="${esc(DONATE.yoomoney)}" target="_blank" rel="noopener">${L('Open YooMoney', 'Перейти в ЮMoney')}</a>
