@@ -14,6 +14,7 @@ const readJson = name => JSON.parse(readFileSync(join(SRC, 'data', name), 'utf8'
 const builds = readJson('builds.json');
 const ghost = readJson('ghost-spectre.json');
 const settings = readJson('settings.json');
+const featured = readJson('featured.json'); // the card at the top of /settings-for-windows
 
 const SITE = 'https://somov.org';
 const CDN = 'https://dl3.somov.org/';
@@ -739,6 +740,33 @@ function settingsPage() {
         </article>`;
   };
 
+  // The first section of the page, from _src/data/featured.json ("show": false hides it).
+  // It works like a category: its own chip, search and filter. "file" is a file name on dl3 or a full https:// address.
+  const featuredHtml = () => {
+    if (!featured.show) return '';
+    const f = featured;
+    const fileUrl = f.file && (/^https?:\/\//.test(f.file) ? f.file : CDN + f.file);
+    const fileName = f.file && decodeURIComponent(f.file.split('/').pop());
+    const searchText = [...plain(f.heading), ...plain(f.title), ...plain(f.desc), ...plain(f.link?.label), fileName]
+      .filter(Boolean).join(' ').toLowerCase();
+    return `<section class="section group" data-group="featured">
+        <h2 class="group-title">${T(f.heading)}</h2>
+        <div class="rows">
+        <article class="item" id="featured" data-category="featured" data-search="${esc(searchText)}">
+          <div${fileUrl ? '' : ' class="item-full"'}>
+            <h3 class="item-title">${T(f.title)}</h3>
+            ${f.desc ? `<p class="item-desc">${T(f.desc)}</p>` : ''}
+            ${f.link?.url ? `<div class="item-links">${tweakLinkHtml(f.link, 'featured')}</div>` : ''}
+          </div>
+          ${fileUrl ? `<div class="item-action">
+            <span class="file-type">${fileTypeOf(fileName)}</span>
+            <a class="btn btn-secondary btn-sm" href="${esc(fileUrl)}">${icon('download')} <span>${S.download}</span></a>
+          </div>` : ''}
+        </article>
+        </div>
+      </section>`;
+  };
+
   const body = `<main class="page" id="content">
     <div class="container container-narrow">
       <a href="/" class="back">${icon('back')} ${S.home}</a>
@@ -753,6 +781,7 @@ function settingsPage() {
         </label>
         <div class="chips" role="group" ${attr('aria-label', 'Categories', 'Категории')}>
           <button type="button" class="chip" data-category="all" aria-pressed="true">${L('All', 'Все')}</button>
+          ${featured.show ? `<button type="button" class="chip" data-category="featured" aria-pressed="false">${T(featured.heading)}</button>` : ''}
           ${settings.categories.map(c => `<button type="button" class="chip" data-category="${c.id}" aria-pressed="false">${T(c.title)}</button>`).join('\n          ')}
         </div>
       </div>
@@ -763,6 +792,8 @@ function settingsPage() {
         <ol></ol>
       </details>
       <p class="empty" id="empty" hidden>${L('Nothing found. Try another word or category.', 'Ничего не найдено. Попробуйте другое слово или категорию.')}</p>
+
+      ${featuredHtml()}
 
       ${settings.categories.map(c => `<section class="section group" data-group="${c.id}">
         <h2 class="group-title">${T(c.title)}</h2>

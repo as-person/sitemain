@@ -1,0 +1,23 @@
+{
+  "show": true,
+  "heading": {
+    "en": "Test1",
+    "ru": "Тест1"
+  },
+  "title": {
+    "en": "Test title",
+    "ru": "Тестовое название"
+  },
+  "desc": {
+    "en": "Test description: one or two sentences about what this is.",
+    "ru": "Тестовое описание: одно-два предложения о том, что это."
+  },
+  "link": {
+    "url": "",
+    "label": {
+      "en": "",
+      "ru": ""
+    }
+  },
+  "file": "NumLockOnDefault.reg"
+}
