@@ -127,7 +127,7 @@ const S = {
   downloadIsoIn: { en: L('Download English ISO', 'Скачать английский ISO'), ru: L('Download Russian ISO', 'Скачать русский ISO') },
   english: L('English', 'Английский'),
   russian: L('Russian', 'Русский'),
-  final: L('Final', 'Финальная'),
+  final: L('End of Servicing', 'Окончание срока поддержки'), // the same wording as on Ghost Spectre
 };
 const imageLangName = lang => (lang === 'ru' ? S.russian : S.english);
 
@@ -452,7 +452,6 @@ function buildPage(build, preset) {
         <h1 class="page-title">${esc(build.title)}</h1>
         <div class="meta">
           <span class="author">${L('Author:', 'Автор:')} <b>somov</b></span>
-          <span aria-hidden="true">·</span>
           <span>${build.version}</span>
           <span aria-hidden="true">·</span>
           <span class="mono">${build.number}</span>

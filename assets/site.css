@@ -323,7 +323,7 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 }
 .result h2 { font-size: var(--fs-xl); line-height: 1.25; letter-spacing: -.015em; }
 .result .meta { margin-top: 8px; }
-.result .meta .author { flex-basis: 100%; } /* author on its own line, the build details below it */
+.result .meta .author, .build-head .meta .author { flex-basis: 100%; } /* author on its own line, the build details below it */
 /* A soft button without a border: clearly clickable, but unlike the download buttons next to it */
 .details-link {
   display: inline-flex;
