@@ -1001,10 +1001,23 @@ function supportPage() {
 
 /* -- Robots and sitemap -------------------------------------------------- */
 
+// Every page of the site, without the /ru prefix and the -en / -ru build variants
+const sitePaths = () => ['/', '/ghost-spectre', '/settings-for-windows', '/support',
+  ...builds.map(b => `/windows-${b.id}`),
+  ...settings.items.map(i => `/tweaks/${i.id}`)];
+
+// What the counter on dl3 accepts: it downloads this file from somov.org and ignores anything else,
+// so nobody can fill the stats with made-up pages or tweaks.
+function counterKeys() {
+  writeFileSync(join(ROOT, 'counter-keys.json'), JSON.stringify({
+    pages: sitePaths(),
+    tweaks: [...settings.items.map(i => i.id), ...(featured.show ? ['featured'] : [])],
+    places: ['header', 'footer', 'home', 'build'], // data-tg-placement of the Telegram links
+  }, null, 2) + '\n');
+}
+
 function sitemap() {
-  const paths = ['/', '/ghost-spectre', '/settings-for-windows', '/support',
-    ...builds.map(b => `/windows-${b.id}`),
-    ...settings.items.map(i => `/tweaks/${i.id}`)];
+  const paths = sitePaths();
   const alternates = path => LANGS.map(l => `    <xhtml:link rel="alternate" hreflang="${l}" href="${SITE}${langPath(l, path)}"/>`).join('\n');
   write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
@@ -1043,4 +1056,5 @@ for (const lang of LANGS) {
 PAGE_LANG = 'en';
 notFoundPage();
 sitemap();
+counterKeys();
 console.log('Site built.');

@@ -146,7 +146,10 @@
         const link = $('.item-title a', item);
         // Tweaks link to their own page; the featured item at the top has none, so it links to itself
         const href = link ? link.getAttribute('href') : '#' + item.id;
-        return { numbers, line, total: numbers.download + numbers.copy + numbers.link, title: $('.item-title', item).innerText, href };
+        // Not innerText: for an item hidden by the search it returns both languages at once
+        const titleEl = $('.item-title', item);
+        const title = ($('.lang-' + currentLang(), titleEl) || titleEl).textContent.trim();
+        return { numbers, line, total: numbers.download + numbers.copy + numbers.link, title, href };
       }).sort((a, b) => b.total - a.total);
       $('ol', ranking).replaceChildren(...rows.map(row => {
         const li = document.createElement('li');

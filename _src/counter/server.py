@@ -17,6 +17,8 @@ Runs behind nginx, which sets X-Real-IP. Visitor IPs are never stored: the count
 already counted by a salted hash of the IP and the action. On stop (an update, a reboot) it saves these
 hashes to SEEN_PATH and on start reads them back and deletes the file, so nobody is counted twice and
 nothing about visitors stays on disk while the counter runs.
+Only real pages, tweaks and Telegram link places are counted: the site publishes them in
+/counter-keys.json on every build, and the counter downloads that list every 10 minutes (KEYS_URL).
 """
 import hashlib
 import json
@@ -28,6 +30,7 @@ import re
 import sqlite3
 import threading
 import time
+import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, unquote, urlsplit
 
@@ -36,6 +39,9 @@ DB_PATH = os.environ.get('DB_PATH', '/var/lib/somov-counter/counts.db')
 PORT = int(os.environ.get('PORT', '8095'))
 ALLOWED_ORIGIN = os.environ.get('ALLOWED_ORIGIN', 'https://somov.org')
 SEEN_PATH = os.environ.get('SEEN_PATH', '')
+KEYS_URL = os.environ.get('KEYS_URL', 'https://somov.org/counter-keys.json')
+KEYS_CACHE = os.path.join(os.path.dirname(DB_PATH), 'counter-keys.json')  # used until the site answers
+KEYS_REFRESH = 600
 OWNER_IPS = {ip.strip() for ip in os.environ.get('OWNER_IPS', '').split(',') if ip.strip()}
 
 FILE_RE = re.compile(r'^[^/\\\x00-\x1f]{1,200}$')
@@ -52,6 +58,44 @@ db.commit()
 lock = threading.Lock()
 last_counted = {}  # hash of (ip, action) -> unix time it was counted
 salt = secrets.token_hex(16)
+
+
+allowed = None  # {'pages': set, 'tweaks': set, 'places': set}; None until a list is loaded
+
+
+def parse_keys(data):
+    keys = {name: set(data[name]) for name in ('pages', 'tweaks', 'places')}
+    if not all(isinstance(v, str) for values in keys.values() for v in values) or not keys['pages']:
+        raise ValueError('bad counter keys')
+    return keys
+
+
+def refresh_keys():
+    """Loads the list from the cache, then keeps it up to date from the site."""
+    global allowed
+    try:
+        with open(KEYS_CACHE) as f:
+            allowed = parse_keys(json.load(f))
+    except (OSError, ValueError, KeyError, TypeError):
+        pass
+    while True:
+        try:
+            request = urllib.request.Request(KEYS_URL, headers={'User-Agent': 'somov-counter'})
+            with urllib.request.urlopen(request, timeout=15) as response:
+                raw = response.read(1_000_000)
+            keys = parse_keys(json.loads(raw))
+            allowed = keys
+            with open(KEYS_CACHE + '.tmp', 'wb') as f:
+                f.write(raw)
+            os.replace(KEYS_CACHE + '.tmp', KEYS_CACHE)
+        except Exception:  # the site is unreachable or the file is broken: keep the previous list
+            pass
+        time.sleep(KEYS_REFRESH)
+
+
+def known(group, value):
+    # Before the first list is loaded everything that passes the format check is accepted
+    return allowed is None or value in allowed[group]
 
 
 def load_seen():
@@ -190,7 +234,7 @@ class Handler(BaseHTTPRequestHandler):
             kind = query.get('kind', [''])[0]
             page = query.get('page', [''])[0]
             if page:
-                if kind != 'view' or not PAGE_RE.match(page):
+                if kind != 'view' or not PAGE_RE.match(page) or not known('pages', page):
                     return self.respond(400)
                 ip = self.headers.get('X-Real-IP', '')
                 if ip and ip not in OWNER_IPS and first_today((ip, 'page', page)):
@@ -198,7 +242,7 @@ class Handler(BaseHTTPRequestHandler):
                 return self.respond(204)
             place = query.get('tg', [''])[0]
             if place:
-                if kind != 'click' or not PLACE_RE.match(place):
+                if kind != 'click' or not PLACE_RE.match(place) or not known('places', place):
                     return self.respond(400)
                 ip = self.headers.get('X-Real-IP', '')
                 if ip and ip not in OWNER_IPS:
@@ -210,7 +254,7 @@ class Handler(BaseHTTPRequestHandler):
                 return self.respond(204)
             tweak = query.get('tweak', [''])[0]
             if tweak:
-                if kind not in TWEAK_KINDS or not TWEAK_RE.match(tweak):
+                if kind not in TWEAK_KINDS or not TWEAK_RE.match(tweak) or not known('tweaks', tweak):
                     return self.respond(400)
                 return self.count('tweak:' + tweak, kind, ('tweak', tweak, kind))
             if kind != 'magnet':
@@ -232,4 +276,5 @@ class Handler(BaseHTTPRequestHandler):
 if __name__ == '__main__':
     load_seen()
     signal.signal(signal.SIGTERM, save_seen)
+    threading.Thread(target=refresh_keys, daemon=True).start()
     ThreadingHTTPServer(('127.0.0.1', PORT), Handler).serve_forever()
