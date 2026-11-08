@@ -164,7 +164,7 @@
       "id": "winrar", "category": "apps",
       "title": { "en": "WinRAR", "ru": "WinRAR" },
       "desc": { "en": "A popular archiver with support for many formats, encryption and multi-volume archives.", "ru": "Популярный архиватор с поддержкой множества форматов, шифрованием и многотомными архивами." },
-      "file": "WinRAR.v7.22.exe"
+      "file": "WinRAR.v7.23.exe"
     },
     {
       "id": "acrobat-reader", "category": "apps",

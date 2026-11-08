@@ -437,8 +437,6 @@ function buildPage(build, preset) {
           ${build.final ? `<span class="badge">${S.final}</span>` : ''}
         </div>
         ${shareRow()}
-          </div>
-        </div>
         <p class="lead">${T(build.lead)}</p>
       </div>
 
@@ -623,7 +621,9 @@ const shareRow = () => `<div class="share">
               <a role="menuitem" href="#" target="_blank" rel="noopener" data-share-service="facebook">Facebook</a>
               <a role="menuitem" href="#" target="_blank" rel="noopener" data-share-service="reddit">Reddit</a>
               <a role="menuitem" href="#" data-share-service="email">Email</a>
-            </div>`;
+            </div>
+          </div>
+        </div>`;
 
 const tgCard = placement => `<a class="tg-card" href="${TELEGRAM}" target="_blank" rel="noopener" data-tg-placement="${placement}">
           <span class="tg-icon">${icon('send')}</span>
