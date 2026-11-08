@@ -242,11 +242,15 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
-    def is_owner(self):
+    def owner_via(self):
+        """'ip', 'token' or '' — how the owner was recognized ('token' at home means the home IP changed)."""
         if self.headers.get('X-Real-IP', '') in OWNER_IPS:
-            return True
+            return 'ip'
         token = parse_qs(urlsplit(self.path).query).get('owner', [''])[0]
-        return bool(token) and any(hmac.compare_digest(token, t) for t in OWNER_TOKENS)
+        return 'token' if token and any(hmac.compare_digest(token, t) for t in OWNER_TOKENS) else ''
+
+    def is_owner(self):
+        return bool(self.owner_via())
 
     def count(self, key, kind, dedupe):
         ip = self.headers.get('X-Real-IP', '')
@@ -312,8 +316,9 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if urlsplit(self.path).path != '/api/stats':
             return self.respond(404)
-        if self.is_owner():
-            return self.respond(200, {'owner': True, 'counts': read_counts()})
+        via = self.owner_via()
+        if via:
+            return self.respond(200, {'owner': True, 'via': via, 'counts': read_counts()})
         return self.respond(200, {'owner': False})
 
 
