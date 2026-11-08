@@ -109,6 +109,7 @@ const PATHS = {
   close: 'M6 6l12 12M18 6 6 18',
   left: 'm15 6-6 6 6 6',
   right: 'm9 6 6 6-6 6',
+  alert: '<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/>',
 };
 const icon = name => {
   const shape = PATHS[name];
@@ -675,10 +676,12 @@ const textIn = (value, lang) => (value && typeof value === 'object' ? value[lang
 
 // A link may exist in one language only, or point to a different URL per language.
 // Owner-only counter line of a tweak: file downloads (counted by the server), copies and link clicks (reported by the site).
+// "warning" in settings.json: something to know before applying the tweak
+const tweakWarning = item => (item.warning ? `<p class="item-warning">${icon('alert')}<span>${T(item.warning)}</span></p>` : '');
+const tweakFiles = item => [item.file, ...(item.downloads ?? []).map(d => d.file)].filter(Boolean).map(f => decodeURIComponent(f));
 const tweakStats = item => {
-  const files = [item.file, ...(item.downloads ?? []).map(d => d.file)].filter(Boolean).map(f => decodeURIComponent(f));
-  const kinds = [files.length && 'download', item.commands && 'copy', item.links?.length && 'link'].filter(Boolean);
-  return kinds.length ? `<p class="stats-line tweak-stats" data-tweak-stats="${item.id}" data-files="${esc(files.join('|'))}" data-kinds="${kinds.join(',')}" hidden></p>` : '';
+  const kinds = [tweakFiles(item).length && 'download', item.commands && 'copy', item.links?.length && 'link'].filter(Boolean);
+  return kinds.length ? `<p class="stats-line tweak-stats" data-tweak-stats="${item.id}" data-kinds="${kinds.join(',')}" hidden></p>` : '';
 };
 const tweakCount = (id, kind) => `data-count-tweak="${id}" data-count-kind="${kind}"`;
 
@@ -732,7 +735,7 @@ function settingsPage() {
 
   const itemHtml = item => {
     const searchText = [
-      ...plain(item.title), ...plain(item.desc), item.file ? decodeURIComponent(item.file) : '',
+      ...plain(item.title), ...plain(item.desc), ...plain(item.warning), item.file ? decodeURIComponent(item.file) : '',
       ...(item.commands ?? []).flatMap(c => [...plain(c.label), c.code]),
       ...(item.downloads ?? []).map(d => d.label),
       ...(item.keys ?? []).flatMap(k => [...plain(k.combo), ...plain(k.desc)]),
@@ -744,6 +747,7 @@ function settingsPage() {
           <div${hasAction ? '' : ' class="item-full"'}>
             <h3 class="item-title"><a href="/tweaks/${item.id}">${T(item.title)}</a></h3>
             ${item.desc ? `<p class="item-desc">${T(item.desc)}</p>` : ''}
+            ${tweakWarning(item)}
             ${item.tags?.length ? `<div class="item-tags">${item.tags.map(tag => `<span class="badge">${TAGS[tag]}</span>`).join('')}</div>` : ''}
             ${item.links?.length ? `<div class="item-links">${item.links.map(l => linkHtml(l, item.id)).join('')}</div>` : ''}
             ${item.commands ? `<div class="commands">${item.commands.map(c => `<div>
@@ -782,7 +786,7 @@ function settingsPage() {
     const statsFile = f.file && !external ? fileName : '';
     const kinds = [statsFile && 'download', (f.link?.url || external) && 'link'].filter(Boolean);
     const featuredStats = kinds.length
-      ? `<p class="stats-line tweak-stats" data-tweak-stats="featured" data-files="${esc(statsFile)}" data-kinds="${kinds.join(',')}" hidden></p>`
+      ? `<p class="stats-line tweak-stats" data-tweak-stats="featured" data-kinds="${kinds.join(',')}" hidden></p>`
       : '';
     return `<section class="section group" data-group="featured">
         <h2 class="group-title">${T(f.heading)}</h2>
@@ -878,6 +882,7 @@ function tweakPage(item) {
       <h1 class="page-title">${T(item.title)}</h1>
       ${shareRow()}
       ${item.desc ? `<p class="lead">${T(item.desc)}</p>` : ''}
+      ${tweakWarning(item)}
       ${tweakTags(item)}
       ${item.links?.length ? `<div class="item-links">${item.links.map(l => tweakLinkHtml(l, item.id)).join('')}</div>` : ''}
       ${tweakStats(item)}
@@ -1034,6 +1039,19 @@ const sitePaths = () => ['/', '/ghost-spectre', '/settings-for-windows', '/suppo
   ...builds.map(b => `/windows-${b.id}`),
   ...settings.items.map(i => `/tweaks/${i.id}`)];
 
+// Tweak downloads are counted per tweak, not per file name: a new version of a tool comes with a new file name,
+// and its count must go on. The counter remembers every file -> tweak pair it has ever seen, so an old file
+// opened from an old link still counts for the same tweak. Builds (somov and Ghost Spectre) are not listed:
+// their counts are per file, so a new build starts from zero.
+function counterFiles() {
+  const files = {};
+  for (const item of settings.items) for (const file of tweakFiles(item)) files[file] = `tweak:${item.id}`;
+  if (featured.show && featured.file && !/^https?:[/][/]/.test(featured.file)) {
+    files[decodeURIComponent(featured.file.split('/').pop())] = 'tweak:featured';
+  }
+  return files;
+}
+
 // What the counter on dl3 accepts: it downloads this file from somov.org and ignores anything else,
 // so nobody can fill the stats with made-up pages or tweaks.
 function counterKeys() {
@@ -1041,6 +1059,7 @@ function counterKeys() {
     pages: sitePaths(),
     tweaks: [...settings.items.map(i => i.id), ...(featured.show ? ['featured'] : [])],
     places: ['header', 'footer', 'home', 'build'], // data-tg-placement of the Telegram links
+    files: counterFiles(),
   }, null, 2) + '\n');
 }
 

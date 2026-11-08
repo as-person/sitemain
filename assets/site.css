@@ -723,6 +723,22 @@ html:not([data-image]) .img-ru { display: none !important; }
 .item-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .item-links { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 8px; font-size: var(--fs-sm); }
 .item-full { grid-column: 1 / -1; }
+/* "warning" of a tweak: read before applying */
+.item-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid rgb(245 194 107 / .28);
+  border-radius: var(--r-sm);
+  background: rgb(245 194 107 / .07);
+  color: var(--text);
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+}
+.item-warning .icon { flex: none; width: 16px; height: 16px; margin-top: 2px; color: #f5c26b; }
+.lead + .item-warning { margin-top: 16px; }
 
 .item-action { display: flex; align-items: center; gap: 10px; }
 .file-type { color: var(--muted); font-family: var(--mono); font-size: 12px; }

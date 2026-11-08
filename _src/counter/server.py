@@ -17,7 +17,8 @@ Runs behind nginx, which sets X-Real-IP. Visitor IPs are never stored: the count
 already counted by a salted hash of the IP and the action. On stop (an update, a reboot) it saves these
 hashes to SEEN_PATH and on start reads them back and deletes the file, so nobody is counted twice and
 nothing about visitors stays on disk while the counter runs.
-Only real pages, tweaks and Telegram link places are counted: the site publishes them in
+Tweak downloads are kept per tweak, not per file name (KEYS_URL also maps every tweak file to its tweak),
+so a new version of a tool continues the count; builds are counted per file and start anew with a new file. Only real pages, tweaks and Telegram link places are counted: the site publishes them in
 /counter-keys.json on every build, and the counter downloads that list every 10 minutes (KEYS_URL).
 """
 import hashlib
@@ -62,11 +63,39 @@ salt = secrets.token_hex(16)
 
 allowed = None  # {'pages': set, 'tweaks': set, 'places': set}; None until a list is loaded
 
+# Tweak file name -> tweak:<id>. Every pair ever seen is kept, so a new version of a tool continues the count
+# of its tweak and an old file still counts under it. Builds are not mapped: they are counted per file.
+db.execute('CREATE TABLE IF NOT EXISTS aliases (file TEXT PRIMARY KEY, key TEXT NOT NULL)')
+db.commit()
+aliases = dict(db.execute('SELECT file, key FROM aliases'))
+
+
+def resolve(name):
+    return aliases.get(name, name)
+
+
+def remember_files(files):
+    """Stores new file -> key pairs and moves counts recorded under a file name to its key."""
+    with lock:
+        for file, key in files.items():
+            if aliases.get(file) == key:
+                continue
+            db.execute('INSERT INTO aliases VALUES (?, ?) ON CONFLICT (file) DO UPDATE SET key = excluded.key', (file, key))
+            rows = db.execute('SELECT kind, n FROM counts WHERE file = ?', (file,)).fetchall()
+            for kind, n in rows:
+                db.execute('INSERT INTO counts VALUES (?, ?, ?) ON CONFLICT (file, kind) DO UPDATE SET n = n + ?', (key, kind, n, n))
+            db.execute('DELETE FROM counts WHERE file = ?', (file,))
+            aliases[file] = key
+        db.commit()
+
 
 def parse_keys(data):
     keys = {name: set(data[name]) for name in ('pages', 'tweaks', 'places')}
+    keys['files'] = dict(data.get('files', {}))
     if not all(isinstance(v, str) for values in keys.values() for v in values) or not keys['pages']:
         raise ValueError('bad counter keys')
+    if not all(isinstance(v, str) and re.match(r'^tweak:[a-z0-9-]{1,60}$', v) for v in keys['files'].values()):
+        raise ValueError('bad file keys')
     return keys
 
 
@@ -76,6 +105,7 @@ def refresh_keys():
     try:
         with open(KEYS_CACHE) as f:
             allowed = parse_keys(json.load(f))
+        remember_files(allowed['files'])
     except (OSError, ValueError, KeyError, TypeError):
         pass
     while True:
@@ -84,6 +114,7 @@ def refresh_keys():
             with urllib.request.urlopen(request, timeout=15) as response:
                 raw = response.read(1_000_000)
             keys = parse_keys(json.loads(raw))
+            remember_files(keys['files'])
             allowed = keys
             with open(KEYS_CACHE + '.tmp', 'wb') as f:
                 f.write(raw)
@@ -223,12 +254,14 @@ class Handler(BaseHTTPRequestHandler):
                 image = name[:-len('.torrent')]
                 if not file_exists(image):
                     return self.respond(400)
-                return self.count(image, 'torrent', ('image', image))
+                key = resolve(image)
+                return self.count(key, 'torrent', ('image', key))
             if not file_exists(name):
                 return self.respond(400)
+            key = resolve(name)
             if is_image(name):
-                return self.count(name, 'download', ('image', name))
-            return self.count(name, 'download', ('file', name))
+                return self.count(key, 'download', ('image', key))
+            return self.count(key, 'download', ('file', name))
         if url.path == '/api/count':
             query = parse_qs(url.query)
             kind = query.get('kind', [''])[0]
@@ -262,7 +295,8 @@ class Handler(BaseHTTPRequestHandler):
             file = query.get('file', [''])[0]
             if not is_image(file) or not file_exists(file):
                 return self.respond(400)
-            return self.count(file, 'magnet', ('image', file))
+            key = resolve(file)
+            return self.count(key, 'magnet', ('image', key))
         return self.respond(404)
 
     def do_GET(self):

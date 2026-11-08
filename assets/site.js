@@ -113,12 +113,12 @@
       line.hidden = false;
     });
 
-    // Tweaks: downloads of their files, copied commands and opened links
+    // Tweaks: downloads of their files (the server counts them under the tweak, whatever the file version),
+    // copied commands and opened links
     const tweakNumbers = line => {
-      const files = line.dataset.files ? line.dataset.files.split('|') : [];
       const own = statsCounts['tweak:' + line.dataset.tweakStats] || {};
       return {
-        download: files.reduce((sum, file) => sum + ((statsCounts[file] || {}).download || 0), 0),
+        download: own.download || 0,
         copy: own.copy || 0,
         link: own.link || 0,
       };

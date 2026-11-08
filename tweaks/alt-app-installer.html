@@ -37,7 +37,7 @@ window.siteOwner.then(function(d){if(d&&d.owner)window['ga-disable-'+ID]=true;})
 Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({owner:false})},2500)})]).then(function(d){if(!(d&&d.owner))gtag('event','page_view');});})();
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-4RBN0G8775"></script>
-  <link rel="stylesheet" href="/assets/site.css?v=3bf984a3">
+  <link rel="stylesheet" href="/assets/site.css?v=0fd5c594">
 </head>
 <body>
   <a class="skip-link" href="#content"><span class="lang-en">Skip to content</span><span class="lang-ru">Перейти к содержимому</span></a>
@@ -83,17 +83,19 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
         </div>
       <p class="lead"><span class="lang-en">Installs apps from Microsoft Store without using the Microsoft Store.</span><span class="lang-ru">Устанавливает программы из Microsoft Store без участия самого Microsoft Store.</span></p>
       
+      
       <div class="item-links"><a class="link" href="https://www.youtube.com/watch?v=ayIilTc-6u4" target="_blank" rel="noopener" data-count-tweak="alt-app-installer" data-count-kind="link"><span class="lang-en">Guide</span><span class="lang-ru">Инструкция</span></a><a class="link" href="https://github.com/mjishnu/alt-app-installer/releases" target="_blank" rel="noopener" data-count-tweak="alt-app-installer" data-count-kind="link">GitHub</a></div>
-      <p class="stats-line tweak-stats" data-tweak-stats="alt-app-installer" data-files="altappinstaller.exe" data-kinds="download,link" hidden></p>
+      <p class="stats-line tweak-stats" data-tweak-stats="alt-app-installer" data-kinds="download,link" hidden></p>
       <section class="tweak-card">
           <div class="tweak-download">
-            <a class="btn btn-primary" href="https://dl3.somov.org/altappinstaller.exe"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
-            <span class="file-type">.exe</span>
+            <a class="btn btn-primary" href="https://dl3.somov.org/altappinstaller-v2.7.3.zip"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
+            <span class="file-type">.zip</span>
           </div>
           <h2><span class="lang-en">How to apply</span><span class="lang-ru">Как применить</span></h2>
           <ol class="steps">
-            <li><span><span class="lang-en">Download the file.</span><span class="lang-ru">Скачайте файл.</span></span></li>
-            <li><span><span class="lang-en">Run it and follow the instructions on the screen.</span><span class="lang-ru">Запустите его и следуйте инструкциям на экране.</span></span></li>
+            <li><span><span class="lang-en">Download the archive.</span><span class="lang-ru">Скачайте архив.</span></span></li>
+            <li><span><span class="lang-en">Unpack it to any folder.</span><span class="lang-ru">Распакуйте его в любую папку.</span></span></li>
+            <li><span><span class="lang-en">Run the program or script from that folder.</span><span class="lang-ru">Запустите программу или скрипт из этой папки.</span></span></li>
           </ol>
         </section>
       
@@ -125,6 +127,6 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
     </div>
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="/assets/site.js?v=bee9eebc" defer></script>
+  <script src="/assets/site.js?v=e9a3cc05" defer></script>
 </body>
 </html>

@@ -37,7 +37,7 @@ window.siteOwner.then(function(d){if(d&&d.owner)window['ga-disable-'+ID]=true;})
 Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({owner:false})},2500)})]).then(function(d){if(!(d&&d.owner))gtag('event','page_view');});})();
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-4RBN0G8775"></script>
-  <link rel="stylesheet" href="/assets/site.css?v=3bf984a3">
+  <link rel="stylesheet" href="/assets/site.css?v=0fd5c594">
 </head>
 <body>
   <a class="skip-link" href="#content"><span class="lang-en">Skip to content</span><span class="lang-ru">Перейти к содержимому</span></a>
@@ -82,9 +82,10 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
           </div>
         </div>
       <p class="lead"><span class="lang-en">Disables this prompt when launching certain programs. Run the file as Administrator; a restart or signing out and back in may be required.</span><span class="lang-ru">Отключает этот запрос при запуске некоторых программ. Запустите файл от имени администратора; может потребоваться перезагрузка или повторный вход в систему.</span></p>
+      
       <div class="item-tags"><span class="badge"><span class="lang-en">Run as administrator</span><span class="lang-ru">Нужны права администратора</span></span><span class="badge"><span class="lang-en">Restart required</span><span class="lang-ru">Нужна перезагрузка</span></span></div>
       
-      <p class="stats-line tweak-stats" data-tweak-stats="disable-security-warning" data-files="Disable_security_warning.bat" data-kinds="download" hidden></p>
+      <p class="stats-line tweak-stats" data-tweak-stats="disable-security-warning" data-kinds="download" hidden></p>
       <section class="tweak-card">
           <div class="tweak-download">
             <a class="btn btn-primary" href="https://dl3.somov.org/Disable_security_warning.bat"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
@@ -130,6 +131,6 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
     </div>
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="/assets/site.js?v=bee9eebc" defer></script>
+  <script src="/assets/site.js?v=e9a3cc05" defer></script>
 </body>
 </html>
