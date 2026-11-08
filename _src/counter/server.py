@@ -8,7 +8,8 @@ POST /api/count      the site reports what never reaches the server:
                        ?tweak=<id>&kind=copy|link         a tweak command was copied / a tweak link was opened
                        ?page=<path>&kind=view             a page was opened (once per IP per page per day)
                        ?tg=<place>&kind=click             a link to the Telegram channel was clicked
-GET  /api/stats      returns the counts to the owner's IP, and {"owner": false} to everyone else
+GET  /api/stats      returns the counts to the owner (IP in OWNER_IPS or ?owner=<token> from OWNER_TOKENS),
+                     and {"owner": false} to everyone else; the owner's own visits and clicks are never counted
 
 Each IP is counted once per 24 hours per thing: per Windows image (its ISO, .torrent and magnet together,
 whichever way it was taken), per tweak file, command or link. Someone taking the English and the Russian
@@ -22,6 +23,7 @@ so a new version of a tool continues the count; builds are counted per file and 
 /counter-keys.json on every build, and the counter downloads that list every 10 minutes (KEYS_URL).
 """
 import hashlib
+import hmac
 import json
 import os
 import secrets
@@ -44,6 +46,8 @@ KEYS_URL = os.environ.get('KEYS_URL', 'https://somov.org/counter-keys.json')
 KEYS_CACHE = os.path.join(os.path.dirname(DB_PATH), 'counter-keys.json')  # used until the site answers
 KEYS_REFRESH = 600
 OWNER_IPS = {ip.strip() for ip in os.environ.get('OWNER_IPS', '').split(',') if ip.strip()}
+# A device of the owner on any network (a phone on mobile data): the site sends ?owner=<token> it keeps in localStorage
+OWNER_TOKENS = [t.strip() for t in os.environ.get('OWNER_TOKENS', '').split(',') if len(t.strip()) >= 16]
 
 FILE_RE = re.compile(r'^[^/\\\x00-\x1f]{1,200}$')
 TWEAK_RE = re.compile(r'^[a-z0-9-]{1,60}$')
@@ -238,9 +242,15 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
+    def is_owner(self):
+        if self.headers.get('X-Real-IP', '') in OWNER_IPS:
+            return True
+        token = parse_qs(urlsplit(self.path).query).get('owner', [''])[0]
+        return bool(token) and any(hmac.compare_digest(token, t) for t in OWNER_TOKENS)
+
     def count(self, key, kind, dedupe):
         ip = self.headers.get('X-Real-IP', '')
-        if ip and ip not in OWNER_IPS and first_today((ip,) + dedupe):
+        if ip and not self.is_owner() and first_today((ip,) + dedupe):
             add(key, kind)
         return self.respond(204)
 
@@ -270,7 +280,7 @@ class Handler(BaseHTTPRequestHandler):
                 if kind != 'view' or not PAGE_RE.match(page) or not known('pages', page):
                     return self.respond(400)
                 ip = self.headers.get('X-Real-IP', '')
-                if ip and ip not in OWNER_IPS and first_today((ip, 'page', page)):
+                if ip and not self.is_owner() and first_today((ip, 'page', page)):
                     add_view('page:' + page)
                 return self.respond(204)
             place = query.get('tg', [''])[0]
@@ -278,7 +288,7 @@ class Handler(BaseHTTPRequestHandler):
                 if kind != 'click' or not PLACE_RE.match(place) or not known('places', place):
                     return self.respond(400)
                 ip = self.headers.get('X-Real-IP', '')
-                if ip and ip not in OWNER_IPS:
+                if ip and not self.is_owner():
                     # 'tg' is the site-wide total (one per IP per day), 'tg:<place>' the clicks from one place
                     if first_today((ip, 'tg')):
                         add('tg', 'click')
@@ -302,7 +312,7 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if urlsplit(self.path).path != '/api/stats':
             return self.respond(404)
-        if self.headers.get('X-Real-IP', '') in OWNER_IPS:
+        if self.is_owner():
             return self.respond(200, {'owner': True, 'counts': read_counts()})
         return self.respond(200, {'owner': False})
 

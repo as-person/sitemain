@@ -84,12 +84,15 @@
 
   /* Download counter: report clicks; the server returns the counts only to the owner's IP */
   const COUNTER = 'https://dl3.somov.org/api';
+  // On the owner's own device (opened once with /?owner=<token>, see `analytics` in _src/build.mjs) every request
+  // carries the token: the counter shows the stats and does not count the owner, on any network.
+  const withOwner = url => (window.ownerToken ? url + (url.includes('?') ? '&' : '?') + 'owner=' + encodeURIComponent(window.ownerToken) : url);
 
   function reportClick(event) {
     const link = event.target.closest && event.target.closest('[data-count-file], [data-count-tweak]');
     if (!link) return;
     const target = link.dataset.countTweak ? 'tweak=' + link.dataset.countTweak : 'file=' + encodeURIComponent(link.dataset.countFile);
-    const url = COUNTER + '/count?' + target + '&kind=' + link.dataset.countKind;
+    const url = withOwner(COUNTER + '/count?' + target + '&kind=' + link.dataset.countKind);
     if (!(navigator.sendBeacon && navigator.sendBeacon(url))) {
       fetch(url, { method: 'POST', mode: 'no-cors', keepalive: true }).catch(() => {});
     }
@@ -168,7 +171,7 @@
   if ($('[data-stats-file], [data-tweak-stats], [data-tg-stats]')) {
     languageListeners.push(renderStats);
     // The page asks the counter once, in <head>; see `analytics` in _src/build.mjs.
-    (window.siteOwner || fetch(COUNTER + '/stats').then(response => response.json()))
+    (window.siteOwner || fetch(withOwner(COUNTER + '/stats')).then(response => response.json()))
       .then(data => {
         if (data.owner) {
           statsCounts = data.counts;
@@ -185,11 +188,11 @@
       .replace(/\.html$/, '').replace(/\/index$/, '/').replace(/^\/ru(?=\/|$)/, '')
       .replace(/^(\/windows-1[01])-(en|ru)$/, '$1').replace(/(.)\/+$/, '$1')) || '/';
     if (/^\/[a-z0-9/-]{0,100}$/.test(pagePath)) {
-      const url = COUNTER + '/count?page=' + encodeURIComponent(pagePath) + '&kind=view';
+      const url = withOwner(COUNTER + '/count?page=' + encodeURIComponent(pagePath) + '&kind=view');
       if (!(navigator.sendBeacon && navigator.sendBeacon(url))) {
         fetch(url, { method: 'POST', mode: 'no-cors', keepalive: true }).catch(() => {});
       }
-      (window.siteOwner || fetch(COUNTER + '/stats').then(response => response.json()))
+      (window.siteOwner || fetch(withOwner(COUNTER + '/stats')).then(response => response.json()))
         .then(data => {
           const topbar = $('.topbar');
           if (!data.owner || !topbar) return;
@@ -382,7 +385,7 @@
     if (typeof window.gtag === 'function') {
       window.gtag('event', 'telegram_click', { placement: link.dataset.tgPlacement, transport_type: 'beacon' });
     }
-    const url = COUNTER + '/count?tg=' + link.dataset.tgPlacement + '&kind=click';
+    const url = withOwner(COUNTER + '/count?tg=' + link.dataset.tgPlacement + '&kind=click');
     if (!(navigator.sendBeacon && navigator.sendBeacon(url))) {
       fetch(url, { method: 'POST', mode: 'no-cors', keepalive: true }).catch(() => {});
     }

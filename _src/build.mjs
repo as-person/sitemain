@@ -136,11 +136,16 @@ const imageLangName = lang => (lang === 'ru' ? S.russian : S.english);
 // The owner is not counted in Analytics: on a device opened with /?noga (/?ga undoes it), and from the IPs
 // in OWNER_IPS of the download counter. The page view is sent once the counter has answered that this is
 // not the owner's IP; window.siteOwner holds that answer for site.js too.
+// A device of the owner on any network: open /?owner=<token> once (OWNER_TOKENS on the counter); the token is kept
+// in localStorage as window.ownerToken, sent with every counter request and removed from the address bar.
+// /?owner=off forgets it.
 const COUNTER_API = 'https://dl3.somov.org/api';
 const analytics = `<!-- Owner opt-out: open /?noga to stop counting this device, /?ga to resume. The owner's IPs are set on the counter. -->
 <script>
-(function(){var ID='${GA_ID}';try{var p=new URLSearchParams(location.search);if(p.has('noga'))localStorage.setItem('ga-optout','1');if(p.has('ga'))localStorage.removeItem('ga-optout');if(localStorage.getItem('ga-optout')==='1')window['ga-disable-'+ID]=true;}catch(e){}
-window.siteOwner=window.fetch?fetch('${COUNTER_API}/stats').then(function(r){return r.json()}).catch(function(){return{owner:false}}):Promise.resolve({owner:false});
+(function(){var ID='${GA_ID}';window.ownerToken='';try{var p=new URLSearchParams(location.search);if(p.has('noga'))localStorage.setItem('ga-optout','1');if(p.has('ga'))localStorage.removeItem('ga-optout');if(localStorage.getItem('ga-optout')==='1')window['ga-disable-'+ID]=true;
+if(p.has('owner')){var o=p.get('owner');if(o==='off')localStorage.removeItem('owner-token');else if(o)localStorage.setItem('owner-token',o);p.delete('owner');var q=p.toString();history.replaceState(null,'',location.pathname+(q?'?'+q:'')+location.hash);}
+window.ownerToken=localStorage.getItem('owner-token')||'';}catch(e){}
+window.siteOwner=window.fetch?fetch('${COUNTER_API}/stats'+(window.ownerToken?'?owner='+encodeURIComponent(window.ownerToken):'')).then(function(r){return r.json()}).catch(function(){return{owner:false}}):Promise.resolve({owner:false});
 window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments);};gtag('js',new Date());gtag('config',ID,{send_page_view:false});
 window.siteOwner.then(function(d){if(d&&d.owner)window['ga-disable-'+ID]=true;});
 Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({owner:false})},2500)})]).then(function(d){if(!(d&&d.owner))gtag('event','page_view');});})();
