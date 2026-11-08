@@ -342,6 +342,8 @@ function homePage() {
         </div>
       </section>
 
+      ${tgCard('home')}
+
       <noscript>
         <p class="noscript-links">
           ${builds.flatMap(b => LANGS.map(l => `<a class="link" href="/windows-${b.id}-${l}">Windows ${b.id} (${l === 'ru' ? 'Russian' : 'English'})</a>`)).join(' · ')}
@@ -462,14 +464,7 @@ function buildPage(build, preset) {
             ${supportNudge}
           </div>
         </div>
-        <a class="tg-card" href="${TELEGRAM}" target="_blank" rel="noopener">
-          <span class="tg-icon">${icon('send')}</span>
-          <span class="tg-text">
-            <span class="tg-title">${L('New builds on Telegram', 'Новые сборки — в Telegram')}</span>
-            <span class="tg-sub">${L('Be the first to know about new versions', 'Узнавайте о новых версиях первыми')}</span>
-          </span>
-          <span class="tg-action" ${attr('aria-label', 'Subscribe', 'Подписаться')}>${icon('d')}</span>
-        </a>
+        ${tgCard('build')}
       </aside>
 
       <div class="build-body">
@@ -629,6 +624,15 @@ const shareRow = () => `<div class="share">
               <a role="menuitem" href="#" target="_blank" rel="noopener" data-share-service="reddit">Reddit</a>
               <a role="menuitem" href="#" data-share-service="email">Email</a>
             </div>`;
+
+const tgCard = placement => `<a class="tg-card" href="${TELEGRAM}" target="_blank" rel="noopener" data-tg-placement="${placement}">
+          <span class="tg-icon">${icon('send')}</span>
+          <span class="tg-text">
+            <span class="tg-title">${L('Be the first to know about new builds', 'Узнавайте о новых сборках первыми')}</span>
+            <span class="tg-sub">${L('Updates, tweaks and answers to questions on Telegram', 'Обновления, твики и ответы на вопросы — в Telegram')}</span>
+          </span>
+          <span class="tg-action" ${attr('aria-label', 'Subscribe', 'Подписаться')}>${icon('d')}</span>
+        </a>`;
 
 /* -- Tweaks: shared pieces of the settings list and the tweak pages ------- */
 

@@ -290,6 +290,13 @@
     paint();
   }
 
+  /* Telegram card: report clicks to Analytics with the place they came from */
+  $$('[data-tg-placement]').forEach(link => link.addEventListener('click', () => {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'telegram_click', { placement: link.dataset.tgPlacement, transport_type: 'beacon' });
+    }
+  }));
+
   /* Support page: tapping a QR code downloads it; a download icon confirms it for a moment */
   $$('.qr-wrap').forEach(link => {
     let timer;

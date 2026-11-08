@@ -462,6 +462,7 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
   transition: border-color var(--ease), background var(--ease);
 }
 .tg-card:hover { border-color: var(--border-strong); background: var(--raised); }
+.home .tg-card { margin-top: 16px; }
 .tg-icon { display: grid; flex: none; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--raised-hover); color: var(--text); }
 .tg-icon .icon { width: 17px; height: 17px; }
 .tg-text { display: grid; flex: 1; min-width: 0; }
