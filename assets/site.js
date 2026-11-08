@@ -140,11 +140,13 @@
     // Settings page: every tweak ranked by its total, for the owner only
     const ranking = $('#owner-stats');
     if (ranking) {
-      // Only tweaks with their own page; the featured section at the top has none
-      const rows = $$('.item [data-tweak-stats]').filter(line => $('.item-title a', line.closest('.item'))).map(line => {
+      const rows = $$('.item [data-tweak-stats]').map(line => {
         const numbers = tweakNumbers(line);
-        const link = $('.item-title a', line.closest('.item'));
-        return { numbers, line, total: numbers.download + numbers.copy + numbers.link, title: link.innerText, href: link.getAttribute('href') };
+        const item = line.closest('.item');
+        const link = $('.item-title a', item);
+        // Tweaks link to their own page; the featured item at the top has none, so it links to itself
+        const href = link ? link.getAttribute('href') : '#' + item.id;
+        return { numbers, line, total: numbers.download + numbers.copy + numbers.link, title: $('.item-title', item).innerText, href };
       }).sort((a, b) => b.total - a.total);
       $('ol', ranking).replaceChildren(...rows.map(row => {
         const li = document.createElement('li');
