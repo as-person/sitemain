@@ -10,9 +10,9 @@ POST /api/count      the site reports what never reaches the server:
                        ?tg=<place>&kind=click             a link to the Telegram channel was clicked
 GET  /api/stats      returns the counts to the owner's IP, and {"owner": false} to everyone else
 
-Windows images (.iso and their .torrent): each IP is counted once per 24 hours across all images.
-Everything else (tweak files, commands, links): each IP is counted once per 24 hours per file or tweak,
-so someone taking three tweaks counts for all three.
+Each IP is counted once per 24 hours per thing: per Windows image (its ISO, .torrent and magnet together,
+whichever way it was taken), per tweak file, command or link. Someone taking the English and the Russian
+image, or three tweaks, counts for each of them.
 Runs behind nginx, which sets X-Real-IP. Visitor IPs are never stored: the counter remembers who was
 already counted by a salted hash of the IP and the action. On stop (an update, a reboot) it saves these
 hashes to SEEN_PATH and on start reads them back and deletes the file, so nobody is counted twice and
@@ -223,11 +223,11 @@ class Handler(BaseHTTPRequestHandler):
                 image = name[:-len('.torrent')]
                 if not file_exists(image):
                     return self.respond(400)
-                return self.count(image, 'torrent', ('images',))
+                return self.count(image, 'torrent', ('image', image))
             if not file_exists(name):
                 return self.respond(400)
             if is_image(name):
-                return self.count(name, 'download', ('images',))
+                return self.count(name, 'download', ('image', name))
             return self.count(name, 'download', ('file', name))
         if url.path == '/api/count':
             query = parse_qs(url.query)
@@ -262,7 +262,7 @@ class Handler(BaseHTTPRequestHandler):
             file = query.get('file', [''])[0]
             if not is_image(file) or not file_exists(file):
                 return self.respond(400)
-            return self.count(file, 'magnet', ('images',))
+            return self.count(file, 'magnet', ('image', file))
         return self.respond(404)
 
     def do_GET(self):
