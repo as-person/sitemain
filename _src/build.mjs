@@ -749,6 +749,12 @@ function settingsPage() {
     const fileName = f.file && decodeURIComponent(f.file.split('/').pop());
     const searchText = [...plain(f.heading), ...plain(f.title), ...plain(f.desc), ...plain(f.link?.label), fileName]
       .filter(Boolean).join(' ').toLowerCase();
+    // Owner-only line, like the tweaks: downloads of a file on dl3 and clicks on the link
+    const statsFile = f.file && !/^https?:\/\//.test(f.file) ? fileName : '';
+    const kinds = [statsFile && 'download', f.link?.url && 'link'].filter(Boolean);
+    const featuredStats = kinds.length
+      ? `<p class="stats-line tweak-stats" data-tweak-stats="featured" data-files="${esc(statsFile)}" data-kinds="${kinds.join(',')}" hidden></p>`
+      : '';
     return `<section class="section group" data-group="featured">
         <h2 class="group-title">${T(f.heading)}</h2>
         <div class="rows">
@@ -757,6 +763,7 @@ function settingsPage() {
             <h3 class="item-title">${T(f.title)}</h3>
             ${f.desc ? `<p class="item-desc">${T(f.desc)}</p>` : ''}
             ${f.link?.url ? `<div class="item-links">${tweakLinkHtml(f.link, 'featured')}</div>` : ''}
+            ${featuredStats}
           </div>
           ${fileUrl ? `<div class="item-action">
             <span class="file-type">${fileTypeOf(fileName)}</span>
