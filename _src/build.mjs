@@ -746,13 +746,19 @@ function settingsPage() {
   const featuredHtml = () => {
     if (!featured.show) return '';
     const f = featured;
-    const fileUrl = f.file && (/^https?:\/\//.test(f.file) ? f.file : CDN + f.file);
-    const fileName = f.file && decodeURIComponent(f.file.split('/').pop());
+    const external = Boolean(f.file && /^https?:\/\//.test(f.file));
+    const fileUrl = f.file && (external ? f.file : CDN + f.file);
+    // The file name for the type label and search. A download address like ...items?path=/dir/name.cmd&download=true
+    // keeps the name in the "path" parameter, not at the end of the URL.
+    const nameOf = url => {
+      const { pathname, searchParams } = new URL(url);
+      return decodeURIComponent((searchParams.get('path') || pathname).split('/').pop());
+    };
+    const fileName = f.file && (external ? nameOf(f.file) : decodeURIComponent(f.file.split('/').pop()));
     const searchText = [...plain(f.heading), ...plain(f.title), ...plain(f.desc), ...plain(f.link?.label), fileName]
       .filter(Boolean).join(' ').toLowerCase();
     // Owner-only line, like the tweaks: downloads of a file on dl3 and clicks on the link
     // A file elsewhere never reaches dl3, so its button reports the click instead (counted with the link clicks)
-    const external = Boolean(f.file && /^https?:\/\//.test(f.file));
     const statsFile = f.file && !external ? fileName : '';
     const kinds = [statsFile && 'download', (f.link?.url || external) && 'link'].filter(Boolean);
     const featuredStats = kinds.length
