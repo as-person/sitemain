@@ -584,9 +584,9 @@ html:not([data-image]) .img-ru { display: none !important; }
   background: rgb(8 9 12 / .94);
   color: var(--text);
 }
-.lightbox[open] { display: grid; place-items: center; }
+.lightbox[open] { display: grid; place-items: center; overflow: hidden; touch-action: pinch-zoom; }
 .lightbox::backdrop { background: transparent; }
-.lightbox img { max-width: min(100vw - 32px, 1600px); max-height: calc(100dvh - 120px); width: auto; border-radius: var(--r-sm); }
+.lightbox img { max-width: min(100vw - 32px, 1600px); max-height: calc(100dvh - 120px); width: auto; border-radius: var(--r-sm); user-select: none; -webkit-user-select: none; -webkit-user-drag: none; -webkit-touch-callout: none; }
 .lb-btn {
   position: absolute;
   display: grid;
@@ -602,6 +602,11 @@ html:not([data-image]) .img-ru { display: none !important; }
 .lb-prev { top: 50%; left: 16px; translate: 0 -50%; }
 .lb-next { top: 50%; right: 16px; translate: 0 -50%; }
 .lb-count { position: absolute; bottom: 20px; left: 50%; translate: -50% 0; color: var(--muted); font-size: var(--fs-sm); }
+/* Phones: the arrows would cover the screenshot, so they sit below it, around the counter */
+@media (max-width: 720px) {
+  .lb-prev, .lb-next { top: auto; bottom: 8px; translate: none; }
+  .lb-count { bottom: 22px; }
+}
 
 /* -- Ghost Spectre ------------------------------------------------------- */
 

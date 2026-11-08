@@ -440,6 +440,82 @@
       if (event.key === 'ArrowLeft') show(current - 1);
       if (event.key === 'ArrowRight') show(current + 1);
     });
+
+    // Touch: swipe left or right to browse, up or down to close. The image follows the finger.
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const EASE = '220ms cubic-bezier(.2, 0, 0, 1)';
+    let drag = null;
+    let suppressClick = false;
+
+    function setDrag(x, y, fade) {
+      image.style.translate = x + 'px ' + y + 'px';
+      lightbox.style.backgroundColor = fade === undefined ? '' : 'rgb(8 9 12 / ' + (0.94 * fade).toFixed(3) + ')';
+    }
+    function animate(apply, done) {
+      const ms = reduceMotion.matches ? 0 : 220;
+      image.style.transition = ms ? 'translate ' + EASE + ', opacity ' + EASE : 'none';
+      lightbox.style.transition = ms ? 'background-color ' + EASE : 'none';
+      apply();
+      setTimeout(() => {
+        image.style.transition = lightbox.style.transition = '';
+        if (done) done();
+      }, ms);
+    }
+    function resetDrag() {
+      image.style.transition = lightbox.style.transition = '';
+      image.style.translate = image.style.opacity = '';
+      lightbox.style.backgroundColor = '';
+    }
+    lightbox.addEventListener('close', resetDrag);
+
+    lightbox.addEventListener('pointerdown', event => {
+      if (event.pointerType === 'mouse' || !event.isPrimary || event.target.closest('.lb-btn')) return;
+      // Leave the gesture to the browser while the page is pinch-zoomed in.
+      if (window.visualViewport && window.visualViewport.scale > 1.01) return;
+      drag = { id: event.pointerId, x: event.clientX, y: event.clientY, dx: 0, dy: 0, axis: null, t: event.timeStamp };
+      image.style.transition = lightbox.style.transition = 'none';
+    });
+    lightbox.addEventListener('pointermove', event => {
+      if (!drag || event.pointerId !== drag.id) return;
+      drag.dx = event.clientX - drag.x;
+      drag.dy = event.clientY - drag.y;
+      if (!drag.axis && Math.hypot(drag.dx, drag.dy) > 10) {
+        drag.axis = Math.abs(drag.dx) > Math.abs(drag.dy) ? 'x' : 'y';
+      }
+      if (drag.axis === 'x') setDrag(drag.dx, 0);
+      if (drag.axis === 'y') setDrag(0, drag.dy, Math.max(0.3, 1 - Math.abs(drag.dy) / 400));
+    });
+    function endDrag(event) {
+      if (!drag || event.pointerId !== drag.id) return;
+      const { axis, dx, dy, t } = drag;
+      drag = null;
+      if (!axis) return resetDrag();
+      suppressClick = true;
+      setTimeout(() => { suppressClick = false; }, 0);
+      const distance = axis === 'x' ? dx : dy;
+      const speed = Math.abs(distance) / Math.max(1, event.timeStamp - t);
+      const passed = event.type === 'pointerup' && (Math.abs(distance) > 60 || (speed > 0.5 && Math.abs(distance) > 20));
+      if (!passed) return animate(() => setDrag(0, 0));
+      if (axis === 'y') {
+        const away = (dy > 0 ? 1 : -1) * window.innerHeight;
+        return animate(() => { setDrag(0, away, 0); image.style.opacity = '0'; }, () => lightbox.close());
+      }
+      // The next image comes in from the side the finger moved away from.
+      const step = dx < 0 ? 1 : -1;
+      animate(() => { setDrag(-step * window.innerWidth, 0); image.style.opacity = '0'; }, () => {
+        image.style.transition = 'none';
+        show(current + step);
+        setDrag(step * 60, 0);
+        image.offsetWidth; // apply the start position before animating in
+        animate(() => { setDrag(0, 0); image.style.opacity = ''; });
+      });
+    }
+    lightbox.addEventListener('pointerup', endDrag);
+    lightbox.addEventListener('pointercancel', endDrag);
+    // A swipe must not count as a tap on the backdrop.
+    lightbox.addEventListener('click', event => {
+      if (suppressClick) event.stopImmediatePropagation();
+    }, true);
   }
 
   /* Build page: on small screens, show the download bar once the panel scrolls away */
