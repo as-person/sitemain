@@ -94,7 +94,7 @@ const sizeL = bytes => L(formatSize(bytes, 'en'), formatSize(bytes, 'ru'));
 const countAttr = (file, kind) => `data-count-file="${esc(file)}" data-count-kind="${kind}"`;
 const supportNudge = `<p class="support-nudge">${L('The builds are free. If they helped you, you can <a class="link" href="/support">support the project</a>.', 'Сборки бесплатные. Если пригодились, можно <a class="link" href="/support">поддержать проект</a>.')}</p>`;
 const statsLine = (file, kinds = 'download,torrent,magnet') =>
-  `<p class="stats-line" data-stats-file="${esc(file)}" data-stats-kinds="${kinds}" hidden></p>`;
+  `<div class="stats-line" data-stats-file="${esc(file)}" data-stats-kinds="${kinds}" hidden></div>`;
 
 const PATHS = {
   d: 'M5 12h14m-6-6 6 6-6 6',
@@ -664,7 +664,7 @@ const tgCard = placement => `<a class="tg-card" href="${TELEGRAM}" target="_blan
           </span>
           <span class="tg-action" ${attr('aria-label', 'Subscribe', 'Подписаться')}>${icon('d')}</span>
         </a>
-        <p class="stats-line tg-stats" data-tg-stats="${placement}" hidden></p>`;
+        <div class="stats-line tg-stats" data-tg-stats="${placement}" hidden></div>`;
 
 /* -- Tweaks: shared pieces of the settings list and the tweak pages ------- */
 
@@ -685,7 +685,7 @@ const tweakWarning = item => (item.warning ? `<p class="item-warning">${icon('al
 const tweakFiles = item => [item.file, ...(item.downloads ?? []).map(d => d.file)].filter(Boolean).map(f => decodeURIComponent(f));
 const tweakStats = item => {
   const kinds = [tweakFiles(item).length && 'download', item.commands && 'copy', item.links?.length && 'link'].filter(Boolean);
-  return kinds.length ? `<p class="stats-line tweak-stats" data-tweak-stats="${item.id}" data-kinds="${kinds.join(',')}" hidden></p>` : '';
+  return kinds.length ? `<div class="stats-line tweak-stats" data-tweak-stats="${item.id}" data-kinds="${kinds.join(',')}" hidden></div>` : '';
 };
 const tweakCount = (id, kind) => `data-count-tweak="${id}" data-count-kind="${kind}"`;
 
@@ -790,7 +790,7 @@ function settingsPage() {
     const statsFile = f.file && !external ? fileName : '';
     const kinds = [statsFile && 'download', (f.link?.url || external) && 'link'].filter(Boolean);
     const featuredStats = kinds.length
-      ? `<p class="stats-line tweak-stats" data-tweak-stats="featured" data-kinds="${kinds.join(',')}" hidden></p>`
+      ? `<div class="stats-line tweak-stats" data-tweak-stats="featured" data-kinds="${kinds.join(',')}" hidden></div>`
       : '';
     return `<section class="section group" data-group="featured">
         <h2 class="group-title">${T(f.heading)}</h2>

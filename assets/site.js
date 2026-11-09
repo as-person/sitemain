@@ -6,8 +6,8 @@
   const root = document.documentElement;
 
   const STRINGS = {
-    en: { copied: 'Copied', copyFailed: 'Could not copy', found: 'Found', clicks: 'Downloads', download: 'Download', linkCopied: 'Link copied', copies: 'Copies', linkClicks: 'Link clicks', tgClicks: 'Telegram clicks', fromHere: 'from here', views: 'Page views', today: 'today', week: '7 days', month: '30 days', total: 'all time', allCount: 'total', onlyYou: 'visible only to you', viaKey: 'signed in by key' },
-    ru: { copied: 'Скопировано', copyFailed: 'Не удалось скопировать', found: 'Найдено', clicks: 'Скачиваний', download: 'Скачать', linkCopied: 'Ссылка скопирована', copies: 'Копирований', linkClicks: 'Переходов', tgClicks: 'Переходов в Telegram', fromHere: 'отсюда', views: 'Просмотры страницы', today: 'сегодня', week: 'неделя', month: 'месяц', total: 'за всё время', allCount: 'всего', onlyYou: 'видно только вам', viaKey: 'вход по ключу' },
+    en: { copied: 'Copied', copyFailed: 'Could not copy', found: 'Found', clicks: 'Downloads', download: 'Download', linkCopied: 'Link copied', copies: 'Copies', linkClicks: 'Link clicks', tgClicks: 'Telegram clicks', fromHere: 'from here', views: 'Page views', today: 'today', week: '7 days', month: '30 days', total: 'all time', allCount: 'total', people: 'people', repeated: 'repeated', sum: 'Total', onlyYou: 'visible only to you', viaKey: 'signed in by key' },
+    ru: { copied: 'Скопировано', copyFailed: 'Не удалось скопировать', found: 'Найдено', clicks: 'Скачиваний', download: 'Скачать', linkCopied: 'Ссылка скопирована', copies: 'Копирований', linkClicks: 'Переходов', tgClicks: 'Переходов в Telegram', fromHere: 'отсюда', views: 'Просмотры страницы', today: 'сегодня', week: 'неделя', month: 'месяц', total: 'за всё время', allCount: 'всего', people: 'людей', repeated: 'повторно', sum: 'Итого', onlyYou: 'видно только вам', viaKey: 'вход по ключу' },
   };
   const currentLang = () => (root.lang === 'ru' ? 'ru' : 'en');
   const t = key => STRINGS[currentLang()][key];
@@ -103,8 +103,37 @@
   });
 
   let statsCounts = null;
-  // Unique count (one person once a day) and, when someone did it more than once, all actions: "4 (total 9)"
-  const withAll = (unique, all) => unique + (all > unique ? ' (' + t('allCount') + ' ' + all + ')' : '');
+  // Owner stats: a short line with the unique count (one person once a day), and on click a small table
+  // "people / total / repeated" with every action. The open state survives re-rendering (language switch).
+  function statDetails(host, summary, rows, sumRow) {
+    const wasOpen = !!$('details[open]', host);
+    const details = document.createElement('details');
+    details.className = 'owner-stat';
+    details.open = wasOpen;
+    const head = document.createElement('summary');
+    head.textContent = summary;
+    const table = document.createElement('table');
+    const cells = (tag, values) => {
+      const tr = document.createElement('tr');
+      values.forEach((value, i) => {
+        const cell = document.createElement(i === 0 ? 'th' : tag);
+        cell.textContent = value;
+        tr.append(cell);
+      });
+      return tr;
+    };
+    const list = rows.concat(sumRow && rows.length > 1 ? [{
+      label: t('sum'), unique: rows.reduce((n, r) => n + r.unique, 0), all: rows.reduce((n, r) => n + r.all, 0), sum: true,
+    }] : []);
+    table.append(cells('th', ['', t('people'), t('allCount'), t('repeated')]),
+      ...list.map(r => {
+        const tr = cells('td', [r.label, r.unique, Math.max(r.all, r.unique), Math.max(r.all - r.unique, 0)]);
+        if (r.sum) tr.className = 'sum';
+        return tr;
+      }));
+    details.append(head, table);
+    host.replaceChildren(details);
+  }
 
   function renderStats() {
     if (!statsCounts) return;
@@ -116,9 +145,7 @@
         all: counts['all:' + kind] || 0,
       }));
       const total = parts.reduce((sum, part) => sum + part.value, 0);
-      const all = parts.reduce((sum, part) => sum + part.all, 0);
-      // Each way too, so it is clear which one people took again
-      line.textContent = t('clicks') + ': ' + withAll(total, all) + ' · ' + parts.map(part => part.label + ' ' + withAll(part.value, part.all)).join(' · ');
+      statDetails(line, t('clicks') + ': ' + total, parts.map(part => ({ label: part.label, unique: part.value, all: part.all })), true);
       line.hidden = false;
     });
 
@@ -133,10 +160,12 @@
         all: { download: own['all:download'] || 0, copy: own['all:copy'] || 0, link: own['all:link'] || 0 },
       };
     };
-    const tweakText = (line, numbers) => line.dataset.kinds.split(',')
-      .map(kind => t(kind === 'download' ? 'clicks' : kind === 'copy' ? 'copies' : 'linkClicks') + ': ' + withAll(numbers[kind], numbers.all[kind])).join(' · ');
+    const kindLabel = kind => t(kind === 'download' ? 'clicks' : kind === 'copy' ? 'copies' : 'linkClicks');
+    const tweakText = (line, numbers) => line.dataset.kinds.split(',').map(kind => kindLabel(kind) + ': ' + numbers[kind]).join(' · ');
     $$('[data-tweak-stats]').forEach(line => {
-      line.textContent = tweakText(line, tweakNumbers(line));
+      const numbers = tweakNumbers(line);
+      statDetails(line, tweakText(line, numbers), line.dataset.kinds.split(',')
+        .map(kind => ({ label: kindLabel(kind), unique: numbers[kind], all: numbers.all[kind] })), false);
       line.hidden = false;
     });
 
@@ -144,8 +173,10 @@
     $$('[data-tg-stats]').forEach(line => {
       const site = statsCounts.tg || {};
       const here = statsCounts['tg:' + line.dataset.tgStats] || {};
-      line.textContent = t('tgClicks') + ': ' + withAll(site.click || 0, site['all:click'] || 0)
-        + ' · ' + t('fromHere') + ' ' + withAll(here.click || 0, here['all:click'] || 0);
+      statDetails(line, t('tgClicks') + ': ' + (site.click || 0) + ' · ' + t('fromHere') + ' ' + (here.click || 0), [
+        { label: t('tgClicks'), unique: site.click || 0, all: site['all:click'] || 0 },
+        { label: t('fromHere'), unique: here.click || 0, all: here['all:click'] || 0 },
+      ], false);
       line.hidden = false;
     });
 
@@ -210,12 +241,14 @@
           bar.className = 'page-views';
           bar.innerHTML = '<div class="container"></div>';
           const render = () => {
-            bar.firstChild.textContent = t('views') + ': ' + ['today', 'week', 'month']
-              .map(key => t(key) + ' ' + withAll(views[key] || 0, views['hits_' + key] || 0)).join(' · ')
-              + ' · ' + t('total') + ' ' + withAll(views.view || 0, views.hits || 0)
+            const periods = [['today', 'today'], ['week', 'week'], ['month', 'month'], ['total', '']];
+            const summary = t('views') + ': ' + periods.map(([label, key]) => t(label) + ' ' + (views[key || 'view'] || 0)).join(' · ')
               + ' (' + t('onlyYou') + ')'
               // Recognized by the device key, not the IP: normal on a phone, on the home PC it means the IP changed
               + (data.via === 'token' ? ' · ' + t('viaKey') : '');
+            statDetails(bar.firstChild, summary, periods.map(([label, key]) => ({
+              label: t(label), unique: views[key || 'view'] || 0, all: views[key ? 'hits_' + key : 'hits'] || 0,
+            })), false);
           };
           render();
           languageListeners.push(render);

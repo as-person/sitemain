@@ -659,6 +659,26 @@ html:not([data-image]) .img-ru { display: none !important; }
 .row-muted .row-name { color: var(--muted); }
 .notice { margin-top: 6px; color: var(--muted); font-size: var(--fs-sm); }
 .stats-line { color: var(--muted); font-size: var(--fs-xs); }
+/* Owner stats: a short line (people), and on click a small table people / total / repeated */
+.owner-stat summary { display: inline; cursor: pointer; list-style: none; }
+.owner-stat summary::-webkit-details-marker { display: none; }
+.owner-stat summary::after { content: ' ▾'; display: inline-block; transition: transform var(--ease); }
+.owner-stat[open] summary::after { transform: rotate(180deg); }
+.owner-stat summary:hover { color: var(--text); }
+.owner-stat table {
+  display: inline-table;
+  margin-top: 6px;
+  border-collapse: collapse;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.owner-stat th, .owner-stat td { padding: 3px 10px; font-weight: 400; white-space: nowrap; }
+.owner-stat tr:first-child th { color: var(--muted); font-size: 11px; }
+.owner-stat tr th:first-child { text-align: left; color: var(--muted); }
+.owner-stat td { color: var(--text); }
+.owner-stat tr.sum th, .owner-stat tr.sum td { border-top: 1px solid var(--border); font-weight: 600; }
 .row .stats-line { margin-top: 4px; }
 .dl-actions .stats-line { text-align: center; }
 

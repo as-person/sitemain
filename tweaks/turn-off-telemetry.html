@@ -39,7 +39,7 @@ window.siteOwner.then(function(d){if(d&&d.owner)window['ga-disable-'+ID]=true;})
 Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({owner:false})},2500)})]).then(function(d){if(!(d&&d.owner))gtag('event','page_view');});})();
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-4RBN0G8775"></script>
-  <link rel="stylesheet" href="/assets/site.css?v=46b5fb88">
+  <link rel="stylesheet" href="/assets/site.css?v=6acbb445">
 </head>
 <body>
   <a class="skip-link" href="#content"><span class="lang-en">Skip to content</span><span class="lang-ru">Перейти к содержимому</span></a>
@@ -87,7 +87,7 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
       
       
       
-      <p class="stats-line tweak-stats" data-tweak-stats="turn-off-telemetry" data-kinds="download" hidden></p>
+      <div class="stats-line tweak-stats" data-tweak-stats="turn-off-telemetry" data-kinds="download" hidden></div>
       <section class="tweak-card">
           <div class="tweak-download">
             <a class="btn btn-primary" href="https://dl3.somov.org/Turn%20Off%20Telemetry%20in%20Windows%2010.cmd"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
@@ -132,6 +132,6 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
     </div>
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="/assets/site.js?v=f5b4ebb7" defer></script>
+  <script src="/assets/site.js?v=5a84b66f" defer></script>
 </body>
 </html>

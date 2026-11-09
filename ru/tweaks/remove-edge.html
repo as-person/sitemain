@@ -39,7 +39,7 @@ window.siteOwner.then(function(d){if(d&&d.owner)window['ga-disable-'+ID]=true;})
 Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({owner:false})},2500)})]).then(function(d){if(!(d&&d.owner))gtag('event','page_view');});})();
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-4RBN0G8775"></script>
-  <link rel="stylesheet" href="/assets/site.css?v=46b5fb88">
+  <link rel="stylesheet" href="/assets/site.css?v=6acbb445">
 </head>
 <body>
   <a class="skip-link" href="#content"><span class="lang-en">Skip to content</span><span class="lang-ru">Перейти к содержимому</span></a>
@@ -87,7 +87,7 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
       <p class="item-warning"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg><span><span class="lang-en">Removing Edge may cause an update failure loop. Install Edge, install all Windows updates, then remove Edge.</span><span class="lang-ru">Удаление Edge может зациклить установку обновлений Windows. Сначала установите Edge, затем все обновления Windows и только потом удаляйте Edge.</span></span></p>
       <div class="item-tags"><span class="badge"><span class="lang-en">Run as administrator</span><span class="lang-ru">Нужны права администратора</span></span></div>
       <div class="item-links"><a class="link lang-en" href="https://www.microsoft.com/en-us/edge/business/download?form=MA13FJ" target="_blank" rel="noopener" data-count-tweak="remove-edge" data-count-kind="link">Install Edge</a><a class="link lang-ru" href="https://www.microsoft.com/ru-ru/edge/business/download?form=MA13FJ" target="_blank" rel="noopener" data-count-tweak="remove-edge" data-count-kind="link">Установить Edge</a><a class="link" href="https://github.com/ShadowWhisperer/Remove-MS-Edge" target="_blank" rel="noopener" data-count-tweak="remove-edge" data-count-kind="link">GitHub</a></div>
-      <p class="stats-line tweak-stats" data-tweak-stats="remove-edge" data-kinds="download,link" hidden></p>
+      <div class="stats-line tweak-stats" data-tweak-stats="remove-edge" data-kinds="download,link" hidden></div>
       <section class="tweak-card">
           <div class="tweak-download">
             <a class="btn btn-primary" href="https://dl3.somov.org/Remove-Edge.exe"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download</span><span class="lang-ru">Скачать</span></span></a>
@@ -132,6 +132,6 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
     </div>
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="/assets/site.js?v=f5b4ebb7" defer></script>
+  <script src="/assets/site.js?v=5a84b66f" defer></script>
 </body>
 </html>
