@@ -686,7 +686,8 @@ html:not([data-image]) .img-ru { display: none !important; }
   font: inherit;
 }
 .search input::placeholder { color: var(--muted); }
-.search input:focus-visible { outline-offset: 0; border-radius: var(--r-md); }
+/* No blue ring on the search field: a slightly lighter border, like the dropdowns on /support */
+.search input:focus, .search input:focus-visible { outline: none; border-color: rgb(255 255 255 / .32); box-shadow: 0 0 0 3px rgb(255 255 255 / .07); }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .chips::-webkit-scrollbar { display: none; }
 .chip {
