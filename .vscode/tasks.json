@@ -1,0 +1,30 @@
+{
+  // Local preview of the site. The server resolves addresses like GitHub Pages does (/windows-11, /tweaks/num-lock),
+  // which Live Server cannot. It starts by itself when the folder is opened (VS Code asks once to allow that).
+  // Open the site inside VS Code: Ctrl+Alt+O (user keybinding: simpleBrowser.show http://127.0.0.1:8080/).
+  // Rebuild after editing _src: Ctrl+Shift+B, then refresh the preview.
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Сайт: сервер",
+      "type": "shell",
+      "command": "node _src/serve.mjs 8080",
+      "isBackground": true,
+      "runOptions": { "runOn": "folderOpen" },
+      "presentation": { "reveal": "silent", "panel": "dedicated" },
+      "problemMatcher": {
+        "owner": "site-preview",
+        "pattern": { "regexp": "^__never__$" },
+        "background": { "activesBegins": true, "beginsPattern": ".", "endsPattern": "http://127\\.0\\.0\\.1" }
+      }
+    },
+    {
+      "label": "Сайт: пересобрать",
+      "type": "shell",
+      "command": "node _src/build.mjs",
+      "group": { "kind": "build", "isDefault": true },
+      "presentation": { "reveal": "silent", "panel": "shared" },
+      "problemMatcher": []
+    }
+  ]
+}
