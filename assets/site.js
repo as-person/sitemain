@@ -258,6 +258,29 @@
     }
   }
 
+  /* Header "Builds" menu (a <details>, so it works without scripts too). Closes on a click outside or Esc.
+     On phones the nav row scrolls sideways and would clip it, so there it is placed under the button by hand. */
+  $$('[data-nav-menu]').forEach(menu => {
+    const list = $('.nav-menu-list', menu);
+    const place = () => {
+      if (!menu.open || !matchMedia('(max-width: 720px)').matches) {
+        list.style.cssText = '';
+        return;
+      }
+      const r = $('summary', menu).getBoundingClientRect();
+      const width = Math.min(260, innerWidth - 32);
+      list.style.cssText = `position: fixed; top: ${r.bottom + 6}px; left: ${Math.max(16, Math.min(r.left, innerWidth - width - 16))}px; min-width: ${width}px;`;
+    };
+    menu.addEventListener('toggle', place);
+    addEventListener('resize', place);
+    addEventListener('scroll', () => { if (menu.open && matchMedia('(max-width: 720px)').matches) menu.open = false; }, { passive: true });
+    $('.site-nav') && $('.site-nav').addEventListener('scroll', () => { menu.open = false; }, { passive: true });
+    document.addEventListener('click', event => { if (menu.open && !menu.contains(event.target)) menu.open = false; });
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && menu.open) { menu.open = false; $('summary', menu).focus(); }
+    });
+  });
+
   /* Home: build picker */
   const buildsData = $('#builds-data');
   if (buildsData) {

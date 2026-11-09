@@ -165,6 +165,44 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 .site-nav a[aria-current="page"] { color: var(--text); background: var(--raised); }
 .site-nav .nav-external { margin-left: auto; }
 
+/* "Builds" menu in the header: the build pages from every page of the site */
+.nav-menu { position: relative; }
+.nav-menu summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 40px;
+  padding-inline: 12px;
+  border-radius: var(--r-sm);
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  list-style: none;
+  transition: color var(--ease), background var(--ease);
+}
+.nav-menu summary::-webkit-details-marker { display: none; }
+.nav-menu summary:hover, .nav-menu[open] summary, .nav-menu summary[aria-current="page"] { color: var(--text); background: var(--raised); }
+.nav-menu summary .icon { width: 14px; height: 14px; transition: transform var(--ease); }
+.nav-menu[open] summary .icon { transform: rotate(180deg); }
+.nav-menu-list {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 30;
+  display: grid;
+  min-width: 240px;
+  padding: 6px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: 0 16px 40px rgb(0 0 0 / .45);
+}
+.site-nav .nav-menu-list a { justify-content: space-between; gap: 16px; color: var(--text); }
+.nav-menu-list a span { color: var(--muted); font-size: var(--fs-xs); }
+.site-nav .nav-menu-list a.nav-menu-all { margin-top: 4px; border-top: 1px solid var(--border); border-radius: 0 0 var(--r-sm) var(--r-sm); color: var(--muted); }
+
 .lang-switch { display: flex; flex: none; padding: 3px; border: 1px solid var(--border); border-radius: var(--pill); }
 .lang-switch button {
   display: grid;

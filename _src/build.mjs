@@ -110,6 +110,7 @@ const PATHS = {
   close: 'M6 6l12 12M18 6 6 18',
   left: 'm15 6-6 6 6 6',
   right: 'm9 6 6 6-6 6',
+  down: 'm6 9 6 6 6-6',
   alert: '<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/>',
 };
 const icon = name => {
@@ -217,7 +218,13 @@ function header(current) {
         <span>Windows by somov</span>
       </a>
       <nav class="site-nav" ${attr('aria-label', 'Main', 'Основная навигация')}>
-        ${navLink('builds', '/', L('Builds', 'Сборки'))}
+        <details class="nav-menu" data-nav-menu>
+          <summary${current === 'builds' ? ' aria-current="page"' : ''}>${L('Builds', 'Сборки')} ${icon('down')}</summary>
+          <div class="nav-menu-list">
+            ${builds.map(b => `<a href="/windows-${b.id}">Windows ${b.id} IoT LTSC <span>${b.version}</span></a>`).join('\n            ')}
+            <a class="nav-menu-all" href="/">${L('All builds', 'Все сборки')}</a>
+          </div>
+        </details>
         ${navLink('ghost', '/ghost-spectre', 'Ghost Spectre')}
         ${navLink('settings', '/settings-for-windows', L('Settings', 'Настройки'))}
         <a class="nav-external" href="${TELEGRAM}" target="_blank" rel="noopener" data-tg-placement="header">Telegram</a>

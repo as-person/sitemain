@@ -39,7 +39,7 @@ window.siteOwner.then(function(d){if(d&&d.owner)window['ga-disable-'+ID]=true;})
 Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({owner:false})},2500)})]).then(function(d){if(!(d&&d.owner))gtag('event','page_view');});})();
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-4RBN0G8775"></script>
-  <link rel="stylesheet" href="/assets/site.css?v=1780c066">
+  <link rel="stylesheet" href="/assets/site.css?v=e402dec5">
 </head>
 <body>
   <a class="skip-link" href="#content"><span class="lang-en">Skip to content</span><span class="lang-ru">Перейти к содержимому</span></a>
@@ -50,7 +50,14 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
         <span>Windows by somov</span>
       </a>
       <nav class="site-nav" aria-label="Main" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Main&quot;,&quot;ru&quot;:&quot;Основная навигация&quot;}}">
-        <a href="/"><span class="lang-en">Builds</span><span class="lang-ru">Сборки</span></a>
+        <details class="nav-menu" data-nav-menu>
+          <summary><span class="lang-en">Builds</span><span class="lang-ru">Сборки</span> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+          <div class="nav-menu-list">
+            <a href="/windows-11">Windows 11 IoT LTSC <span>24H2</span></a>
+            <a href="/windows-10">Windows 10 IoT LTSC <span>21H2</span></a>
+            <a class="nav-menu-all" href="/"><span class="lang-en">All builds</span><span class="lang-ru">Все сборки</span></a>
+          </div>
+        </details>
         <a href="/ghost-spectre">Ghost Spectre</a>
         <a href="/settings-for-windows" aria-current="page"><span class="lang-en">Settings</span><span class="lang-ru">Настройки</span></a>
         <a class="nav-external" href="https://t.me/+gmXk9-zXZ405YWY6" target="_blank" rel="noopener" data-tg-placement="header">Telegram</a>
@@ -135,6 +142,6 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
     </div>
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="/assets/site.js?v=5a84b66f" defer></script>
+  <script src="/assets/site.js?v=82b64651" defer></script>
 </body>
 </html>
