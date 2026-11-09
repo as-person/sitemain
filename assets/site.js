@@ -6,8 +6,8 @@
   const root = document.documentElement;
 
   const STRINGS = {
-    en: { copied: 'Copied', copyFailed: 'Could not copy', found: 'Found', clicks: 'Downloads', download: 'Download', linkCopied: 'Link copied', copies: 'Copies', linkClicks: 'Link clicks', tgClicks: 'Telegram clicks', fromHere: 'from here', views: 'Page views', today: 'today', week: '7 days', month: '30 days', total: 'all time', onlyYou: 'visible only to you', viaKey: 'signed in by key' },
-    ru: { copied: 'Скопировано', copyFailed: 'Не удалось скопировать', found: 'Найдено', clicks: 'Скачиваний', download: 'Скачать', linkCopied: 'Ссылка скопирована', copies: 'Копирований', linkClicks: 'Переходов', tgClicks: 'Переходов в Telegram', fromHere: 'отсюда', views: 'Просмотры страницы', today: 'сегодня', week: 'неделя', month: 'месяц', total: 'всего', onlyYou: 'видно только вам', viaKey: 'вход по ключу' },
+    en: { copied: 'Copied', copyFailed: 'Could not copy', found: 'Found', clicks: 'Downloads', download: 'Download', linkCopied: 'Link copied', copies: 'Copies', linkClicks: 'Link clicks', tgClicks: 'Telegram clicks', fromHere: 'from here', views: 'Page views', today: 'today', week: '7 days', month: '30 days', total: 'all time', allCount: 'total', onlyYou: 'visible only to you', viaKey: 'signed in by key' },
+    ru: { copied: 'Скопировано', copyFailed: 'Не удалось скопировать', found: 'Найдено', clicks: 'Скачиваний', download: 'Скачать', linkCopied: 'Ссылка скопирована', copies: 'Копирований', linkClicks: 'Переходов', tgClicks: 'Переходов в Telegram', fromHere: 'отсюда', views: 'Просмотры страницы', today: 'сегодня', week: 'неделя', month: 'месяц', total: 'за всё время', allCount: 'всего', onlyYou: 'видно только вам', viaKey: 'вход по ключу' },
   };
   const currentLang = () => (root.lang === 'ru' ? 'ru' : 'en');
   const t = key => STRINGS[currentLang()][key];
@@ -103,6 +103,9 @@
   });
 
   let statsCounts = null;
+  // Unique count (one person once a day) and, when someone did it more than once, all actions: "4 (total 9)"
+  const withAll = (unique, all) => unique + (all > unique ? ' (' + t('allCount') + ' ' + all + ')' : '');
+
   function renderStats() {
     if (!statsCounts) return;
     $$('[data-stats-file]').forEach(line => {
@@ -112,7 +115,8 @@
         value: counts[kind] || 0,
       }));
       const total = parts.reduce((sum, part) => sum + part.value, 0);
-      line.textContent = t('clicks') + ': ' + total + ' (' + parts.map(part => part.label + ' ' + part.value).join(' · ') + ')';
+      const all = line.dataset.statsKinds.split(',').reduce((sum, kind) => sum + (counts['all:' + kind] || 0), 0);
+      line.textContent = t('clicks') + ': ' + withAll(total, all) + ' · ' + parts.map(part => part.label + ' ' + part.value).join(' · ');
       line.hidden = false;
     });
 
@@ -124,10 +128,11 @@
         download: own.download || 0,
         copy: own.copy || 0,
         link: own.link || 0,
+        all: { download: own['all:download'] || 0, copy: own['all:copy'] || 0, link: own['all:link'] || 0 },
       };
     };
     const tweakText = (line, numbers) => line.dataset.kinds.split(',')
-      .map(kind => t(kind === 'download' ? 'clicks' : kind === 'copy' ? 'copies' : 'linkClicks') + ': ' + numbers[kind]).join(' · ');
+      .map(kind => t(kind === 'download' ? 'clicks' : kind === 'copy' ? 'copies' : 'linkClicks') + ': ' + withAll(numbers[kind], numbers.all[kind])).join(' · ');
     $$('[data-tweak-stats]').forEach(line => {
       line.textContent = tweakText(line, tweakNumbers(line));
       line.hidden = false;
@@ -135,8 +140,10 @@
 
     // Telegram cards: clicks on any channel link on the site, and on this card's place
     $$('[data-tg-stats]').forEach(line => {
-      const here = (statsCounts['tg:' + line.dataset.tgStats] || {}).click || 0;
-      line.textContent = t('tgClicks') + ': ' + ((statsCounts.tg || {}).click || 0) + ' · ' + t('fromHere') + ' ' + here;
+      const site = statsCounts.tg || {};
+      const here = statsCounts['tg:' + line.dataset.tgStats] || {};
+      line.textContent = t('tgClicks') + ': ' + withAll(site.click || 0, site['all:click'] || 0)
+        + ' · ' + t('fromHere') + ' ' + withAll(here.click || 0, here['all:click'] || 0);
       line.hidden = false;
     });
 
@@ -202,7 +209,8 @@
           bar.innerHTML = '<div class="container"></div>';
           const render = () => {
             bar.firstChild.textContent = t('views') + ': ' + ['today', 'week', 'month']
-              .map(key => t(key) + ' ' + (views[key] || 0)).join(' · ') + ' · ' + t('total') + ' ' + (views.view || 0)
+              .map(key => t(key) + ' ' + withAll(views[key] || 0, views['hits_' + key] || 0)).join(' · ')
+              + ' · ' + t('total') + ' ' + withAll(views.view || 0, views.hits || 0)
               + ' (' + t('onlyYou') + ')'
               // Recognized by the device key, not the IP: normal on a phone, on the home PC it means the IP changed
               + (data.via === 'token' ? ' · ' + t('viaKey') : '');

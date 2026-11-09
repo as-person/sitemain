@@ -11,6 +11,12 @@ POST /api/count      the site reports what never reaches the server:
 GET  /api/stats      returns the counts to the owner (IP in OWNER_IPS or ?owner=<token> from OWNER_TOKENS),
                      and {"owner": false} to everyone else; the owner's own visits and clicks are never counted
 
+Two counts are kept for everything. The unique one (the plain kind: download, view, click...) counts each IP
+once per 24 hours per thing; it is what may become public. The total one (kind 'all:<kind>', and for pages
+'hits' with daily 'hday:' rows) counts every action, for the owner's fuller picture: a reload is another view.
+For files only the start of a download is a total action (no Range header, or a range from byte 0), so a
+download made of many partial requests is one, and a resumed download adds nothing; one IP adds at most
+TOTAL_CAP total actions per thing per day, so a reload loop cannot inflate it.
 Each IP is counted once per 24 hours per thing: per Windows image (its ISO, .torrent and magnet together,
 whichever way it was taken), per tweak file, command or link. Someone taking the English and the Russian
 image, or three tweaks, counts for each of them.
@@ -56,12 +62,17 @@ PAGE_RE = re.compile(r'^/[a-z0-9/-]{0,100}$')
 PLACE_RE = re.compile(r'^[a-z0-9-]{1,30}$')
 CLICK_WINDOW = int(os.environ.get('CLICK_WINDOW', '86400'))  # seconds between counted actions from one IP
 MAX_TRACKED = 300000
+# Search and SEO robots (Barkrowler, SemrushBot, DotBot, link previews...) are not people: never counted.
+# Download tools people use (curl, wget, aria2, download managers) are counted.
+BOT_RE = re.compile(r'bot|crawl|spider|slurp|preview|headless|lighthouse|scanner|facebookexternalhit', re.I)
+TOTAL_CAP = int(os.environ.get('TOTAL_CAP', '30'))  # total actions counted per IP per thing per day
 
 db = sqlite3.connect(DB_PATH, check_same_thread=False)
 db.execute('CREATE TABLE IF NOT EXISTS counts (file TEXT, kind TEXT, n INTEGER NOT NULL, PRIMARY KEY (file, kind))')
 db.commit()
 lock = threading.Lock()
 last_counted = {}  # hash of (ip, action) -> unix time it was counted
+totals_today = {}  # hash of (ip, action) -> [day, total actions counted that day]
 salt = secrets.token_hex(16)
 
 
@@ -178,6 +189,25 @@ def first_today(key):
         return True
 
 
+def total_allowed(key):
+    """True for up to TOTAL_CAP total actions of one IP on one thing per day."""
+    key = hashlib.sha256((salt + 'total' + repr(key)).encode()).hexdigest()[:24]
+    today = time.strftime('%Y-%m-%d')
+    with lock:
+        entry = totals_today.get(key)
+        if entry is None or entry[0] != today:
+            if len(totals_today) >= MAX_TRACKED:
+                for old in [k for k, v in totals_today.items() if v[0] != today]:
+                    del totals_today[old]
+                if len(totals_today) >= MAX_TRACKED:
+                    totals_today.clear()
+            entry = totals_today[key] = [today, 0]
+        if entry[1] >= TOTAL_CAP:
+            return False
+        entry[1] += 1
+        return True
+
+
 def add(file, kind):
     with lock:
         db.execute('INSERT INTO counts VALUES (?, ?, 1) ON CONFLICT (file, kind) DO UPDATE SET n = n + 1', (file, kind))
@@ -197,17 +227,28 @@ def add_view(key):
         db.commit()
 
 
+def add_hit(key):
+    """Every view of a page (total), plus one row per day ('hday:'); rows older than 30 days are dropped."""
+    hday = 'h' + day_key()
+    with lock:
+        db.execute("INSERT INTO counts VALUES (?, 'hits', 1) ON CONFLICT (file, kind) DO UPDATE SET n = n + 1", (key,))
+        db.execute('INSERT INTO counts VALUES (?, ?, 1) ON CONFLICT (file, kind) DO UPDATE SET n = n + 1', (key, hday))
+        db.execute("DELETE FROM counts WHERE file = ? AND kind LIKE 'hday:%' AND kind < ?", (key, 'h' + day_key(29)))
+        db.commit()
+
+
 def read_counts():
-    """Totals per file; pages also get today, week (last 7 days) and month (last 30 days)."""
+    """Totals per file; pages also get today, week (last 7 days) and month (last 30 days), unique and hits_*."""
     counts = {}
     today, week, month = day_key(), day_key(6), day_key(29)
     with lock:
         for file, kind, n in db.execute('SELECT file, kind, n FROM counts'):
             entry = counts.setdefault(file, {})
-            if kind.startswith('day:'):
+            if kind.startswith('day:') or kind.startswith('hday:'):
+                prefix = 'hits_' if kind.startswith('h') else ''
                 for name, since in (('today', today), ('week', week), ('month', month)):
-                    if kind >= since:
-                        entry[name] = entry.get(name, 0) + n
+                    if kind.lstrip('h') >= since:
+                        entry[prefix + name] = entry.get(prefix + name, 0) + n
                 continue
             entry[kind] = n
     return counts
@@ -252,10 +293,19 @@ class Handler(BaseHTTPRequestHandler):
     def is_owner(self):
         return bool(self.owner_via())
 
-    def count(self, key, kind, dedupe):
+    def ignored(self):
+        """The owner or a robot: nothing is counted. Downloads come through nginx with the visitor's User-Agent."""
+        ua = self.headers.get('X-Original-UA') or self.headers.get('User-Agent', '')
+        return self.is_owner() or bool(BOT_RE.search(ua))
+
+    def count(self, key, kind, dedupe, start=True):
+        """Unique count (once per IP per day) and total count (every action; `start` False for the middle of a download)."""
         ip = self.headers.get('X-Real-IP', '')
-        if ip and not self.is_owner() and first_today((ip,) + dedupe):
-            add(key, kind)
+        if ip and not self.ignored():
+            if first_today((ip,) + dedupe):
+                add(key, kind)
+            if start and total_allowed((ip, key, kind)):
+                add(key, 'all:' + kind)
         return self.respond(204)
 
     def do_POST(self):
@@ -264,6 +314,9 @@ class Handler(BaseHTTPRequestHandler):
             if self.headers.get('X-Original-Method') != 'GET':
                 return self.respond(204)
             name = os.path.basename(unquote(urlsplit(self.headers.get('X-Original-URI', '')).path))
+            # A download starts with no Range or a range from byte 0; later parts and resumes are not new downloads
+            byte_range = self.headers.get('X-Original-Range', '').replace(' ', '')
+            start = not byte_range or byte_range.startswith('bytes=0-')
             if name.lower().endswith('.torrent') and is_image(name[:-len('.torrent')]):
                 image = name[:-len('.torrent')]
                 if not file_exists(image):
@@ -274,8 +327,8 @@ class Handler(BaseHTTPRequestHandler):
                 return self.respond(400)
             key = resolve(name)
             if is_image(name):
-                return self.count(key, 'download', ('image', key))
-            return self.count(key, 'download', ('file', name))
+                return self.count(key, 'download', ('image', key), start)
+            return self.count(key, 'download', ('file', name), start)
         if url.path == '/api/count':
             query = parse_qs(url.query)
             kind = query.get('kind', [''])[0]
@@ -284,20 +337,26 @@ class Handler(BaseHTTPRequestHandler):
                 if kind != 'view' or not PAGE_RE.match(page) or not known('pages', page):
                     return self.respond(400)
                 ip = self.headers.get('X-Real-IP', '')
-                if ip and not self.is_owner() and first_today((ip, 'page', page)):
-                    add_view('page:' + page)
+                if ip and not self.ignored():
+                    if first_today((ip, 'page', page)):
+                        add_view('page:' + page)
+                    if total_allowed((ip, 'page', page)):
+                        add_hit('page:' + page)
                 return self.respond(204)
             place = query.get('tg', [''])[0]
             if place:
                 if kind != 'click' or not PLACE_RE.match(place) or not known('places', place):
                     return self.respond(400)
                 ip = self.headers.get('X-Real-IP', '')
-                if ip and not self.is_owner():
+                if ip and not self.ignored():
                     # 'tg' is the site-wide total (one per IP per day), 'tg:<place>' the clicks from one place
                     if first_today((ip, 'tg')):
                         add('tg', 'click')
                     if first_today((ip, 'tg', place)):
                         add('tg:' + place, 'click')
+                    if total_allowed((ip, 'tg', place)):
+                        add('tg', 'all:click')
+                        add('tg:' + place, 'all:click')
                 return self.respond(204)
             tweak = query.get('tweak', [''])[0]
             if tweak:
