@@ -708,7 +708,7 @@ html:not([data-image]) .img-ru { display: none !important; }
 .search input::placeholder { color: var(--muted); }
 /* No blue ring on the search field: a slightly lighter border, like the dropdowns on /support */
 .search input:focus, .search input:focus-visible { outline: none; border-color: rgb(255 255 255 / .32); box-shadow: 0 0 0 3px rgb(255 255 255 / .07); }
-.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
 .chips::-webkit-scrollbar { display: none; }
 .chip {
   flex: none;
@@ -733,7 +733,7 @@ html:not([data-image]) .img-ru { display: none !important; }
   gap: 12px 24px;
   align-items: start;
   padding: 18px 20px;
-  scroll-margin-top: 220px;
+  scroll-margin-top: 150px; /* clear of the header and the sticky search */
 }
 .item + .item { border-top: 1px solid var(--border); }
 .item:target { background: var(--raised); }

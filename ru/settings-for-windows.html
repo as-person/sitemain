@@ -39,7 +39,7 @@ window.siteOwner.then(function(d){if(d&&d.owner)window['ga-disable-'+ID]=true;})
 Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({owner:false})},2500)})]).then(function(d){if(!(d&&d.owner))gtag('event','page_view');});})();
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-4RBN0G8775"></script>
-  <link rel="stylesheet" href="/assets/site.css?v=6acbb445">
+  <link rel="stylesheet" href="/assets/site.css?v=5b1f8218">
 </head>
 <body>
   <a class="skip-link" href="#content"><span class="lang-en">Skip to content</span><span class="lang-ru">Перейти к содержимому</span></a>
@@ -73,16 +73,17 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
           <input type="search" id="settings-search" placeholder="Search: telemetry, drivers, Store…" data-i18n="{&quot;placeholder&quot;:{&quot;en&quot;:&quot;Search: telemetry, drivers, Store…&quot;,&quot;ru&quot;:&quot;Поиск: телеметрия, драйверы, Store…&quot;}}" autocomplete="off">
         </label>
-        <div class="chips" role="group" aria-label="Categories" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Categories&quot;,&quot;ru&quot;:&quot;Категории&quot;}}">
-          <button type="button" class="chip" data-category="all" aria-pressed="true"><span class="lang-en">All</span><span class="lang-ru">Все</span></button>
-          <button type="button" class="chip" data-category="featured" aria-pressed="false"><span class="lang-en">Activation</span><span class="lang-ru">Активация</span></button>
-          <button type="button" class="chip" data-category="tweaks" aria-pressed="false"><span class="lang-en">Windows tweaks</span><span class="lang-ru">Твики Windows</span></button>
-          <button type="button" class="chip" data-category="privacy" aria-pressed="false"><span class="lang-en">Privacy and security</span><span class="lang-ru">Приватность и безопасность</span></button>
-          <button type="button" class="chip" data-category="store" aria-pressed="false">Microsoft Store</button>
-          <button type="button" class="chip" data-category="apps" aria-pressed="false"><span class="lang-en">Apps</span><span class="lang-ru">Программы</span></button>
-          <button type="button" class="chip" data-category="drivers" aria-pressed="false"><span class="lang-en">Drivers and runtimes</span><span class="lang-ru">Драйверы и компоненты</span></button>
-          <button type="button" class="chip" data-category="maintenance" aria-pressed="false"><span class="lang-en">Maintenance</span><span class="lang-ru">Обслуживание</span></button>
-        </div>
+      </div>
+      <!-- Only the search stays on screen while scrolling; the categories scroll away with the page -->
+      <div class="chips" role="group" aria-label="Categories" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Categories&quot;,&quot;ru&quot;:&quot;Категории&quot;}}">
+        <button type="button" class="chip" data-category="all" aria-pressed="true"><span class="lang-en">All</span><span class="lang-ru">Все</span></button>
+        <button type="button" class="chip" data-category="featured" aria-pressed="false"><span class="lang-en">Activation</span><span class="lang-ru">Активация</span></button>
+        <button type="button" class="chip" data-category="tweaks" aria-pressed="false"><span class="lang-en">Windows tweaks</span><span class="lang-ru">Твики Windows</span></button>
+        <button type="button" class="chip" data-category="privacy" aria-pressed="false"><span class="lang-en">Privacy and security</span><span class="lang-ru">Приватность и безопасность</span></button>
+        <button type="button" class="chip" data-category="store" aria-pressed="false">Microsoft Store</button>
+        <button type="button" class="chip" data-category="apps" aria-pressed="false"><span class="lang-en">Apps</span><span class="lang-ru">Программы</span></button>
+        <button type="button" class="chip" data-category="drivers" aria-pressed="false"><span class="lang-en">Drivers and runtimes</span><span class="lang-ru">Драйверы и компоненты</span></button>
+        <button type="button" class="chip" data-category="maintenance" aria-pressed="false"><span class="lang-en">Maintenance</span><span class="lang-ru">Обслуживание</span></button>
       </div>
 
       <p class="result-count" id="result-count" role="status"></p>

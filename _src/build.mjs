@@ -823,11 +823,12 @@ function settingsPage() {
           ${icon('search')}
           <input type="search" id="settings-search" ${attr('placeholder', 'Search: telemetry, drivers, Store…', 'Поиск: телеметрия, драйверы, Store…')} autocomplete="off">
         </label>
-        <div class="chips" role="group" ${attr('aria-label', 'Categories', 'Категории')}>
-          <button type="button" class="chip" data-category="all" aria-pressed="true">${L('All', 'Все')}</button>
-          ${featured.show ? `<button type="button" class="chip" data-category="featured" aria-pressed="false">${T(featured.heading)}</button>` : ''}
-          ${settings.categories.map(c => `<button type="button" class="chip" data-category="${c.id}" aria-pressed="false">${T(c.title)}</button>`).join('\n          ')}
-        </div>
+      </div>
+      <!-- Only the search stays on screen while scrolling; the categories scroll away with the page -->
+      <div class="chips" role="group" ${attr('aria-label', 'Categories', 'Категории')}>
+        <button type="button" class="chip" data-category="all" aria-pressed="true">${L('All', 'Все')}</button>
+        ${featured.show ? `<button type="button" class="chip" data-category="featured" aria-pressed="false">${T(featured.heading)}</button>` : ''}
+        ${settings.categories.map(c => `<button type="button" class="chip" data-category="${c.id}" aria-pressed="false">${T(c.title)}</button>`).join('\n        ')}
       </div>
 
       <p class="result-count" id="result-count" role="status"></p>
