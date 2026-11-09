@@ -913,6 +913,8 @@ html:not([data-image]) .img-ru { display: none !important; }
 /* -- Support ------------------------------------------------------------- */
 
 .support-nudge { color: var(--muted); font-size: var(--fs-xs); text-align: center; }
+/* "support the project" moves to the next line whole instead of breaking in two */
+.support-nudge .link { white-space: nowrap; }
 .support-grid { display: grid; gap: 12px; margin-top: 32px; }
 /* Links like /support#crypto from Telegram posts: keep the card clear of the sticky header */
 .support-card[id] { scroll-margin-top: 88px; }
@@ -1100,3 +1102,26 @@ html:not([data-image]) .img-ru { display: none !important; }
 .owner-stats li a { color: var(--text); }
 .owner-stats li a:hover { color: var(--accent-text); }
 .owner-stats li span { float: right; font-variant-numeric: tabular-nums; }
+
+/* -- Archive of old builds ------------------------------------------------ */
+.archive-current { margin-top: 20px; }
+.archive-current .more-card-sub { margin: 0 0 2px; }
+/* Release heading: the build number, its month beside it, the edition below */
+.archive-release .group-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; margin-bottom: 2px; }
+.archive-date { color: var(--muted); font-size: var(--fs-sm); font-weight: 400; }
+.archive-sub { margin-bottom: 12px; color: var(--muted); font-size: var(--fs-sm); }
+/* Links to the archive: under the cards on the home page (closer to the footer), after the date on the build page */
+.home:has(.archive-link) { padding-bottom: 36px; }
+.archive-link { display: flex; align-items: center; gap: 4px; width: fit-content; margin: 24px auto 0; color: var(--muted); font-size: var(--fs-sm); transition: color var(--ease); }
+.archive-link:hover { color: var(--text); }
+.archive-link .icon { width: 14px; height: 14px; transition: transform var(--ease); }
+.archive-link:hover .icon { transform: translateX(2px); }
+.meta-archive { white-space: nowrap; }
+/* Phones: the footer as a neat two-column grid. With three sections the third (Contact) takes the full width,
+   since its two links do not fit half of it; the copyright is the last line, on the left. */
+@media (max-width: 720px) {
+  .footer-inner { display: grid; grid-template-columns: max-content 1fr; gap: 20px 32px; }
+  .footer-links a { white-space: nowrap; }
+  .footer-inner > section:nth-of-type(3) { grid-column: 1 / -1; }
+  .footer-end { grid-column: 1 / -1; margin: 0; align-self: auto; }
+}

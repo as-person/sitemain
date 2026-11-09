@@ -1,0 +1,75 @@
+{
+  "publish": false,
+  "_note": "TEST DATA. publish: false builds the page only into _preview/ (not published). Newest release first.",
+  "releases": [
+    {
+      "build": "11",
+      "version": "24H2",
+      "number": "26100.9309",
+      "date": {
+        "en": "September 2026",
+        "ru": "Сентябрь 2026"
+      },
+      "images": {
+        "en": {
+          "file": "en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9309_by_somov.iso",
+          "size": 5741230080,
+          "btih": "8fdd3e6212cc0aa2923818a8d6a4e466bd50a118",
+          "sha256": "E7B078F95F6FBB90EA4BF1685EA79BF2E7783E495ABA8E221178CC9B1E4B9B97"
+        },
+        "ru": {
+          "file": "ru-ru_windows_11_iot_enterprise_ltsc_2024_x64_26100.9309_by_somov.iso",
+          "size": 5689012224,
+          "btih": "b4534227c0487cfe014f3e8066762d6b6e90ae8d",
+          "sha256": "5267F88DE4F16C70AB9DB5133AB4FBE6C2AAF203A4D8C15679F3897473560C63"
+        }
+      }
+    },
+    {
+      "build": "11",
+      "version": "24H2",
+      "number": "26100.8875",
+      "date": {
+        "en": "July 2026",
+        "ru": "Июль 2026"
+      },
+      "images": {
+        "en": {
+          "file": "en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.8875_by_somov.iso",
+          "size": 5732818944,
+          "btih": "5ef32aaff279c7d6b3d3e4f37a813d2376ec485c",
+          "sha256": "FDADC72CC21F861161FAB7E151528AD287DC9AE3240C17451AB5C5D5E1E055E1"
+        },
+        "ru": {
+          "file": "ru-ru_windows_11_iot_enterprise_ltsc_2024_x64_26100.8875_by_somov.iso",
+          "size": 5680627712,
+          "btih": "3e4d4c52195cb9ba9f366789edd8142c04156cb6",
+          "sha256": "D15D005DB62E50597541D6B9D4ED8BB9D48C1FD897773BD786AF3AFA0F33065E"
+        }
+      }
+    },
+    {
+      "build": "11",
+      "version": "24H2",
+      "number": "26100.8246",
+      "date": {
+        "en": "May 2026",
+        "ru": "Май 2026"
+      },
+      "images": {
+        "en": {
+          "file": "en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.8246_by_somov.iso",
+          "size": 5718138880,
+          "btih": "c07efac45fb172ec748d4efe313db13f91602db8",
+          "sha256": "AB4C8D488DA4CE46D56BAFC4BFD932C9023FC437AE8406EE3B32897B0C4658C9"
+        },
+        "ru": {
+          "file": "ru-ru_windows_11_iot_enterprise_ltsc_2024_x64_26100.8246_by_somov.iso",
+          "size": 5667635200,
+          "btih": "ec24f50a795e11be7b89c3a67b51de2c4531a846",
+          "sha256": "3FDA723A87AF76C1EE997BBA7BA859F05BAAE96332778B59809878FA0AB50C01"
+        }
+      }
+    }
+  ]
+}

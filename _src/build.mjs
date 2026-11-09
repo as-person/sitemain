@@ -15,6 +15,7 @@ const builds = readJson('builds.json');
 const ghost = readJson('ghost-spectre.json');
 const settings = readJson('settings.json');
 const featured = readJson('featured.json'); // the card at the top of /settings-for-windows
+const archive = readJson('archive.json'); // old builds; "publish": false builds the page into _preview/ only
 
 const SITE = 'https://somov.org';
 const CDN = 'https://dl3.somov.org/';
@@ -229,7 +230,8 @@ function header(current) {
   </header>`;
 }
 
-const footer = `<footer class="footer">
+// A function, not a constant: the archive link depends on archiveOn(), which differs in the preview pass
+const footer = () => `<footer class="footer">
     <div class="container footer-inner">
       <section>
         <h2>${L('Support the project', 'Поддержать проект')}</h2>
@@ -237,6 +239,12 @@ const footer = `<footer class="footer">
           <a href="/support">${L('Ways to support', 'Способы поддержки')} ${icon('d')}</a>
         </div>
       </section>
+      ${archiveOn() ? `<section>
+        <h2>${L('Builds', 'Сборки')}</h2>
+        <div class="footer-links">
+          <a href="${archiveHref()}">${L('Archive', 'Архив')} ${icon('d')}</a>
+        </div>
+      </section>` : ''}
       <section>
         <h2>${L('Contact', 'Контакты')}</h2>
         <div class="footer-links">
@@ -254,13 +262,20 @@ const shell = (meta, current, body, bodyClass = '') => `${head(meta)}
 <body${bodyClass ? ` class="${bodyClass}"` : ''}>
   ${header(current)}
   ${body}
-  ${footer}
+  ${footer()}
 </body>
 </html>
 `;
 
+// While the archive is not published, a second pass builds the archive page and the pages that link to it
+// into _preview/ (GitHub Pages skips folders starting with "_", git ignores it), to try it out locally.
+let PREVIEW = false;
+const archiveOn = () => archive.publish || PREVIEW;
+const archiveHref = (hash = '') => `${PREVIEW ? '/_preview' : ''}/archive${hash}`;
+const archivedReleases = buildId => archive.releases.filter(r => r.build === buildId);
+
 function write(relativePath, html) {
-  const full = join(ROOT, PAGE_LANG === 'ru' ? `ru/${relativePath}` : relativePath);
+  const full = join(PREVIEW ? join(ROOT, '_preview') : ROOT, PAGE_LANG === 'ru' ? `ru/${relativePath}` : relativePath);
   mkdirSync(dirname(full), { recursive: true });
   writeFileSync(full, html);
 }
@@ -380,6 +395,7 @@ function homePage() {
           ${icon('d')}
         </a>
       </nav>
+      ${archiveOn() && archivedReleases('11').length ? `<a class="archive-link" href="${archiveHref()}">${L('Archive of previous versions', 'Архив предыдущих версий')} ${icon('d')}</a>` : ''}
     </div>
   </main>
   <script type="application/json" id="builds-data">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>`;
@@ -458,6 +474,7 @@ function buildPage(build, preset) {
           <span aria-hidden="true">·</span>
           <span>${T(build.date)}</span>
           ${build.final ? `<span class="badge">${S.final}</span>` : ''}
+          ${archiveOn() && archivedReleases(build.id).length ? `<a class="link meta-archive" href="${archiveHref()}">${L('Previous versions', 'Предыдущие версии')}</a>` : ''}
         </div>
         ${shareRow()}
         <p class="lead">${T(build.lead)}</p>
@@ -634,6 +651,79 @@ function ghostPage() {
       ru: 'Сборки Windows 10 и Windows 11 от Ghost Spectre: версии, даты и размеры. Прямая загрузка и торрент.',
     },
   }, 'ghost', body));
+}
+
+/* -- Archive of old builds ----------------------------------------------- */
+
+// Old releases are served from dl3.somov.org/archive/. Their torrents carry the direct link as a webseed (ws=),
+// so they download even when nobody seeds them.
+const ARCHIVE_CDN = `${CDN}archive/`;
+
+function archivePage() {
+  const current = Object.fromEntries(builds.map(b => [b.id, b]));
+  const imageRow = (release, lang) => {
+    const image = release.images[lang];
+    const url = `${ARCHIVE_CDN}${image.file}`;
+    const magnet = `magnet:?xt=urn:btih:${image.btih}&dn=${encodeURIComponent(image.file)}`
+      + `&ws=${encodeURIComponent(url)}${TRACKERS.map(t => `&tr=${encodeURIComponent(t)}`).join('')}`;
+    return `<article class="row">
+            <div>
+              <h3 class="row-name">${imageLangName(lang)}</h3>
+              <div class="meta">
+                <span>${sizeL(image.size)}</span>
+                <span aria-hidden="true">·</span>
+                <span>ISO · x64</span>
+              </div>
+              <button type="button" class="hash-copy" data-copy="${image.sha256}" ${attr('title', 'Copy SHA-256', 'Скопировать SHA-256')}>SHA-256 <code>${image.sha256.slice(0, 8)}…${image.sha256.slice(-8)}</code> ${icon('copy')}</button>
+            </div>
+            <div class="row-actions">
+              <a class="btn btn-secondary btn-sm" href="${url}">${icon('download')} <span>${S.download}</span></a>
+              <a class="row-text-link" href="${url}.torrent">Torrent</a>
+              <a class="row-text-link" href="${esc(magnet)}">Magnet</a>
+            </div>
+          </article>`;
+  };
+
+  const releaseHtml = release => {
+    const build = current[release.build];
+    return `<section class="group archive-release" id="b-${release.number}">
+        <h2 class="group-title"><span class="mono">${release.number}</span> <span class="archive-date">${T(release.date)}</span></h2>
+        <p class="archive-sub">${esc(build.title)} ${release.version} · <span class="author">${L('Author:', 'Автор:')} <b>somov</b></span></p>
+        <div class="rows">
+          ${LANGS.map(l => imageRow(release, l)).join('\n          ')}
+        </div>
+      </section>`;
+  };
+
+  const latest = builds.find(b => b.id === '11');
+  const body = `<main class="page" id="content">
+    <div class="container container-narrow">
+      <a href="/" class="back">${icon('back')} ${S.home}</a>
+      <h1 class="page-title">${L('Build archive', 'Архив сборок')}</h1>
+      <p class="page-sub">${L('Previous versions of the Windows 11 builds by somov. Direct download, torrent and magnet.', 'Предыдущие версии сборок Windows 11 от somov. Прямая загрузка, торрент и magnet.')}</p>
+      <a class="more-card archive-current" href="/windows-11">
+        <span>
+          <span class="more-card-sub">${L('Current version', 'Актуальная версия')}</span>
+          <span class="more-card-title">${esc(latest.title)} ${latest.version} · <span class="mono">${latest.number}</span> · ${T(latest.date)}</span>
+        </span>
+        ${icon('d')}
+      </a>
+      <p class="notice">${L('Old versions do not get fixes and updates. Use them if you need exactly this build.', 'Старые версии не получают исправлений и обновлений. Берите их, если нужна именно эта сборка.')}</p>
+      <div class="section">
+        ${archive.releases.map(releaseHtml).join('\n      ')}
+      </div>
+    </div>
+  </main>`;
+
+  const html = shell({
+    path: '/archive',
+    title: { en: 'Build archive - Windows by somov', ru: 'Архив сборок - Windows от somov' },
+    description: {
+      en: 'Previous versions of the Windows 11 IoT Enterprise LTSC builds by somov: direct download, torrent, magnet and SHA-256.',
+      ru: 'Предыдущие версии сборок Windows 11 IoT Enterprise LTSC от somov: прямая загрузка, торрент, magnet и SHA-256.',
+    },
+  }, 'builds', body);
+  write('archive.html', html);
 }
 
 /* -- Settings ------------------------------------------------------------ */
@@ -1097,6 +1187,7 @@ for (const lang of LANGS) {
   PAGE_LANG = lang;
   homePage();
   ghostPage();
+  if (archive.publish) archivePage();
   settingsPage();
   for (const item of settings.items) tweakPage(item);
   supportPage();
@@ -1104,6 +1195,18 @@ for (const lang of LANGS) {
     buildPage(build, null);
     for (const imageLang of LANGS) buildPage(build, imageLang);
   }
+}
+// The archive while it is not published: its page, the home page and the Windows 11 page with the links to it,
+// into _preview/ only. Open /_preview/archive, /_preview/ and /_preview/windows-11 on the local server.
+if (!archive.publish) {
+  PREVIEW = true;
+  for (const lang of LANGS) {
+    PAGE_LANG = lang;
+    archivePage();
+    homePage();
+    for (const build of builds.filter(b => archivedReleases(b.id).length)) buildPage(build, null);
+  }
+  PREVIEW = false;
 }
 PAGE_LANG = 'en';
 notFoundPage();
