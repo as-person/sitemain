@@ -113,10 +113,12 @@
       const parts = line.dataset.statsKinds.split(',').map(kind => ({
         label: kind === 'download' ? t('download') : kind === 'torrent' ? 'Torrent' : 'Magnet',
         value: counts[kind] || 0,
+        all: counts['all:' + kind] || 0,
       }));
       const total = parts.reduce((sum, part) => sum + part.value, 0);
-      const all = line.dataset.statsKinds.split(',').reduce((sum, kind) => sum + (counts['all:' + kind] || 0), 0);
-      line.textContent = t('clicks') + ': ' + withAll(total, all) + ' · ' + parts.map(part => part.label + ' ' + part.value).join(' · ');
+      const all = parts.reduce((sum, part) => sum + part.all, 0);
+      // Each way too, so it is clear which one people took again
+      line.textContent = t('clicks') + ': ' + withAll(total, all) + ' · ' + parts.map(part => part.label + ' ' + withAll(part.value, part.all)).join(' · ');
       line.hidden = false;
     });
 
