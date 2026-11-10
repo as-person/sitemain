@@ -691,11 +691,12 @@ function archivePage() {
                 <span>ISO · x64</span>
               </div>
               <button type="button" class="hash-copy" data-copy="${image.sha256}" ${attr('title', 'Copy SHA-256', 'Скопировать SHA-256')}>SHA-256 <code>${image.sha256.slice(0, 8)}…${image.sha256.slice(-8)}</code> ${icon('copy')}</button>
+              ${statsLine(image.file)}
             </div>
             <div class="row-actions">
               <a class="btn btn-secondary btn-sm" href="${url}">${icon('download')} <span>${S.download}</span></a>
               <a class="row-text-link" href="${url}.torrent">Torrent</a>
-              <a class="row-text-link" href="${esc(magnet)}">Magnet</a>
+              <a class="row-text-link" href="${esc(magnet)}" ${countAttr(image.file, 'magnet')}>Magnet</a>
             </div>
           </article>`;
   };
