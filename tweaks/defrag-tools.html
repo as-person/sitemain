@@ -39,9 +39,20 @@ window.siteOwner.then(function(d){if(d&&d.owner)window['ga-disable-'+ID]=true;})
 Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({owner:false})},2500)})]).then(function(d){if(!(d&&d.owner))gtag('event','page_view');});})();
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-4RBN0G8775"></script>
+<!-- Yandex.Metrika: started like Analytics above, only once the counter has answered that this is not the owner
+     (and not on a device opened with /?noga). No "ecommerce": there is no shop, and dataLayer belongs to gtag. -->
+<script>
+(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();
+for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}
+k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js?id=114172668','ym');
+(function(){var off=false;try{off=localStorage.getItem('ga-optout')==='1'}catch(e){}if(off)return;
+Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({owner:false})},2500)})]).then(function(d){if(d&&d.owner)return;
+ym(114172668,'init',{ssr:true,clickmap:true,referrer:document.referrer,url:location.href,accurateTrackBounce:true,trackLinks:true});});})();
+</script>
   <link rel="stylesheet" href="/assets/site.css?v=af4aa342">
 </head>
 <body>
+  <noscript><div><img src="https://mc.yandex.ru/watch/114172668" style="position:absolute; left:-9999px;" alt=""></div></noscript>
   <a class="skip-link" href="#content"><span class="lang-en">Skip to content</span><span class="lang-ru">Перейти к содержимому</span></a>
   <header class="topbar">
     <div class="container topbar-inner">

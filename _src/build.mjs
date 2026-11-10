@@ -20,6 +20,7 @@ const archive = readJson('archive.json'); // old builds; "publish": false builds
 const SITE = 'https://somov.org';
 const CDN = 'https://dl3.somov.org/';
 const GA_ID = 'G-4RBN0G8775';
+const YM_ID = 114172668; // Yandex.Metrika
 const TELEGRAM = 'https://t.me/+gmXk9-zXZ405YWY6';
 // Donation methods for /support. QR codes come from _src/qr.py, keep the addresses in sync.
 const DONATE = {
@@ -155,7 +156,18 @@ window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(argu
 window.siteOwner.then(function(d){if(d&&d.owner)window['ga-disable-'+ID]=true;});
 Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({owner:false})},2500)})]).then(function(d){if(!(d&&d.owner))gtag('event','page_view');});})();
 </script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=${GA_ID}"></script>`;
+<script async src="https://www.googletagmanager.com/gtag/js?id=${GA_ID}"></script>
+<!-- Yandex.Metrika: started like Analytics above, only once the counter has answered that this is not the owner
+     (and not on a device opened with /?noga). No "ecommerce": there is no shop, and dataLayer belongs to gtag. -->
+<script>
+(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();
+for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}
+k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js?id=${YM_ID}','ym');
+(function(){var off=false;try{off=localStorage.getItem('ga-optout')==='1'}catch(e){}if(off)return;
+Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({owner:false})},2500)})]).then(function(d){if(d&&d.owner)return;
+ym(${YM_ID},'init',{ssr:true,clickmap:true,referrer:document.referrer,url:location.href,accurateTrackBounce:true,trackLinks:true});});})();
+</script>`;
+const metrikaNoscript = `<noscript><div><img src="https://mc.yandex.ru/watch/${YM_ID}" style="position:absolute; left:-9999px;" alt=""></div></noscript>`;
 
 // Before first paint: use the saved language, otherwise the page language (/ru copies are Russian),
 // otherwise the browser language. Visitors of a /ru copy keep the usual address: the prefix is removed
@@ -270,6 +282,7 @@ const footer = () => `<footer class="footer">
 
 const shell = (meta, current, body, bodyClass = '') => `${head(meta)}
 <body${bodyClass ? ` class="${bodyClass}"` : ''}>
+  ${metrikaNoscript}
   ${header(current)}
   ${body}
   ${footer()}
