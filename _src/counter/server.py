@@ -57,6 +57,8 @@ KEYS_REFRESH = 600
 OWNER_IPS = {ip.strip() for ip in os.environ.get('OWNER_IPS', '').split(',') if ip.strip()}
 # A device of the owner on any network (a phone on mobile data): the site sends ?owner=<token> it keeps in localStorage
 OWNER_TOKENS = [t.strip() for t in os.environ.get('OWNER_TOKENS', '').split(',') if len(t.strip()) >= 16]
+# The server itself (checks and tests run on dl3): never counted, and not shown the stats either
+SELF_IPS = {ip.strip() for ip in os.environ.get('SELF_IPS', '127.0.0.1,::1,89.110.97.213').split(',') if ip.strip()}
 
 FILE_RE = re.compile(r'^[^/\\\x00-\x1f]{1,200}$')
 TWEAK_RE = re.compile(r'^[a-z0-9-]{1,60}$')
@@ -415,9 +417,9 @@ class Handler(BaseHTTPRequestHandler):
     def ignored(self):
         """The owner or a robot: nothing is counted. Downloads come through nginx with the visitor's User-Agent."""
         ua = self.headers.get('X-Original-UA') or self.headers.get('User-Agent', '')
-        if self.is_owner() or BOT_RE.search(ua):
-            return True
         ip = self.headers.get('X-Real-IP', '')
+        if ip in SELF_IPS or self.is_owner() or BOT_RE.search(ua):
+            return True
         if not ip:
             return False
         if is_cloud_robot(ip):
