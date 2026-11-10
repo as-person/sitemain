@@ -66,7 +66,10 @@ const TRACKERS = [
   'udp://tracker.theoks.net:6969/announce',
 ];
 
-const assetHash = file => createHash('sha1').update(readFileSync(join(ROOT, file))).digest('hex').slice(0, 8);
+// Version mark of a CSS/JS file. Line endings are normalized first: git on Windows may keep the file with CRLF
+// on disk while GitHub serves it with LF, and the mark must be the same on any machine.
+const assetHash = file => createHash('sha1')
+  .update(readFileSync(join(ROOT, file), 'utf8').replace(/\r\n/g, '\n')).digest('hex').slice(0, 8);
 const CSS_URL = `/assets/site.css?v=${assetHash('assets/site.css')}`;
 const JS_URL = `/assets/site.js?v=${assetHash('assets/site.js')}`;
 
@@ -550,7 +553,7 @@ function buildPage(build, preset) {
                choosing the image for the whole page, not just for this block -->
           <div class="sums-head">
             <span class="sums-head-label">${L('Image', 'Образ')}</span>
-            <nav class="seg-links seg-inline" ${attr('aria-label', 'Image language', 'Язык образа')}>
+            <nav class="seg-links seg-inline" ${attr('aria-label', 'Image language of the checksums', 'Язык образа для контрольных сумм')}>
               ${LANGS.map(l => switchLink(l, imageLangName(l))).join('\n              ')}
             </nav>
           </div>
@@ -963,8 +966,25 @@ function tweakPage(item) {
   const category = settings.categories.find(c => c.id === item.category);
   const related = settings.items.filter(i => i.category === item.category && i !== item).slice(0, 6);
   const titleIn = lang => textIn(item.title, lang);
-  const descIn = lang => textIn(item.desc, lang)
+  const baseDesc = lang => textIn(item.desc, lang)
     || [titleIn(lang), ...(item.commands ?? []).map(c => textIn(c.label, lang))].join('. ');
+  // Search results show the description: a short one ("Run wsreset.bat.") gets a sentence about what the page
+  // gives, so it reads as a full snippet (about 70-160 characters)
+  const DESC_TAIL = {
+    file: { en: 'Free download and step-by-step instructions on somov.org.', ru: 'Бесплатная загрузка и пошаговая инструкция на somov.org.' },
+    page: { en: 'Details, links and instructions on somov.org.', ru: 'Описание, ссылки и инструкция на somov.org.' },
+  };
+  const descIn = lang => {
+    const base = baseDesc(lang).trim();
+    if (base.length >= 90) return base;
+    const end = /[.!?…]$/.test(base) ? '' : '.';
+    return `${base}${end} ${DESC_TAIL[item.file ? 'file' : 'page'][lang]}`;
+  };
+  // A long tweak name leaves no room for the full site name in the title (search results cut it at ~65 characters)
+  const titleFor = (lang, suffix) => {
+    const full = `${titleIn(lang)} - ${suffix}`;
+    return full.length <= 65 ? full : `${titleIn(lang)} - somov`;
+  };
 
   const action = item.file ? `<section class="tweak-card">
           <div class="tweak-download">
@@ -1003,8 +1023,8 @@ function tweakPage(item) {
   write(`tweaks/${item.id}.html`, shell({
     path: `/tweaks/${item.id}`,
     title: {
-      en: `${titleIn('en')} - Windows tweaks by somov`,
-      ru: `${titleIn('ru')} - настройки Windows от somov`,
+      en: titleFor('en', 'Windows tweaks by somov'),
+      ru: titleFor('ru', 'настройки Windows от somov'),
     },
     description: { en: descIn('en'), ru: descIn('ru') },
   }, 'settings', body));
@@ -1023,12 +1043,20 @@ function notFoundPage() {
   <meta name="theme-color" content="#0f1115">
   <meta name="color-scheme" content="dark">
   <link rel="icon" href="/favicon.ico" sizes="any">
+  <script>
+  // GitHub Pages shows this page for any missing address. Common variants of a real address are sent to it:
+  // a trailing slash (/support/), capital letters (/Support), .html and /index (/support.html), and /tweaks/ to
+  // the settings list. The fixed address never changes again, so this cannot loop.
+  (function(){var p=location.pathname,q=p.toLowerCase().replace(/\\.html$/,'').replace(/\\/index$/,'/').replace(/(.)\\/+$/,'$1');
+  if(/^(\\/ru)?\\/tweaks$/.test(q))q=q.replace(/tweaks$/,'settings-for-windows');
+  if(q!==p)location.replace(q+location.search+location.hash);})();
+  </script>
   ${langScript}
   <link rel="stylesheet" href="${CSS_URL}">
 </head>
 <body>
   <main class="not-found" id="content">
-    <div class="not-found-code">404</div>
+    <h1 class="not-found-code">404</h1>
     <p>${L('This page doesn’t exist.', 'Такой страницы не существует.')}</p>
     <a class="btn btn-primary" href="/">${icon('back')} <span>${L('Back to home', 'На главную')}</span></a>
   </main>

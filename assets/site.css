@@ -435,7 +435,7 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 
 /* -- Inner pages --------------------------------------------------------- */
 
-.page { flex: 1; padding-block: 28px 72px; }
+.page { position: relative; flex: 1; padding-block: 28px 72px; }
 
 .back {
   display: inline-flex;
@@ -807,7 +807,7 @@ html:not([data-image]) .img-ru { display: none !important; }
 }
 .chip:hover { color: var(--text); border-color: var(--border-strong); }
 .chip[aria-pressed="true"] { background: var(--selected); border-color: var(--selected); color: var(--on-selected); }
-.result-count { margin-top: 16px; color: var(--muted); font-size: var(--fs-sm); }
+.result-count { margin-top: 16px; min-height: 1.5em; min-height: 1lh; color: var(--muted); font-size: var(--fs-sm); } /* the line is filled by site.js: its place is kept so the list does not jump */
 .empty { margin-top: 32px; padding: 40px 20px; border: 1px dashed var(--border-strong); border-radius: var(--r-lg); color: var(--muted); text-align: center; }
 
 .item {
@@ -1174,7 +1174,8 @@ html:not([data-image]) .img-ru { display: none !important; }
 /* Owner-only counters on the settings and tweak pages */
 .tweak-stats { margin-top: 8px; }
 .tg-stats { margin-top: 6px; padding-inline: 4px; }
-.page-views { border-bottom: 1px dashed var(--border-strong); color: var(--muted); font-size: 12px; line-height: 1.4; }
+/* Owner-only line under the header: laid over the top padding of the page, so appearing after load moves nothing */
+.page-views { position: absolute; top: 0; left: 0; right: 0; z-index: 5; border-bottom: 1px dashed var(--border-strong); background: var(--bg); color: var(--muted); font-size: 12px; line-height: 1.4; }
 .page-views .container { padding-block: 5px; text-align: right; }
 .owner-stats { margin-top: 20px; padding: 12px 20px; border: 1px dashed var(--border-strong); border-radius: var(--r-lg); }
 .owner-stats summary { color: var(--muted); font-size: var(--fs-sm); font-weight: 600; cursor: pointer; }
@@ -1207,4 +1208,8 @@ html:not([data-image]) .img-ru { display: none !important; }
   .footer-links a { white-space: nowrap; }
   .footer-inner > section:nth-of-type(3) { grid-column: 1 / -1; }
   .footer-end { grid-column: 1 / -1; margin: 0; align-self: auto; }
+}
+/* Phones: the owner line wraps onto two lines and would cover the page, so there it takes its own place */
+@media (max-width: 720px) {
+  .page-views { position: static; }
 }

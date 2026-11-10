@@ -270,7 +270,8 @@
           };
           render();
           languageListeners.push(render);
-          topbar.after(bar);
+          // Over the top padding of <main> (see .page-views in site.css), so it moves nothing on the page
+          ($('main') || topbar).prepend(bar);
         })
         .catch(() => {});
     }
