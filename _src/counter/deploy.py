@@ -17,6 +17,7 @@ ROOT_COUNTED = '    location / {\n        mirror /_count_hit;\n        mirror_re
 METHOD_LINE = '        proxy_set_header X-Original-Method $request_method;\n'
 RANGE_LINE = '        proxy_set_header X-Original-Range $http_range;\n'
 UA_LINE = '        proxy_set_header X-Original-UA $http_user_agent;\n'
+REFERER_LINE = '        proxy_set_header X-Original-Referer $http_referer;\n'
 LIMIT_FILE = '/etc/nginx/conf.d/somov-counter-limit.conf'
 # At most 10 requests a second from one IP (a page sends 2-3), short bursts allowed
 LIMIT_ZONE = 'limit_req_zone $binary_remote_addr zone=somov_api:10m rate=10r/s;\nlimit_req_status 429;\n'
@@ -50,6 +51,7 @@ DOWNLOADS = '''    location ~* \\.(iso|torrent)$ {
         proxy_set_header X-Original-Method $request_method;
         proxy_set_header X-Original-Range $http_range;
         proxy_set_header X-Original-UA $http_user_agent;
+        proxy_set_header X-Original-Referer $http_referer;
         proxy_connect_timeout 1s;
         proxy_read_timeout 2s;
     }
@@ -70,7 +72,7 @@ if 'location = /_count_hit' not in changed:
 else:
     # The counter tells the start of a download (total count) from its later parts by the Range header,
     # and robots from people by the User-Agent
-    for line in (RANGE_LINE, UA_LINE):
+    for line in (RANGE_LINE, UA_LINE, REFERER_LINE):
         if line not in changed:
             changed = changed.replace(METHOD_LINE, METHOD_LINE + line)
 changed = changed.replace(ROOT_PLAIN, ROOT_COUNTED)

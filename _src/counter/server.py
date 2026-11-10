@@ -218,6 +218,50 @@ def add(file, kind):
         db.commit()
 
 
+def sub(file, kind):
+    with lock:
+        db.execute('UPDATE counts SET n = n - 1 WHERE file = ? AND kind = ?', (file, kind))
+        db.execute('DELETE FROM counts WHERE file = ? AND kind = ? AND n <= 0', (file, kind))
+        db.commit()
+
+
+# Robots that pretend to be a browser: they fetch every file one after another, without opening the site.
+# An IP that takes more than BURST_FILES different files within BURST_WINDOW seconds with no Referer is a robot
+# for a day: its downloads in that window are taken back and the next ones are not counted.
+BURST_FILES = int(os.environ.get('BURST_FILES', '10'))
+BURST_WINDOW = int(os.environ.get('BURST_WINDOW', '10'))  # more than 10 files in 10 seconds: no person clicks that fast
+bursts = {}  # hash of IP -> {'files': {name: time}, 'counted': [(time, key, kind, unique, total)], 'until': time}
+
+
+def burst_check(ip, name):
+    """Returns (robot, actions to take back)."""
+    key = hashlib.sha256((salt + 'burst' + ip).encode()).hexdigest()[:24]
+    now = time.time()
+    with lock:
+        if len(bursts) >= MAX_TRACKED:
+            for old in [k for k, s in bursts.items() if s['until'] < now and not s['files']]:
+                del bursts[old]
+        state = bursts.setdefault(key, {'files': {}, 'counted': [], 'until': 0})
+        if state['until'] > now:
+            return True, []
+        state['files'] = {n: t for n, t in state['files'].items() if now - t < BURST_WINDOW}
+        state['counted'] = [c for c in state['counted'] if now - c[0] < BURST_WINDOW]
+        state['files'][name] = now
+        if len(state['files']) > BURST_FILES:
+            state['until'] = now + 86400
+            undo, state['counted'], state['files'] = state['counted'], [], {}
+            return True, undo
+        return False, []
+
+
+def burst_remember(ip, key, kind, unique, total):
+    h = hashlib.sha256((salt + 'burst' + ip).encode()).hexdigest()[:24]
+    with lock:
+        state = bursts.get(h)
+        if state is not None:
+            state['counted'].append((time.time(), key, kind, unique, total))
+
+
 def day_key(days_ago=0):
     return 'day:' + time.strftime('%Y-%m-%d', time.localtime(time.time() - days_ago * 86400))
 
@@ -302,14 +346,30 @@ class Handler(BaseHTTPRequestHandler):
         ua = self.headers.get('X-Original-UA') or self.headers.get('User-Agent', '')
         return self.is_owner() or bool(BOT_RE.search(ua))
 
-    def count(self, key, kind, dedupe, start=True):
-        """Unique count (once per IP per day) and total count (every action; `start` False for the middle of a download)."""
+    def count(self, key, kind, dedupe, start=True, file=None):
+        """Unique count (once per IP per day) and total count (every action; `start` False for the middle of a download).
+        `file` is set for downloads seen by nginx: those are checked for a robot fetching every file in a row."""
         ip = self.headers.get('X-Real-IP', '')
-        if ip and not self.ignored():
-            if first_today((ip,) + dedupe):
-                add(key, kind)
-            if start and total_allowed((ip, key, kind)):
-                add(key, 'all:' + kind)
+        if not ip or self.ignored():
+            return self.respond(204)
+        watch = file is not None and not self.headers.get('X-Original-Referer', '')
+        if watch:
+            robot, undo = burst_check(ip, file)
+            for _, k, kd, unique, total in undo:
+                if unique:
+                    sub(k, kd)
+                if total:
+                    sub(k, 'all:' + kd)
+            if robot:
+                return self.respond(204)
+        unique = first_today((ip,) + dedupe)
+        if unique:
+            add(key, kind)
+        total = start and total_allowed((ip, key, kind))
+        if total:
+            add(key, 'all:' + kind)
+        if watch and (unique or total):
+            burst_remember(ip, key, kind, unique, total)
         return self.respond(204)
 
     def do_POST(self):
@@ -326,13 +386,13 @@ class Handler(BaseHTTPRequestHandler):
                 if not file_exists(image):
                     return self.respond(400)
                 key = resolve(image)
-                return self.count(key, 'torrent', ('image', key))
+                return self.count(key, 'torrent', ('image', key), file=name)
             if not file_exists(name):
                 return self.respond(400)
             key = resolve(name)
             if is_image(name):
-                return self.count(key, 'download', ('image', key), start)
-            return self.count(key, 'download', ('file', name), start)
+                return self.count(key, 'download', ('image', key), start, file=name)
+            return self.count(key, 'download', ('file', name), start, file=name)
         if url.path == '/api/count':
             query = parse_qs(url.query)
             kind = query.get('kind', [''])[0]
