@@ -6,8 +6,8 @@
   const root = document.documentElement;
 
   const STRINGS = {
-    en: { copied: 'Copied', copyFailed: 'Could not copy', found: 'Found', clicks: 'Downloads', download: 'Download', linkCopied: 'Link copied', copies: 'Copies', linkClicks: 'Link clicks', tgClicks: 'Telegram clicks', fromHere: 'from here', views: 'Page views', today: 'today', week: '7 days', month: '30 days', total: 'all time', allCount: 'total', people: 'people', repeated: 'repeated', sum: 'Total', onlyYou: 'visible only to you', viaKey: 'signed in by key', shareMenu: 'Share menu', shareOpened: 'opened', shared: 'shared', share_open: 'Opened the menu', share_shared: 'Shared', share_copy: 'Copy link', share_native: 'Other apps', share_vk: 'VK' },
-    ru: { copied: 'Скопировано', copyFailed: 'Не удалось скопировать', found: 'Найдено', clicks: 'Скачиваний', download: 'Скачать', linkCopied: 'Ссылка скопирована', copies: 'Копирований', linkClicks: 'Переходов', tgClicks: 'Переходов в Telegram', fromHere: 'отсюда', views: 'Просмотры страницы', today: 'сегодня', week: 'неделя', month: 'месяц', total: 'за всё время', allCount: 'всего', people: 'людей', repeated: 'повторно', sum: 'Итого', onlyYou: 'видно только вам', viaKey: 'вход по ключу', shareMenu: 'Меню «Поделиться»', shareOpened: 'открыли', shared: 'поделились', share_open: 'Открыли меню', share_shared: 'Поделились', share_copy: 'Скопировать ссылку', share_native: 'Другие приложения', share_vk: 'ВКонтакте' },
+    en: { copied: 'Copied', copyFailed: 'Could not copy', found: 'Found', clicks: 'Downloads', download: 'Download', linkCopied: 'Link copied', copies: 'Copies', linkClicks: 'Link clicks', tgClicks: 'Telegram clicks', fromHere: 'from here', views: 'Page views', today: 'today', week: '7 days', month: '30 days', total: 'all time', allCount: 'total', people: 'people', repeated: 'repeated', sum: 'Total', onlyYou: 'visible only to you', viaKey: 'signed in by key', shareMenu: 'Share menu', shareOpened: 'opened', shared: 'shared', share_open: 'Opened the menu', share_copy: 'Copy link', share_native: 'Other apps', share_vk: 'VK' },
+    ru: { copied: 'Скопировано', copyFailed: 'Не удалось скопировать', found: 'Найдено', clicks: 'Скачиваний', download: 'Скачать', linkCopied: 'Ссылка скопирована', copies: 'Копирований', linkClicks: 'Переходов', tgClicks: 'Переходов в Telegram', fromHere: 'отсюда', views: 'Просмотры страницы', today: 'сегодня', week: 'неделя', month: 'месяц', total: 'за всё время', allCount: 'всего', people: 'людей', repeated: 'повторно', sum: 'Итого', onlyYou: 'видно только вам', viaKey: 'вход по ключу', shareMenu: 'Меню «Поделиться»', shareOpened: 'открыли', shared: 'поделились', share_open: 'Открыли меню', share_copy: 'Скопировать ссылку', share_native: 'Другие приложения', share_vk: 'ВКонтакте' },
   };
   const currentLang = () => (root.lang === 'ru' ? 'ru' : 'en');
   const t = key => STRINGS[currentLang()][key];
@@ -193,16 +193,10 @@
       const counts = statsCounts['share:' + pagePathNow()] || {};
       const actions = ['open', 'copy', 'native', 'telegram', 'whatsapp', 'vk', 'x', 'facebook', 'reddit', 'email'];
       const names = { telegram: 'Telegram', whatsapp: 'WhatsApp', x: 'X', facebook: 'Facebook', reddit: 'Reddit', email: 'Email' };
-      const ways = actions.slice(1);
-      const shared = ways.reduce((n, a) => n + (counts[a] || 0), 0);
-      const sharedAll = ways.reduce((n, a) => n + (counts['all:' + a] || 0), 0);
-      // Always "opened" and "shared", then each way people used
-      statDetails(line, t('shareMenu') + ': ' + t('shareOpened') + ' ' + (counts.open || 0) + ' · ' + t('shared') + ' ' + shared, [
-        { label: t('share_open'), unique: counts.open || 0, all: counts['all:open'] || 0 },
-        { label: t('share_shared'), unique: shared, all: sharedAll },
-        ...ways.filter(a => counts[a] || counts['all:' + a])
-          .map(a => ({ label: '· ' + (names[a] || t('share_' + a)), unique: counts[a] || 0, all: counts['all:' + a] || 0 })),
-      ], false);
+      const shared = actions.slice(1).reduce((n, a) => n + (counts[a] || 0), 0);
+      statDetails(line, t('shareMenu') + ': ' + t('shareOpened') + ' ' + (counts.open || 0) + ' · ' + t('shared') + ' ' + shared,
+        actions.filter(a => a === 'open' || counts[a] || counts['all:' + a])
+          .map(a => ({ label: names[a] || t('share_' + a), unique: counts[a] || 0, all: counts['all:' + a] || 0 })), false);
       line.hidden = false;
     });
 
