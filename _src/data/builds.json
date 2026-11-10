@@ -3,16 +3,16 @@
     "id": "11",
     "title": "Windows 11 IoT Enterprise LTSC",
     "version": "24H2",
-    "number": "26100.9711",
+    "number": "26100.9974",
     "date": {
-      "en": "October 2026",
-      "ru": "Октябрь 2026"
+      "en": "November 2026",
+      "ru": "Ноябрь 2026"
     },
     "final": false,
     "edition": "2024",
     "ratio": [
-      1600,
-      1200
+      1536,
+      739
     ],
     "changes": [
       {
@@ -20,11 +20,18 @@
         "ru": "Проверки TPM, Secure Boot и OOBE отключены."
       },
       {
-        "en": "Updated to build 26100.9711 (October 2026).",
-        "ru": "Обновлено до сборки 26100.9711 (Октябрь 2026)."
+        "en": "Updated to build 26100.9974 (November 2026).",
+        "ru": "Обновлено до сборки 26100.9974 (Ноябрь 2026)."
       }
     ],
     "history": [
+      {
+        "number": "26100.9974",
+        "date": {
+          "en": "November 2026",
+          "ru": "Ноябрь 2026"
+        }
+      },
       {
         "number": "26100.9711",
         "date": {
@@ -91,23 +98,23 @@
     ],
     "images": {
       "en": {
-        "file": "en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9711_by_somov.iso",
-        "btih": "8c5c4587ddf1f6ed46d841a4d5480263efc9fb2c",
-        "size": 5750372352,
+        "file": "en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9974_by_somov.iso",
+        "btih": "5a7de00af8348bb109dacfe409daca8b096c1723",
+        "size": 5808123904,
         "sums": {
-          "sha256": "da76f1c4798515d96545be82ca6e87d7c74b65a5ebf8d111d51858f44c1eb761",
-          "md5": "a6f45df113983f6d71eb4dfb480581cc",
-          "sha1": "9db1dc28ab6c84d4e04458f65121d0fdfd92cbcf"
+          "sha256": "4f13b1b0e24a82ce5583a2e130223b1b57f2456076a04c615b02345e0b4cbad8",
+          "md5": "ba73a8f27eb5cbc4c40a558368fe9290",
+          "sha1": "290cd61a9ddf5d23f531d8ae5682e07e15512fef"
         }
       },
       "ru": {
-        "file": "ru-ru_windows_11_iot_enterprise_ltsc_2024_x64_26100.9711_by_somov.iso",
-        "btih": "645d3d71d10b47236afa1a9336737a1916bf2876",
-        "size": 5697013760,
+        "file": "ru-ru_windows_11_iot_enterprise_ltsc_2024_x64_26100.9974_by_somov.iso",
+        "btih": "1f4d4cd81a500036d841a7b717c4f65ebca5d785",
+        "size": 5771640832,
         "sums": {
-          "sha256": "091d95333881ac352f11012a752289753afdda307c4aa9b889c34cb71355ea98",
-          "md5": "112a9855da7c24012ea7d4409c49f18a",
-          "sha1": "3abefe67e85ed12a349804e7b0f8489e2131bfe8"
+          "sha256": "25c8612a5282c19d42a7dbb92221e5c5978bab9584e2d01e846af017bc24b5b4",
+          "md5": "a66643cbd422cf212f0d6a714ea8ee34",
+          "sha1": "d1809a9255d7631412f353240a99b21b3aeafb3c"
         }
       }
     }

@@ -678,9 +678,9 @@ function ghostPage() {
 
 /* -- Archive of old builds ----------------------------------------------- */
 
-// Old releases are served from dl3.somov.org/archive/. Their torrents carry the direct link as a webseed (ws=),
-// so they download even when nobody seeds them.
-const ARCHIVE_CDN = `${CDN}archive/`;
+// Old releases stay at the same address as when they were current (dl3.somov.org/<file>), so links never change.
+// Their magnets carry the direct link as a webseed (ws=), so they download even when nobody seeds them.
+const ARCHIVE_CDN = CDN;
 
 function archivePage() {
   const current = Object.fromEntries(builds.map(b => [b.id, b]));
