@@ -270,8 +270,15 @@
           };
           render();
           languageListeners.push(render);
-          // Over the top padding of <main> (see .page-views in site.css), so it moves nothing on the page
-          ($('main') || topbar).prepend(bar);
+          // Wide screens: over the top padding of <main> (see .page-views in site.css), so it moves nothing on the page.
+          // Phones: right under the header; inside <main> it would sit below main's top padding, with a gap above it.
+          const narrow = matchMedia('(max-width: 720px)');
+          const placeBar = () => {
+            if (narrow.matches || !$('main')) topbar.after(bar);
+            else $('main').prepend(bar);
+          };
+          placeBar();
+          narrow.addEventListener('change', placeBar);
         })
         .catch(() => {});
     }
