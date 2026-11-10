@@ -366,7 +366,7 @@ function homePage() {
           </div>
           <div class="dl-actions">
             <a class="btn btn-primary btn-block" id="download-link" href="${image.url}">
-              ${icon('download')} <span>${S.downloadIso} · <span class="lang-en" id="download-size-en">${formatSize(image.size, 'en')}</span><span class="lang-ru" id="download-size-ru">${formatSize(image.size, 'ru')}</span></span>
+              ${icon('download')} <span>${LANGS.map(l => `<span data-dl-label="${l}"${l === PAGE_LANG ? '' : ' hidden'}>${S.downloadIsoIn[l]}</span>`).join('')} · <span class="lang-en" id="download-size-en">${formatSize(image.size, 'en')}</span><span class="lang-ru" id="download-size-ru">${formatSize(image.size, 'ru')}</span></span>
             </a>
             <div class="dl-alt">
               <a class="btn btn-secondary btn-sm" id="torrent-link" href="${image.url}.torrent">Torrent</a>

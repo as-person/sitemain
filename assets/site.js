@@ -324,6 +324,8 @@
       $('#details-link').href = image.details;
       $('#build-title').href = image.details; // the title leads to the build page too
       $('#download-link').href = image.url;
+      // "Download English ISO" / "Download Russian ISO": the button names the chosen image language
+      $$('[data-dl-label]').forEach(label => { label.hidden = label.dataset.dlLabel !== imageLang; });
       $('#download-size-en').textContent = image.size.en;
       $('#download-size-ru').textContent = image.size.ru;
       $('#torrent-link').href = image.url + '.torrent';

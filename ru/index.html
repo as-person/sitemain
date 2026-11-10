@@ -39,7 +39,7 @@ window.siteOwner.then(function(d){if(d&&d.owner)window['ga-disable-'+ID]=true;})
 Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({owner:false})},2500)})]).then(function(d){if(!(d&&d.owner))gtag('event','page_view');});})();
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-4RBN0G8775"></script>
-  <link rel="stylesheet" href="/assets/site.css?v=e402dec5">
+  <link rel="stylesheet" href="/assets/site.css?v=50ae2e11">
 </head>
 <body>
   <a class="skip-link" href="#content"><span class="lang-en">Skip to content</span><span class="lang-ru">Перейти к содержимому</span></a>
@@ -111,7 +111,7 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
           </div>
           <div class="dl-actions">
             <a class="btn btn-primary btn-block" id="download-link" href="https://dl3.somov.org/en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9711_by_somov.iso">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span class="lang-en">Download ISO</span><span class="lang-ru">Скачать ISO</span> · <span class="lang-en" id="download-size-en">5.4 GB</span><span class="lang-ru" id="download-size-ru">5,4 ГБ</span></span>
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span data-dl-label="en" hidden><span class="lang-en">Download English ISO</span><span class="lang-ru">Скачать английский ISO</span></span><span data-dl-label="ru"><span class="lang-en">Download Russian ISO</span><span class="lang-ru">Скачать русский ISO</span></span> · <span class="lang-en" id="download-size-en">5.4 GB</span><span class="lang-ru" id="download-size-ru">5,4 ГБ</span></span>
             </a>
             <div class="dl-alt">
               <a class="btn btn-secondary btn-sm" id="torrent-link" href="https://dl3.somov.org/en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9711_by_somov.iso.torrent">Torrent</a>
@@ -179,6 +179,6 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
     </div>
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="/assets/site.js?v=d86c23fb" defer></script>
+  <script src="/assets/site.js?v=f1672217" defer></script>
 </body>
 </html>
