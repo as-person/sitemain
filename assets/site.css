@@ -165,10 +165,10 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 .site-nav a[aria-current="page"] { color: var(--text); background: var(--raised); }
 .site-nav .nav-external { margin-left: auto; }
 .site-nav .nav-external .icon { display: none; width: 18px; height: 18px; }
-/* Narrow phones: tighter items and the Telegram plane icon instead of the word, so the row fits */
-@media (max-width: 400px) {
+/* Phones: tighter items and the Telegram plane icon instead of the word, so the row fits */
+@media (max-width: 440px) {
   .site-nav { gap: 2px; }
-  .site-nav a, .nav-menu summary { padding-inline: 9px; }
+  .site-nav a, .nav-menu summary { padding-inline: 8px; }
   .site-nav .nav-external .icon { display: block; }
   .site-nav .nav-external span { display: none; }
 }
