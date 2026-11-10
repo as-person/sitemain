@@ -751,6 +751,7 @@ const shareRow = () => `<div class="share">
               <a role="menuitem" href="#" data-share-service="email">Email</a>
             </div>
           </div>
+          <div class="stats-line share-stats" data-share-stats hidden></div>
         </div>`;
 
 const tgCard = placement => `<a class="tg-card" href="${TELEGRAM}" target="_blank" rel="noopener" data-tg-placement="${placement}">

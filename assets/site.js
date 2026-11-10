@@ -6,8 +6,8 @@
   const root = document.documentElement;
 
   const STRINGS = {
-    en: { copied: 'Copied', copyFailed: 'Could not copy', found: 'Found', clicks: 'Downloads', download: 'Download', linkCopied: 'Link copied', copies: 'Copies', linkClicks: 'Link clicks', tgClicks: 'Telegram clicks', fromHere: 'from here', views: 'Page views', today: 'today', week: '7 days', month: '30 days', total: 'all time', allCount: 'total', people: 'people', repeated: 'repeated', sum: 'Total', onlyYou: 'visible only to you', viaKey: 'signed in by key' },
-    ru: { copied: 'Скопировано', copyFailed: 'Не удалось скопировать', found: 'Найдено', clicks: 'Скачиваний', download: 'Скачать', linkCopied: 'Ссылка скопирована', copies: 'Копирований', linkClicks: 'Переходов', tgClicks: 'Переходов в Telegram', fromHere: 'отсюда', views: 'Просмотры страницы', today: 'сегодня', week: 'неделя', month: 'месяц', total: 'за всё время', allCount: 'всего', people: 'людей', repeated: 'повторно', sum: 'Итого', onlyYou: 'видно только вам', viaKey: 'вход по ключу' },
+    en: { copied: 'Copied', copyFailed: 'Could not copy', found: 'Found', clicks: 'Downloads', download: 'Download', linkCopied: 'Link copied', copies: 'Copies', linkClicks: 'Link clicks', tgClicks: 'Telegram clicks', fromHere: 'from here', views: 'Page views', today: 'today', week: '7 days', month: '30 days', total: 'all time', allCount: 'total', people: 'people', repeated: 'repeated', sum: 'Total', onlyYou: 'visible only to you', viaKey: 'signed in by key', shareMenu: 'Share menu', shareOpened: 'opened', shared: 'shared', share_open: 'Opened the menu', share_copy: 'Copy link', share_native: 'Other apps', share_vk: 'VK' },
+    ru: { copied: 'Скопировано', copyFailed: 'Не удалось скопировать', found: 'Найдено', clicks: 'Скачиваний', download: 'Скачать', linkCopied: 'Ссылка скопирована', copies: 'Копирований', linkClicks: 'Переходов', tgClicks: 'Переходов в Telegram', fromHere: 'отсюда', views: 'Просмотры страницы', today: 'сегодня', week: 'неделя', month: 'месяц', total: 'за всё время', allCount: 'всего', people: 'людей', repeated: 'повторно', sum: 'Итого', onlyYou: 'видно только вам', viaKey: 'вход по ключу', shareMenu: 'Меню «Поделиться»', shareOpened: 'открыли', shared: 'поделились', share_open: 'Открыли меню', share_copy: 'Скопировать ссылку', share_native: 'Другие приложения', share_vk: 'ВКонтакте' },
   };
   const currentLang = () => (root.lang === 'ru' ? 'ru' : 'en');
   const t = key => STRINGS[currentLang()][key];
@@ -87,6 +87,14 @@
   // On the owner's own device (opened once with /?owner=<token>, see `analytics` in _src/build.mjs) every request
   // carries the token: the counter shows the stats and does not count the owner, on any network.
   const withOwner = url => (window.ownerToken ? url + (url.includes('?') ? '&' : '?') + 'owner=' + encodeURIComponent(window.ownerToken) : url);
+  // Sends a counter request that survives leaving the page
+  const ping = url => {
+    if (!(navigator.sendBeacon && navigator.sendBeacon(url))) fetch(url, { method: 'POST', mode: 'no-cors', keepalive: true }).catch(() => {});
+  };
+  // The page as the counter knows it: /ru copies and the -en / -ru build addresses are the same page
+  const pagePathNow = () => (location.pathname.toLowerCase()
+    .replace(/\.html$/, '').replace(/\/index$/, '/').replace(/^\/ru(?=\/|$)/, '')
+    .replace(/^(\/windows-1[01])-(en|ru)$/, '$1').replace(/(.)\/+$/, '$1')) || '/';
 
   function reportClick(event) {
     const link = event.target.closest && event.target.closest('[data-count-file], [data-count-tweak]');
@@ -180,6 +188,18 @@
       line.hidden = false;
     });
 
+    // Share menu of this page: opened, and what was chosen in it
+    $$('[data-share-stats]').forEach(line => {
+      const counts = statsCounts['share:' + pagePathNow()] || {};
+      const actions = ['open', 'copy', 'native', 'telegram', 'whatsapp', 'vk', 'x', 'facebook', 'reddit', 'email'];
+      const names = { telegram: 'Telegram', whatsapp: 'WhatsApp', x: 'X', facebook: 'Facebook', reddit: 'Reddit', email: 'Email' };
+      const shared = actions.slice(1).reduce((n, a) => n + (counts[a] || 0), 0);
+      statDetails(line, t('shareMenu') + ': ' + t('shareOpened') + ' ' + (counts.open || 0) + ' · ' + t('shared') + ' ' + shared,
+        actions.filter(a => a === 'open' || counts[a] || counts['all:' + a])
+          .map(a => ({ label: names[a] || t('share_' + a), unique: counts[a] || 0, all: counts['all:' + a] || 0 })), false);
+      line.hidden = false;
+    });
+
     // Settings page: every tweak ranked by its total, for the owner only
     const ranking = $('#owner-stats');
     if (ranking) {
@@ -208,7 +228,7 @@
       ranking.hidden = false;
     }
   }
-  if ($('[data-stats-file], [data-tweak-stats], [data-tg-stats]')) {
+  if ($('[data-stats-file], [data-tweak-stats], [data-tg-stats], [data-share-stats]')) {
     languageListeners.push(renderStats);
     // The page asks the counter once, in <head>; see `analytics` in _src/build.mjs.
     (window.siteOwner || fetch(withOwner(COUNTER + '/stats')).then(response => response.json()))
@@ -224,9 +244,7 @@
   /* Page views: one per IP per page per day, counted on the server (the owner is not counted).
      /ru copies and the -en / -ru build URLs count as the same page. The owner sees the numbers under the header. */
   if (!$('.not-found')) {
-    const pagePath = (location.pathname.toLowerCase()
-      .replace(/\.html$/, '').replace(/\/index$/, '/').replace(/^\/ru(?=\/|$)/, '')
-      .replace(/^(\/windows-1[01])-(en|ru)$/, '$1').replace(/(.)\/+$/, '$1')) || '/';
+    const pagePath = pagePathNow();
     if (/^\/[a-z0-9/-]{0,100}$/.test(pagePath)) {
       const url = withOwner(COUNTER + '/count?page=' + encodeURIComponent(pagePath) + '&kind=view');
       if (!(navigator.sendBeacon && navigator.sendBeacon(url))) {
@@ -510,7 +528,10 @@
     const native = $('[data-share-native]', box);
     if (navigator.share) native.hidden = false;
     const items = () => $$('[role="menuitem"]', menu).filter(item => !item.hidden);
+    // Owner-only stats: the menu was opened, and what was chosen in it
+    const report = action => ping(withOwner(COUNTER + '/count?share=' + action + '&on=' + encodeURIComponent(pagePathNow()) + '&kind=click'));
     function open() {
+      report('open');
       const url = shareUrl();
       $$('[data-share-service]', menu).forEach(link => { link.href = shareLinks[link.dataset.shareService](url, document.title); });
       menu.hidden = false;
@@ -535,6 +556,7 @@
     menu.addEventListener('click', event => {
       const item = event.target.closest('[role="menuitem"]');
       if (!item) return;
+      report(item.dataset.shareService || (item.matches('[data-share-copy]') ? 'copy' : 'native'));
       if (item.matches('[data-share-copy]')) {
         copyText(shareUrl()).then(() => showToast(t('linkCopied'))).catch(() => showToast(t('copyFailed')));
       } else if (item.matches('[data-share-native]')) {
@@ -872,9 +894,10 @@
   const panel = $('.panel');
   const bar = $('.dl-bar');
   if (panel && bar && 'IntersectionObserver' in window) {
-    bar.hidden = true;
+    // The bar stays in the page and slides in and out (CSS .is-shown) instead of appearing at once
+    bar.hidden = false;
     new IntersectionObserver(entries => {
-      bar.hidden = entries[0].isIntersecting || entries[0].boundingClientRect.top > 0;
+      bar.classList.toggle('is-shown', !(entries[0].isIntersecting || entries[0].boundingClientRect.top > 0));
     }).observe(panel);
   }
 

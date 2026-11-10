@@ -439,7 +439,9 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 .build-body { grid-area: body; }
 .build-panel { grid-area: panel; }
 .build-head .meta { margin-top: 12px; }
-.share { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; margin-top: 14px; }
+.share { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 4px 10px; margin-top: 14px; }
+/* Owner-only line next to the button: on its line, the table opens downwards */
+.share-stats { padding-top: 7px; }
 .share-btn {
   display: inline-flex;
   align-items: center;
@@ -622,6 +624,20 @@ html:not([data-image]) .img-ru { display: none !important; }
   border-top: 1px solid var(--border);
   background: rgb(15 17 21 / .92);
   backdrop-filter: blur(14px);
+  /* Slides up from the bottom edge with a short fade, and back down the same way */
+  transform: translateY(100%);
+  opacity: 0;
+  visibility: hidden;
+  transition: transform 340ms cubic-bezier(.2, .9, .25, 1), opacity 240ms ease, visibility 0s linear 340ms;
+}
+.dl-bar.is-shown {
+  transform: none;
+  opacity: 1;
+  visibility: visible;
+  transition: transform 340ms cubic-bezier(.2, .9, .25, 1), opacity 240ms ease, visibility 0s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .dl-bar, .dl-bar.is-shown { transition: opacity 150ms ease, visibility 0s; transform: none; }
 }
 
 /* -- Lightbox ------------------------------------------------------------ */

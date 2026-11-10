@@ -8,6 +8,8 @@ POST /api/count      the site reports what never reaches the server:
                        ?tweak=<id>&kind=copy|link         a tweak command was copied / a tweak link was opened
                        ?page=<path>&kind=view             a page was opened (once per IP per page per day)
                        ?tg=<place>&kind=click             a link to the Telegram channel was clicked
+                       ?share=<action>&on=<page>&kind=click   the Share menu was opened or used (counted per page
+                                                          under 'share:<page>' and for the whole site under 'share')
 GET  /api/stats      returns the counts to the owner (IP in OWNER_IPS or ?owner=<token> from OWNER_TOKENS),
                      and {"owner": false} to everyone else; the owner's own visits and clicks are never counted
 
@@ -58,6 +60,8 @@ OWNER_TOKENS = [t.strip() for t in os.environ.get('OWNER_TOKENS', '').split(',')
 FILE_RE = re.compile(r'^[^/\\\x00-\x1f]{1,200}$')
 TWEAK_RE = re.compile(r'^[a-z0-9-]{1,60}$')
 TWEAK_KINDS = {'copy', 'link'}
+# The Share menu: opening it, and what was chosen in it
+SHARE_ACTIONS = {'open', 'copy', 'native', 'telegram', 'whatsapp', 'vk', 'x', 'facebook', 'reddit', 'email'}
 PAGE_RE = re.compile(r'^/[a-z0-9/-]{0,100}$')
 PLACE_RE = re.compile(r'^[a-z0-9-]{1,30}$')
 CLICK_WINDOW = int(os.environ.get('CLICK_WINDOW', '86400'))  # seconds between counted actions from one IP
@@ -357,6 +361,21 @@ class Handler(BaseHTTPRequestHandler):
                     if total_allowed((ip, 'tg', place)):
                         add('tg', 'all:click')
                         add('tg:' + place, 'all:click')
+                return self.respond(204)
+            action = query.get('share', [''])[0]
+            if action:
+                on = query.get('on', [''])[0]
+                if kind != 'click' or action not in SHARE_ACTIONS or not PAGE_RE.match(on) or not known('pages', on):
+                    return self.respond(400)
+                ip = self.headers.get('X-Real-IP', '')
+                if ip and not self.ignored():
+                    if first_today((ip, 'share', action)):
+                        add('share', action)
+                    if first_today((ip, 'share', on, action)):
+                        add('share:' + on, action)
+                    if total_allowed((ip, 'share', on, action)):
+                        add('share', 'all:' + action)
+                        add('share:' + on, 'all:' + action)
                 return self.respond(204)
             tweak = query.get('tweak', [''])[0]
             if tweak:
