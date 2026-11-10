@@ -639,11 +639,6 @@ html:not([data-image]) .img-ru { display: none !important; }
 .icon-btn:hover { color: var(--text); background: var(--raised-hover); }
 .icon-btn.is-copied { color: var(--success); }
 
-.history { display: grid; gap: 6px; font-size: var(--fs-sm); }
-.history li { display: flex; gap: 12px; align-items: baseline; }
-.history .mono { font-size: var(--fs-xs); }
-.history li > span:last-child { color: var(--muted); }
-
 .dl-bar {
   position: fixed;
   z-index: 15;

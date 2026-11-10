@@ -24,22 +24,6 @@
         "ru": "Обновлено до сборки 26100.9974 (Ноябрь 2026)."
       }
     ],
-    "history": [
-      {
-        "number": "26100.9974",
-        "date": {
-          "en": "November 2026",
-          "ru": "Ноябрь 2026"
-        }
-      },
-      {
-        "number": "26100.9711",
-        "date": {
-          "en": "October 2026",
-          "ru": "Октябрь 2026"
-        }
-      }
-    ],
     "lead": {
       "en": "Windows 11 IoT Enterprise LTSC (Long-Term Servicing Channel) is a lightweight version of Windows with long-term support, designed for stable performance on embedded devices and specialized systems. It excludes unnecessary apps, reducing system requirements and making it an ideal solution where reliability and minimal interference are critical.",
       "ru": "Windows 11 IoT Enterprise LTSC (Long-Term Servicing Channel) — это облегчённая версия Windows с долгосрочной поддержкой, разработанная для стабильной работы на встраиваемых устройствах и специализированных системах. Она лишена лишних приложений, что снижает системные требования и делает её идеальным решением, где важны надёжность и минимальное вмешательство."
@@ -142,15 +126,6 @@
       {
         "en": "Updated to build 19044.6456 (October 2025).",
         "ru": "Обновлено до сборки 19044.6456 (Октябрь 2025)."
-      }
-    ],
-    "history": [
-      {
-        "number": "19044.6456",
-        "date": {
-          "en": "October 2025",
-          "ru": "Октябрь 2025"
-        }
       }
     ],
     "lead": {

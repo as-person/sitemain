@@ -581,13 +581,6 @@ function buildPage(build, preset) {
           </div>
           <p class="sums-file">${esc(images[l].file)}</p>`)}
         </section>
-
-        ${build.history.length > 1 ? `<section class="section">
-          <h2>${L('Version history', 'История версий')}</h2>
-          <ul class="history">
-            ${build.history.map(h => `<li><span class="mono">${h.number}</span><span>${T(h.date)}</span></li>`).join('\n            ')}
-          </ul>
-        </section>` : ''}
       </div>
     </div>
   </main>
