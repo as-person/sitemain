@@ -35,6 +35,7 @@ import hmac
 import json
 import os
 import secrets
+import socket
 import signal
 import sys
 import re
@@ -68,7 +69,14 @@ CLICK_WINDOW = int(os.environ.get('CLICK_WINDOW', '86400'))  # seconds between c
 MAX_TRACKED = 300000
 # Search and SEO robots (Barkrowler, SemrushBot, DotBot, link previews...) are not people: never counted.
 # Download tools people use (curl, wget, aria2, download managers) are counted.
-BOT_RE = re.compile(r'bot|crawl|spider|slurp|preview|headless|lighthouse|scanner|facebookexternalhit', re.I)
+BOT_RE = re.compile(r'bot|crawl|spider|slurp|preview|headless|lighthouse|scanner|facebookexternalhit|dalvik', re.I)
+# Robots that pretend to be a browser but come from the networks of search engines and social networks:
+# recognised by the name of the address (reverse DNS). No VPN exit is named like this.
+ROBOT_HOSTS = ('.spider.yandex.com', '.fbsv.net', '.googlebot.com', '.search.msn.com', '.crawl.baidu.com',
+               '.applebot.apple.com', '.crawl.yahoo.net', '.petalsearch.com', '.ahrefs.com', '.semrush.com')
+# Cloud servers: one may be a VPN, so only a pack of them is a robot (see cloud_pack)
+CLOUD_HOSTS = ('.amazonaws.com', '.googleusercontent.com', '.cloudapp.azure.com', '.cloudapp.net')
+CLOUD_PACK, CLOUD_WINDOW = 3, 60  # 3 different cloud addresses, same browser, same page within a minute
 TOTAL_CAP = int(os.environ.get('TOTAL_CAP', '30'))  # total actions counted per IP per thing per day
 
 db = sqlite3.connect(DB_PATH, check_same_thread=False)
@@ -275,6 +283,69 @@ def add_view(key):
         db.commit()
 
 
+hostnames = {}  # hash of IP -> (name of the address, time looked up); kept for a day
+
+
+def host_of(ip):
+    """Reverse DNS name of an address, looked up once a day, waiting at most 1.5 s ('' when there is none)."""
+    key = hashlib.sha256((salt + 'host' + ip).encode()).hexdigest()[:24]
+    now = time.time()
+    with lock:
+        hit = hostnames.get(key)
+    if hit and now - hit[1] < 86400:
+        return hit[0]
+    result = ['']
+
+    def lookup():
+        try:
+            result[0] = socket.gethostbyaddr(ip)[0].lower()
+        except (OSError, UnicodeError):
+            pass
+    worker = threading.Thread(target=lookup, daemon=True)
+    worker.start()
+    worker.join(1.5)
+    with lock:
+        if len(hostnames) >= MAX_TRACKED:
+            hostnames.clear()
+        hostnames[key] = (result[0], now)
+    return result[0]
+
+
+cloud_views = {}  # (page, User-Agent) -> [(time, hash of IP, ip seen as unique, as total, day)]
+cloud_robots = {}  # hash of IP -> until when it is a robot
+
+
+def cloud_pack(ip, page, ua, unique, total):
+    """Records a page view from a cloud server; when several cloud addresses with the same browser open the same
+    page within a minute, they are robots for a day and their views in that minute are taken back."""
+    h = hashlib.sha256((salt + 'cloud' + ip).encode()).hexdigest()[:24]
+    now = time.time()
+    with lock:
+        views = [v for v in cloud_views.get((page, ua), []) if now - v[0] < CLOUD_WINDOW]
+        views.append((now, h, unique, total, day_key(), 'h' + day_key()))
+        cloud_views[(page, ua)] = views
+        if len({v[1] for v in views}) < CLOUD_PACK:
+            return
+        cloud_views[(page, ua)] = []
+        for _, who, *_ in views:
+            cloud_robots[who] = now + 86400
+        if len(cloud_views) > 10000:
+            cloud_views.clear()
+    for _, _, was_unique, was_total, day, hday in views:
+        if was_unique:
+            sub('page:' + page, 'view')
+            sub('page:' + page, day)
+        if was_total:
+            sub('page:' + page, 'hits')
+            sub('page:' + page, hday)
+
+
+def is_cloud_robot(ip):
+    h = hashlib.sha256((salt + 'cloud' + ip).encode()).hexdigest()[:24]
+    with lock:
+        return cloud_robots.get(h, 0) > time.time()
+
+
 def add_hit(key):
     """Every view of a page (total), plus one row per day ('hday:'); rows older than 30 days are dropped."""
     hday = 'h' + day_key()
@@ -344,7 +415,15 @@ class Handler(BaseHTTPRequestHandler):
     def ignored(self):
         """The owner or a robot: nothing is counted. Downloads come through nginx with the visitor's User-Agent."""
         ua = self.headers.get('X-Original-UA') or self.headers.get('User-Agent', '')
-        return self.is_owner() or bool(BOT_RE.search(ua))
+        if self.is_owner() or BOT_RE.search(ua):
+            return True
+        ip = self.headers.get('X-Real-IP', '')
+        if not ip:
+            return False
+        if is_cloud_robot(ip):
+            return True
+        host = host_of(ip)
+        return bool(host) and host.endswith(ROBOT_HOSTS)
 
     def count(self, key, kind, dedupe, start=True, file=None):
         """Unique count (once per IP per day) and total count (every action; `start` False for the middle of a download).
@@ -402,10 +481,14 @@ class Handler(BaseHTTPRequestHandler):
                     return self.respond(400)
                 ip = self.headers.get('X-Real-IP', '')
                 if ip and not self.ignored():
-                    if first_today((ip, 'page', page)):
+                    unique = first_today((ip, 'page', page))
+                    if unique:
                         add_view('page:' + page)
-                    if total_allowed((ip, 'page', page)):
+                    total = total_allowed((ip, 'page', page))
+                    if total:
                         add_hit('page:' + page)
+                    if host_of(ip).endswith(CLOUD_HOSTS):
+                        cloud_pack(ip, page, self.headers.get('User-Agent', ''), unique, total)
                 return self.respond(204)
             place = query.get('tg', [''])[0]
             if place:
