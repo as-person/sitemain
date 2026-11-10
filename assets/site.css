@@ -173,7 +173,18 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
   .site-nav .nav-external span { display: none; }
 }
 /* When the row still does not fit (the smallest phones), a soft fade on the right hints that it scrolls */
-.site-nav.is-scrollable { mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent); }
+/* A layer over the right edge, not a mask: a mask would also clip the open Builds menu inside the row */
+.site-nav.is-scrollable::after {
+  content: '';
+  position: sticky;
+  right: 0;
+  flex: none;
+  align-self: stretch;
+  width: 36px;
+  margin-left: -36px;
+  background: linear-gradient(to right, transparent, var(--bg));
+  pointer-events: none;
+}
 
 /* "Builds" menu in the header: the build pages from every page of the site */
 .nav-menu { position: relative; }

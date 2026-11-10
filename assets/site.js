@@ -298,10 +298,16 @@
       const width = Math.min(260, innerWidth - 32);
       list.style.cssText = `position: fixed; top: ${r.bottom + 6}px; left: ${Math.max(16, Math.min(r.left, innerWidth - width - 16))}px; min-width: ${width}px;`;
     };
-    menu.addEventListener('toggle', place);
+    // Opening it may scroll the nav row or the page a little to show the button: that must not close it
+    let openedAt = 0;
+    menu.addEventListener('toggle', () => { if (menu.open) openedAt = Date.now(); place(); });
     addEventListener('resize', place);
-    addEventListener('scroll', () => { if (menu.open && matchMedia('(max-width: 720px)').matches) menu.open = false; }, { passive: true });
-    $('.site-nav') && $('.site-nav').addEventListener('scroll', () => { menu.open = false; }, { passive: true });
+    addEventListener('scroll', () => {
+      if (!menu.open || !matchMedia('(max-width: 720px)').matches) return;
+      if (Date.now() - openedAt < 500) place(); else menu.open = false;
+    }, { passive: true });
+    // Scrolling the nav row sideways keeps the menu under its button
+    $('.site-nav') && $('.site-nav').addEventListener('scroll', place, { passive: true });
     document.addEventListener('click', event => { if (menu.open && !menu.contains(event.target)) menu.open = false; });
     document.addEventListener('keydown', event => {
       if (event.key === 'Escape' && menu.open) { menu.open = false; $('summary', menu).focus(); }
