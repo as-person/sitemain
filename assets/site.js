@@ -280,9 +280,17 @@
   const nav = $('.site-nav');
   if (nav) {
     const fade = () => nav.classList.toggle('is-scrollable', nav.scrollLeft + nav.clientWidth < nav.scrollWidth - 2);
-    fade();
+    // Keep the word "Telegram" whenever the row fits with it; switch to the plane icon only if it does not
+    const fitTelegram = () => {
+      nav.classList.remove('tg-icon-only');
+      if (nav.scrollWidth > nav.clientWidth + 1) nav.classList.add('tg-icon-only');
+      fade();
+    };
+    fitTelegram();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitTelegram);
     nav.addEventListener('scroll', fade, { passive: true });
-    addEventListener('resize', fade);
+    addEventListener('resize', fitTelegram);
+    languageListeners.push(fitTelegram);
   }
 
   /* Header "Builds" menu (a <details>, so it works without scripts too). Closes on a click outside or Esc.

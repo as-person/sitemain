@@ -165,13 +165,14 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 .site-nav a[aria-current="page"] { color: var(--text); background: var(--raised); }
 .site-nav .nav-external { margin-left: auto; }
 .site-nav .nav-external .icon { display: none; width: 18px; height: 18px; }
-/* Phones: tighter items and the Telegram plane icon instead of the word, so the row fits */
+/* Phones: tighter items, so the row fits */
 @media (max-width: 440px) {
   .site-nav { gap: 2px; }
   .site-nav a, .nav-menu summary { padding-inline: 8px; }
-  .site-nav .nav-external .icon { display: block; }
-  .site-nav .nav-external span { display: none; }
 }
+/* The word "Telegram" whenever it fits; the plane icon only when it does not (site.js measures it) */
+.site-nav.tg-icon-only .nav-external .icon { display: block; }
+.site-nav.tg-icon-only .nav-external span { display: none; }
 /* When the row still does not fit (the smallest phones), a soft fade on the right hints that it scrolls */
 /* A layer over the right edge, not a mask: a mask would also clip the open Builds menu inside the row */
 .site-nav.is-scrollable::after {
