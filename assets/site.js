@@ -276,6 +276,15 @@
     }
   }
 
+  /* Header links on a phone: fade the right edge while there is more of the row to scroll to */
+  const nav = $('.site-nav');
+  if (nav) {
+    const fade = () => nav.classList.toggle('is-scrollable', nav.scrollLeft + nav.clientWidth < nav.scrollWidth - 2);
+    fade();
+    nav.addEventListener('scroll', fade, { passive: true });
+    addEventListener('resize', fade);
+  }
+
   /* Header "Builds" menu (a <details>, so it works without scripts too). Closes on a click outside or Esc.
      On phones the nav row scrolls sideways and would clip it, so there it is placed under the button by hand. */
   $$('[data-nav-menu]').forEach(menu => {

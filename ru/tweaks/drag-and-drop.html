@@ -39,7 +39,7 @@ window.siteOwner.then(function(d){if(d&&d.owner)window['ga-disable-'+ID]=true;})
 Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({owner:false})},2500)})]).then(function(d){if(!(d&&d.owner))gtag('event','page_view');});})();
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-4RBN0G8775"></script>
-  <link rel="stylesheet" href="/assets/site.css?v=50ae2e11">
+  <link rel="stylesheet" href="/assets/site.css?v=787505cb">
 </head>
 <body>
   <a class="skip-link" href="#content"><span class="lang-en">Skip to content</span><span class="lang-ru">Перейти к содержимому</span></a>
@@ -60,7 +60,7 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
         </details>
         <a href="/ghost-spectre">Ghost Spectre</a>
         <a href="/settings-for-windows" aria-current="page"><span class="lang-en">Settings</span><span class="lang-ru">Настройки</span></a>
-        <a class="nav-external" href="https://t.me/+gmXk9-zXZ405YWY6" target="_blank" rel="noopener" data-tg-placement="header">Telegram</a>
+        <a class="nav-external" href="https://t.me/+gmXk9-zXZ405YWY6" target="_blank" rel="noopener" data-tg-placement="header" aria-label="Telegram"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z"/></svg><span>Telegram</span></a>
       </nav>
       <div class="lang-switch" role="group" aria-label="Site language / Язык сайта">
         <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
@@ -143,6 +143,6 @@ Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({
     </div>
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="/assets/site.js?v=f1672217" defer></script>
+  <script src="/assets/site.js?v=31d40592" defer></script>
 </body>
 </html>

@@ -164,6 +164,16 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 .site-nav a:hover { color: var(--text); background: var(--raised); }
 .site-nav a[aria-current="page"] { color: var(--text); background: var(--raised); }
 .site-nav .nav-external { margin-left: auto; }
+.site-nav .nav-external .icon { display: none; width: 18px; height: 18px; }
+/* Narrow phones: tighter items and the Telegram plane icon instead of the word, so the row fits */
+@media (max-width: 400px) {
+  .site-nav { gap: 2px; }
+  .site-nav a, .nav-menu summary { padding-inline: 9px; }
+  .site-nav .nav-external .icon { display: block; }
+  .site-nav .nav-external span { display: none; }
+}
+/* When the row still does not fit (the smallest phones), a soft fade on the right hints that it scrolls */
+.site-nav.is-scrollable { mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent); }
 
 /* "Builds" menu in the header: the build pages from every page of the site */
 .nav-menu { position: relative; }
@@ -235,6 +245,13 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 }
 .btn:active { transform: translateY(1px); }
 .btn-block { width: 100%; }
+/* The main download buttons name the image language and size; on a very narrow phone the label wraps
+   onto two centred lines instead of pushing the button off the screen */
+.dl-actions .btn-block, .dl-bar .btn-block { white-space: normal; text-align: center; text-wrap: balance; line-height: 1.3; padding-block: 10px; }
+@media (max-width: 400px) {
+  /* A slightly smaller label fits on one line down to 360px; narrower phones get two lines */
+  .dl-actions .btn-block, .dl-bar .btn-block { font-size: 15px; padding-inline: 14px; }
+}
 .btn-primary { background: var(--accent); color: #fff; }
 .btn-primary:hover { background: var(--accent-hover); }
 .btn-secondary { border: 1px solid var(--border-strong); }
@@ -936,7 +953,7 @@ html:not([data-image]) .img-ru { display: none !important; }
   .hero p { font-size: var(--fs-md); }
   .composer { padding: 16px; }
   .selectors { grid-template-columns: 1fr; gap: 16px; }
-  .result { grid-template-columns: 1fr; gap: 20px; margin-top: 20px; padding-top: 20px; }
+  .result { grid-template-columns: minmax(0, 1fr); gap: 20px; margin-top: 20px; padding-top: 20px; }
   /* One column: a line separates the build description from the download buttons */
   .result > .dl-actions { padding-top: 20px; border-top: 1px solid var(--border); }
   .more { grid-template-columns: 1fr; }

@@ -227,7 +227,7 @@ function header(current) {
         </details>
         ${navLink('ghost', '/ghost-spectre', 'Ghost Spectre')}
         ${navLink('settings', '/settings-for-windows', L('Settings', 'Настройки'))}
-        <a class="nav-external" href="${TELEGRAM}" target="_blank" rel="noopener" data-tg-placement="header">Telegram</a>
+        <a class="nav-external" href="${TELEGRAM}" target="_blank" rel="noopener" data-tg-placement="header" aria-label="Telegram">${icon('send')}<span>Telegram</span></a>
       </nav>
       <div class="lang-switch" role="group" aria-label="Site language / Язык сайта">
         <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
