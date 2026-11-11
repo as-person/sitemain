@@ -1392,7 +1392,7 @@ html:not([data-image]) .img-ru { display: none !important; }
   transition: background var(--ease);
 }
 .chat-intro button:hover { background: rgb(94 166 232 / .26); }
-.chat-accent { color: #8fb4ff; font-weight: 600; }
+.chat-accent { color: #ffffff; font-weight: 700; }
 .chat-verify-bar {
   display: flex;
   align-items: flex-start;
@@ -1405,7 +1405,7 @@ html:not([data-image]) .img-ru { display: none !important; }
 .chat-verify-bar[hidden] { display: none; }
 .chat-verify-icon { flex: none; font-size: 18px; line-height: 1.25; }
 .chat-verify-text { display: grid; gap: 1px; min-width: 0; }
-.chat-verify-title { color: #bfd4ff; font-size: var(--fs-sm); font-weight: 600; }
+.chat-verify-title { color: #ffffff; font-size: var(--fs-sm); font-weight: 600; }
 .chat-verify-sub { overflow-wrap: anywhere; color: rgb(255 255 255 / .72); font-size: 12.5px; line-height: 1.4; }
 @media (prefers-reduced-motion: no-preference) {
   .chat-verify-bar.is-pulse { animation: chat-verify-flash 1.4s ease-out 1; }

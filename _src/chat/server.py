@@ -562,11 +562,11 @@ LETTER = {
 }
 CONFIRM_BUBBLES = {
     'ru': ('Здравствуйте! Мы получили ваш вопрос в чате на somov.org и ответим в ближайшее время.<br><br>'
-           'Чтобы ответ пришёл и на эту почту, <b style="color:#2563eb">подтвердите её</b>. В чате на сайте он появится в любом случае.',
+           'Чтобы ответ пришёл и на эту почту, <b style="color:#14171c">подтвердите её</b>. В чате на сайте он появится в любом случае.',
            'Если вы ничего не писали на somov.org, просто не обращайте внимания на это письмо — больше писем не будет.',
            'Подтвердить почту', ''),
     'en': ('Hello! We got your question in the chat on somov.org and will answer soon.<br><br>'
-           'For the answer to come to this email too, please <b style="color:#2563eb">confirm it</b>. It will appear in the chat on the site anyway.',
+           'For the answer to come to this email too, please <b style="color:#14171c">confirm it</b>. It will appear in the chat on the site anyway.',
            'If you did not write anything on somov.org, please ignore this email — no more emails will come.',
            'Confirm email', ''),
 }
