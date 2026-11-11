@@ -974,8 +974,8 @@
      owner, and his Telegram replies come back here. A visitor is a random id kept in this browser. */
   const CHAT = 'https://dl.somov.org/api/chat';
   const CHAT_TEXT = {
-    en: { title: 'somov', sub: 'ask a question and I will answer', hello: 'Hi! Ask about the builds, the tweaks or the site. I will answer right here.', contact: 'Email or Telegram for a reply', placeholder: 'Message', send: 'Send', close: 'Close', today: 'Today', yesterday: 'Yesterday', failed: 'Not sent. Tap to retry', limit: 'Too many messages. Try again a bit later.', attach: 'Attach a photo or file', tooLarge: 'The file is larger than 10 MB', kb: 'KB', mb: 'MB', notify: 'Let me know when the answer comes', notifyHint: 'A notification will come even if the site is closed', pushOn: 'Notifications are on', pushDenied: 'Notifications are blocked in the browser settings', pushFailed: 'Could not turn notifications on', contactToggle: 'Email or Telegram for a reply', contactSave: 'Save', contactHide: 'Hide', contactSaved: 'Contact saved', contactRemoved: 'Contact removed', contactLater: 'The contact will go with your first message', contactFailed: 'Could not save the contact' },
-    ru: { title: 'somov', sub: 'задайте вопрос — я отвечу', hello: 'Привет! Спросите о сборках, настройках или сайте. Отвечу прямо здесь.', contact: 'Почта или Telegram для ответа', placeholder: 'Сообщение', send: 'Отправить', close: 'Закрыть', today: 'Сегодня', yesterday: 'Вчера', failed: 'Не отправлено. Нажмите, чтобы повторить', limit: 'Слишком много сообщений. Попробуйте чуть позже.', attach: 'Прикрепить фото или файл', tooLarge: 'Файл больше 10 МБ', kb: 'КБ', mb: 'МБ', notify: 'Сообщить, когда придёт ответ', notifyHint: 'Уведомление придёт, даже если сайт будет закрыт', pushOn: 'Уведомления включены', pushDenied: 'Уведомления запрещены в настройках браузера', pushFailed: 'Не удалось включить уведомления', contactToggle: 'Почта или Telegram для ответа', contactSave: 'Сохранить', contactHide: 'Скрыть', contactSaved: 'Контакт сохранён', contactRemoved: 'Контакт удалён', contactLater: 'Контакт уйдёт вместе с первым сообщением', contactFailed: 'Не удалось сохранить контакт' },
+    en: { title: 'somov', sub: 'ask a question and I will answer', hello: 'Hi! Ask about the builds, the tweaks or the site. I will answer right here.', contact: 'Email or Telegram for a reply', placeholder: 'Message', send: 'Send', close: 'Close', today: 'Today', yesterday: 'Yesterday', failed: 'Not sent. Tap to retry', limit: 'Too many messages. Try again a bit later.', attach: 'Attach a photo or file', tooLarge: 'The file is larger than 10 MB', kb: 'KB', mb: 'MB', notify: 'Let me know when the answer comes', notifyHint: 'A notification will come even if the site is closed', pushOn: 'Notifications are on', pushDenied: 'Notifications are blocked in the browser settings', pushFailed: 'Could not turn notifications on', contactToggle: 'Email or Telegram for a reply', contactSave: 'Save', contactHide: 'Hide', contactSaved: 'Contact saved', contactRemoved: 'Contact removed', contactLater: 'The contact will go with your first message', contactFailed: 'Could not save the contact', pushOnHint: 'Notifications are on. They can be turned off in the browser settings' },
+    ru: { title: 'somov', sub: 'задайте вопрос — я отвечу', hello: 'Привет! Спросите о сборках, настройках или сайте. Отвечу прямо здесь.', contact: 'Почта или Telegram для ответа', placeholder: 'Сообщение', send: 'Отправить', close: 'Закрыть', today: 'Сегодня', yesterday: 'Вчера', failed: 'Не отправлено. Нажмите, чтобы повторить', limit: 'Слишком много сообщений. Попробуйте чуть позже.', attach: 'Прикрепить фото или файл', tooLarge: 'Файл больше 10 МБ', kb: 'КБ', mb: 'МБ', notify: 'Сообщить, когда придёт ответ', notifyHint: 'Уведомление придёт, даже если сайт будет закрыт', pushOn: 'Уведомления включены', pushDenied: 'Уведомления запрещены в настройках браузера', pushFailed: 'Не удалось включить уведомления', contactToggle: 'Почта или Telegram для ответа', contactSave: 'Сохранить', contactHide: 'Скрыть', contactSaved: 'Контакт сохранён', contactRemoved: 'Контакт удалён', contactLater: 'Контакт уйдёт вместе с первым сообщением', contactFailed: 'Не удалось сохранить контакт', pushOnHint: 'Уведомления включены. Выключить их можно в настройках браузера' },
   };
   const openers = $$('[data-chat-open]');
   if (openers.length) {
@@ -1061,7 +1061,7 @@
         }
         list.append(bubble);
       });
-      if (pushOffer()) {
+      if (pushOffer() && store.get('chatPushOffer') !== 'done') {
         const offer = document.createElement('div');
         offer.className = 'chat-notify';
         const button = document.createElement('button');
@@ -1072,8 +1072,17 @@
         hint.textContent = ct('notifyHint');
         offer.append(button, hint);
         list.append(offer);
+        // Shown once: in 20 s it goes into the bell in the header, which keeps the same offer
+        if (!pushOfferTimer) {
+          pushOfferTimer = setTimeout(() => {
+            store.set('chatPushOffer', 'done');
+            render();
+            pulse($('.chat-bell', panel));
+          }, 20000);
+        }
       }
       contactUi();
+      bellUi();
       if (nearBottom || !render.done) list.scrollTop = list.scrollHeight;
       render.done = true;
       const ownerIds = messages.filter(m => m.owner).map(m => m.id);
@@ -1086,9 +1095,26 @@
     const pushSupported = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
     const pushOffer = () => pushSupported && Notification.permission !== 'denied' && store.get('chatPush') !== '1'
       && messages.some(m => !m.owner && m.id);
+    let pushOfferTimer = null;
+
+    // The bell in the header: there once the conversation started (and the browser can do it);
+    // a green dot when notifications are on
+    function bellUi() {
+      const bell = $('.chat-bell', panel);
+      bell.hidden = !pushSupported || Notification.permission === 'denied' || !messages.some(m => !m.owner && m.id);
+      bell.classList.toggle('is-set', store.get('chatPush') === '1' && Notification.permission === 'granted');
+    }
+
+    function pulse(element) {
+      if (!element || element.hidden) return;
+      element.classList.remove('is-pulse');
+      void element.offsetWidth;   // restart the animation
+      element.classList.add('is-pulse');
+    }
 
     function enablePush(button) {
       button.disabled = true;
+      const done = () => { button.disabled = false; };
       const keyBytes = text => Uint8Array.from(atob(text.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - text.length % 4) % 4)), c => c.charCodeAt(0));
       Notification.requestPermission()
         .then(permission => {
@@ -1104,11 +1130,14 @@
         .then(r => {
           if (!r.ok) throw new Error('subscribe');
           store.set('chatPush', '1');
+          store.set('chatPushOffer', 'done');
           showToast(ct('pushOn'));
+          done();
           render();
         })
         .catch(() => {
           showToast(Notification.permission === 'denied' ? ct('pushDenied') : ct('pushFailed'));
+          done();
           render();
         });
     }
@@ -1158,10 +1187,7 @@
         const field = $('.chat-contact', panel);
         if (!contactShown() || document.activeElement === field || field.value.trim()) return;
         setContact(false);
-        const toggle = $('.chat-contact-toggle', panel);
-        toggle.classList.remove('is-pulse');
-        void toggle.offsetWidth;   // restart the animation
-        toggle.classList.add('is-pulse');
+        pulse($('.chat-contact-toggle', panel));
       }, 30000);
     }
 
@@ -1327,7 +1353,8 @@
           <button type="button" class="chat-close" data-chat-close><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
           <span class="chat-avatar" aria-hidden="true">S</span>
           <span class="chat-who"><b class="chat-title"></b><span class="chat-sub"></span></span>
-          <button type="button" class="chat-contact-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></button>
+          <button type="button" class="chat-bell chat-head-btn" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></button>
+          <button type="button" class="chat-contact-toggle chat-head-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></button>
         </header>
         <div class="chat-contact-bar" hidden>
           <input class="chat-contact" type="text" maxlength="120" autocomplete="email" enterkeyhint="done">
@@ -1359,6 +1386,11 @@
       panel.addEventListener('keydown', event => { if (event.key === 'Escape') close(); });
       const contactField = $('.chat-contact', panel);
       $('.chat-contact-toggle', panel).addEventListener('click', () => setContact(!contactShown(), true));
+      const bell = $('.chat-bell', panel);
+      bell.addEventListener('click', () => {
+        if (bell.classList.contains('is-set')) showToast(ct('pushOnHint'));
+        else enablePush(bell);
+      });
       $('.chat-contact-save', panel).addEventListener('click', saveContact);
       $('.chat-contact-close', panel).addEventListener('click', () => setContact(false));
       contactField.addEventListener('keydown', event => {
@@ -1392,6 +1424,8 @@
       $('.chat-attach', panel).setAttribute('aria-label', ct('attach'));
       $('.chat-attach', panel).title = ct('attach');
       $('.chat-contact', panel).placeholder = ct('contact');
+      $('.chat-bell', panel).setAttribute('aria-label', ct('notify'));
+      $('.chat-bell', panel).title = ct('notify');
       $('.chat-contact-toggle', panel).setAttribute('aria-label', ct('contactToggle'));
       $('.chat-contact-toggle', panel).title = ct('contactToggle');
       $('.chat-contact-save', panel).setAttribute('aria-label', ct('contactSave'));
