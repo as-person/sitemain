@@ -974,8 +974,8 @@
      owner, and his Telegram replies come back here. A visitor is a random id kept in this browser. */
   const CHAT = 'https://dl.somov.org/api/chat';
   const CHAT_TEXT = {
-    en: { title: 'somov', sub: 'ask a question and I will answer', hello: 'Hi! Ask about the builds, the tweaks or the site. I will answer right here.', contact: 'Email or Telegram for a reply (optional)', placeholder: 'Message', send: 'Send', close: 'Close', today: 'Today', yesterday: 'Yesterday', failed: 'Not sent. Tap to retry', limit: 'Too many messages. Try again a bit later.', attach: 'Attach a photo or file', tooLarge: 'The file is larger than 10 MB', kb: 'KB', mb: 'MB' },
-    ru: { title: 'somov', sub: 'задайте вопрос — я отвечу', hello: 'Привет! Спросите о сборках, настройках или сайте. Отвечу прямо здесь.', contact: 'Почта или Telegram для ответа (необязательно)', placeholder: 'Сообщение', send: 'Отправить', close: 'Закрыть', today: 'Сегодня', yesterday: 'Вчера', failed: 'Не отправлено. Нажмите, чтобы повторить', limit: 'Слишком много сообщений. Попробуйте чуть позже.', attach: 'Прикрепить фото или файл', tooLarge: 'Файл больше 10 МБ', kb: 'КБ', mb: 'МБ' },
+    en: { title: 'somov', sub: 'ask a question and I will answer', hello: 'Hi! Ask about the builds, the tweaks or the site. I will answer right here.', contact: 'Email or Telegram for a reply (optional)', placeholder: 'Message', send: 'Send', close: 'Close', today: 'Today', yesterday: 'Yesterday', failed: 'Not sent. Tap to retry', limit: 'Too many messages. Try again a bit later.', attach: 'Attach a photo or file', tooLarge: 'The file is larger than 10 MB', kb: 'KB', mb: 'MB', notify: 'Let me know when the answer comes', notifyHint: 'A notification will come even if the site is closed', pushOn: 'Notifications are on', pushDenied: 'Notifications are blocked in the browser settings', pushFailed: 'Could not turn notifications on' },
+    ru: { title: 'somov', sub: 'задайте вопрос — я отвечу', hello: 'Привет! Спросите о сборках, настройках или сайте. Отвечу прямо здесь.', contact: 'Почта или Telegram для ответа (необязательно)', placeholder: 'Сообщение', send: 'Отправить', close: 'Закрыть', today: 'Сегодня', yesterday: 'Вчера', failed: 'Не отправлено. Нажмите, чтобы повторить', limit: 'Слишком много сообщений. Попробуйте чуть позже.', attach: 'Прикрепить фото или файл', tooLarge: 'Файл больше 10 МБ', kb: 'КБ', mb: 'МБ', notify: 'Сообщить, когда придёт ответ', notifyHint: 'Уведомление придёт, даже если сайт будет закрыт', pushOn: 'Уведомления включены', pushDenied: 'Уведомления запрещены в настройках браузера', pushFailed: 'Не удалось включить уведомления' },
   };
   const openers = $$('[data-chat-open]');
   if (openers.length) {
@@ -1061,12 +1061,61 @@
         }
         list.append(bubble);
       });
+      if (pushOffer()) {
+        const offer = document.createElement('div');
+        offer.className = 'chat-notify';
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = '🔔 ' + ct('notify');
+        button.addEventListener('click', () => enablePush(button));
+        const hint = document.createElement('span');
+        hint.textContent = ct('notifyHint');
+        offer.append(button, hint);
+        list.append(offer);
+      }
       $('.chat-contact', panel).hidden = hasContact;
       if (nearBottom || !render.done) list.scrollTop = list.scrollHeight;
       render.done = true;
       const ownerIds = messages.filter(m => m.owner).map(m => m.id);
       if (ownerIds.length) store.set('chatSeen', String(Math.max(seenId(), ...ownerIds)));
       setDot(false);
+    }
+
+    // Browser notifications about answers (Web Push through /sw.js): offered after the visitor's first message,
+    // asked for only when they press the button. iPhones have it only for a site added to the Home Screen.
+    const pushSupported = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+    const pushOffer = () => pushSupported && Notification.permission !== 'denied' && store.get('chatPush') !== '1'
+      && messages.some(m => !m.owner && m.id);
+
+    function enablePush(button) {
+      button.disabled = true;
+      const keyBytes = text => Uint8Array.from(atob(text.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - text.length % 4) % 4)), c => c.charCodeAt(0));
+      Notification.requestPermission()
+        .then(permission => {
+          if (permission !== 'granted') throw new Error('denied');
+          return Promise.all([navigator.serviceWorker.register('/sw.js').then(() => navigator.serviceWorker.ready),
+            fetch(`${CHAT}/push-key`).then(r => r.json())]);
+        })
+        .then(([registration, data]) => registration.pushManager.getSubscription()
+          .then(old => old || registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: keyBytes(data.key) })))
+        .then(subscription => fetch(`${CHAT}/subscribe?v=${visitor}`, {
+          method: 'POST', headers: { 'Content-Type': 'text/plain;charset=UTF-8' }, body: JSON.stringify(subscription),
+        }))
+        .then(r => {
+          if (!r.ok) throw new Error('subscribe');
+          store.set('chatPush', '1');
+          showToast(ct('pushOn'));
+          render();
+        })
+        .catch(() => {
+          showToast(Notification.permission === 'denied' ? ct('pushDenied') : ct('pushFailed'));
+          render();
+        });
+    }
+    if (pushSupported) {
+      navigator.serviceWorker.addEventListener('message', event => {
+        if (event.data && event.data.chat === 'open') open();
+      });
     }
 
     function sendMessage(m) {

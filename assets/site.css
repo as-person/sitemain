@@ -1421,6 +1421,26 @@ html:not([data-image]) .img-ru { display: none !important; }
 }
 .chat-attach:hover { color: var(--text); background: rgb(255 255 255 / .06); }
 .chat-attach svg { width: 22px; height: 22px; }
+.chat-notify {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  align-self: center;
+  margin: 10px 0 4px;
+  text-align: center;
+}
+.chat-notify button {
+  padding: 7px 14px;
+  border-radius: var(--pill);
+  background: rgb(94 166 232 / .16);
+  color: #9cc8f2;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  transition: background var(--ease);
+}
+.chat-notify button:hover { background: rgb(94 166 232 / .26); }
+.chat-notify button:disabled { opacity: .6; cursor: default; }
+.chat-notify span { color: rgb(255 255 255 / .45); font-size: 12px; }
 .chat.is-drop .chat-list { outline: 2px dashed var(--chat-accent); outline-offset: -8px; }
 
 @media (max-width: 720px) {

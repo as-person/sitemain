@@ -10,9 +10,10 @@ A visitor is a random id made by their browser (no sign-up). IP addresses are no
 salted hashes in memory. Files live next to the database and are served only to their conversation; anything
 that is not a picture is always served as a download, never shown by the browser. The owner sees the visitor's
 country as a flag: it is looked up in a local copy of the free DB-IP country database (no outside service), and
-only the country code is kept.
+only the country code is kept. A visitor who allows notifications gets a browser push (Web Push, encrypted
+for their browser only) when the owner answers, even with the site closed.
 """
-import csv, gzip, hashlib, io, ipaddress, json, os, re, secrets, sqlite3, sys, threading, time, urllib.error, urllib.request
+import base64, csv, gzip, hashlib, io, ipaddress, json, os, re, secrets, socket, sqlite3, sys, threading, time, urllib.error, urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, quote, urlsplit
 
@@ -26,6 +27,8 @@ GEO_URL = 'https://download.db-ip.com/free/dbip-country-lite-{}.csv.gz'   # CC B
 ORIGINS = {'https://somov.org', 'http://127.0.0.1:8080', 'http://localhost:8080'}
 API = f'https://api.telegram.org/bot{TOKEN}/'
 FILE_API = f'https://api.telegram.org/file/bot{TOKEN}/'
+VAPID_PRIVATE = os.environ.get('VAPID_PRIVATE', '')   # base64url P-256 private number; signs the pushes
+VAPID_PUBLIC = os.environ.get('VAPID_PUBLIC', '')     # base64url uncompressed public point; given to browsers
 
 MAX_TEXT, MAX_CONTACT, MAX_PAGE, MAX_BODY = 2000, 120, 200, 8192
 MAX_FILE = 10 * 1024 * 1024                       # one file from a visitor
@@ -63,6 +66,8 @@ if 'file' not in [row[1] for row in db.execute('PRAGMA table_info(messages)')]:
     db.execute("ALTER TABLE messages ADD COLUMN file TEXT NOT NULL DEFAULT ''")
 if 'cc' not in [row[1] for row in db.execute('PRAGMA table_info(messages)')]:
     db.execute("ALTER TABLE messages ADD COLUMN cc TEXT NOT NULL DEFAULT ''")
+db.execute('CREATE TABLE IF NOT EXISTS push (endpoint TEXT PRIMARY KEY, thread TEXT NOT NULL, p256dh TEXT NOT NULL, '
+           'auth TEXT NOT NULL, t INTEGER NOT NULL)')
 db.commit()
 lock = threading.Lock()
 wake = threading.Event()   # a new visitor message: send it to Telegram now
@@ -332,6 +337,7 @@ def owner_message(message):
     run('INSERT INTO messages (thread, owner, text, t, sent, file) VALUES (?, 1, ?, ?, 1, ?)', thread, text[:4000], now, fid)
     run('UPDATE threads SET active = ? WHERE id = ?', now, thread)
     run('INSERT OR REPLACE INTO tg (msg, thread) VALUES (?, ?)', message['message_id'], thread)
+    threading.Thread(target=push, args=(thread, text, fid), daemon=True).start()
     try:   # a quiet "delivered" mark on the answer
         tg('setMessageReaction', chat_id=OWNER, message_id=message['message_id'],
            reaction=[{'type': 'emoji', 'emoji': '👍'}])
@@ -383,9 +389,125 @@ def sender():
                         os.remove(os.path.join(FILES_DIR, fid))
                     except OSError:
                         pass
-                for table in ('messages', 'files', 'tg'):
+                for table in ('messages', 'files', 'tg', 'push'):
                     run(f'DELETE FROM {table} WHERE thread = ?', thread)
                 run('DELETE FROM threads WHERE id = ?', thread)
+
+
+# -- Browser notifications (Web Push: RFC 8291 encryption, RFC 8292 VAPID) -----
+
+def b64d(text):
+    return base64.urlsafe_b64decode(text + '=' * (-len(text) % 4))
+
+
+def b64e(data):
+    return base64.urlsafe_b64encode(data).rstrip(b'=').decode()
+
+
+def push_ready():
+    return bool(VAPID_PRIVATE and VAPID_PUBLIC)
+
+
+def push_endpoint_ok(endpoint):
+    """Only an https push service on the internet: the server must not be made to post into private networks."""
+    url = urlsplit(endpoint)
+    if url.scheme != 'https' or not url.hostname or url.port not in (None, 443) or len(endpoint) > 1000:
+        return False
+    try:
+        ipaddress.ip_address(url.hostname)
+        return False   # push services always have a name
+    except ValueError:
+        pass
+    try:
+        addresses = {info[4][0] for info in socket.getaddrinfo(url.hostname, 443, proto=socket.IPPROTO_TCP)}
+    except OSError:
+        return False
+    return all(ipaddress.ip_address(a.split('%')[0]).is_global for a in addresses)
+
+
+def push_encrypt(p256dh, auth, plaintext):
+    from cryptography.hazmat.primitives import hashes, serialization
+    from cryptography.hazmat.primitives.asymmetric import ec
+    from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+    from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+
+    def hkdf(salt, ikm, info, length):
+        return HKDF(algorithm=hashes.SHA256(), length=length, salt=salt, info=info).derive(ikm)
+
+    browser_public = b64d(p256dh)
+    own = ec.generate_private_key(ec.SECP256R1())
+    own_public = own.public_key().public_bytes(serialization.Encoding.X962, serialization.PublicFormat.UncompressedPoint)
+    shared = own.exchange(ec.ECDH(), ec.EllipticCurvePublicKey.from_encoded_point(ec.SECP256R1(), browser_public))
+    ikm = hkdf(b64d(auth), shared, b'WebPush: info\x00' + browser_public + own_public, 32)
+    salt = os.urandom(16)
+    key = hkdf(salt, ikm, b'Content-Encoding: aes128gcm\x00', 16)
+    nonce = hkdf(salt, ikm, b'Content-Encoding: nonce\x00', 12)
+    sealed = AESGCM(key).encrypt(nonce, plaintext + b'\x02', None)
+    return salt + (4096).to_bytes(4, 'big') + bytes([len(own_public)]) + own_public + sealed
+
+
+def vapid(endpoint):
+    from cryptography.hazmat.primitives import hashes
+    from cryptography.hazmat.primitives.asymmetric import ec
+    from cryptography.hazmat.primitives.asymmetric.utils import decode_dss_signature
+
+    url = urlsplit(endpoint)
+    head = b64e(json.dumps({'typ': 'JWT', 'alg': 'ES256'}).encode())
+    claims = b64e(json.dumps({'aud': f'{url.scheme}://{url.netloc}', 'exp': int(time.time()) + 12 * 3600,
+                              'sub': 'https://somov.org'}).encode())
+    key = ec.derive_private_key(int.from_bytes(b64d(VAPID_PRIVATE), 'big'), ec.SECP256R1())
+    r, s = decode_dss_signature(key.sign(f'{head}.{claims}'.encode(), ec.ECDSA(hashes.SHA256())))
+    return f'vapid t={head}.{claims}.{b64e(r.to_bytes(32, "big") + s.to_bytes(32, "big"))}, k={VAPID_PUBLIC}'
+
+
+def push(thread, text, fid):
+    """Tells the visitor's browsers that the owner answered. Gone subscriptions are forgotten."""
+    if not push_ready():
+        return
+    subscriptions = q('SELECT endpoint, p256dh, auth FROM push WHERE thread = ?', thread)
+    if not subscriptions:
+        return
+    lang = (q('SELECT lang FROM threads WHERE id = ?', thread) or [('en',)])[0][0]
+    photo = bool(fid) and bool(q('SELECT 1 FROM files WHERE id = ? AND image = 1', fid))
+    if not text:
+        text = ('📷 Фото' if photo else '📎 Файл') if lang == 'ru' else ('📷 Photo' if photo else '📎 File')
+    body = json.dumps({'title': 'somov', 'body': text[:180] + ('…' if len(text) > 180 else '')},
+                      ensure_ascii=False).encode()
+    for endpoint, p256dh, auth in subscriptions:
+        try:
+            request = urllib.request.Request(endpoint, push_encrypt(p256dh, auth, body), {
+                'Content-Encoding': 'aes128gcm', 'Content-Type': 'application/octet-stream',
+                'TTL': '86400', 'Urgency': 'high', 'Authorization': vapid(endpoint)})
+            urllib.request.urlopen(request, timeout=20).close()
+        except urllib.error.HTTPError as error:
+            if error.code in (404, 410):
+                run('DELETE FROM push WHERE endpoint = ?', endpoint)
+            else:
+                log('push:', error.code, urlsplit(endpoint).hostname)
+        except Exception as error:
+            log('push:', type(error).__name__, urlsplit(endpoint).hostname)
+
+
+def subscribe(visitor, data):
+    if not push_ready() or not isinstance(data, dict) or not q('SELECT 1 FROM threads WHERE id = ?', visitor):
+        return False
+    endpoint, keys = str(data.get('endpoint', '')), data.get('keys') or {}
+    try:
+        p256dh, auth = str(keys['p256dh']), str(keys['auth'])
+        if len(b64d(p256dh)) != 65 or len(b64d(auth)) != 16:
+            return False
+    except (KeyError, TypeError, ValueError):
+        return False
+    if not push_endpoint_ok(endpoint):
+        return False
+    with lock:
+        db.execute('INSERT OR REPLACE INTO push (endpoint, thread, p256dh, auth, t) VALUES (?, ?, ?, ?, ?)',
+                   (endpoint, visitor, p256dh, auth, int(time.time())))
+        # at most 5 browsers per conversation: the oldest go
+        db.execute('DELETE FROM push WHERE thread = ? AND endpoint NOT IN '
+                   '(SELECT endpoint FROM push WHERE thread = ? ORDER BY t DESC LIMIT 5)', (visitor, visitor))
+        db.commit()
+    return True
 
 
 # -- Rate limits (salted hashes of IPs, in memory only) -------------------------
@@ -493,6 +615,8 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         path = urlsplit(self.path).path
         params = self.params()
+        if path == '/api/chat/push-key':
+            return self.reply(200, {'key': VAPID_PUBLIC if push_ready() else ''})
         visitor = params.get('v', '')
         if not VISITOR_RE.match(visitor):
             return self.reply(400, {'error': 'visitor'})
@@ -554,6 +678,16 @@ class Handler(BaseHTTPRequestHandler):
                                    'ru' if params.get('lang') == 'ru' else 'en', fid, country(ip))
             row = q('SELECT name, size, image FROM files WHERE id = ?', fid)[0]
             return self.reply(200, {'id': mid, 't': now, 'file': file_view(fid, *row)})
+        if path == '/api/chat/subscribe':
+            visitor = self.params().get('v', '')
+            raw = self.body(MAX_BODY)
+            try:
+                data = json.loads(raw) if raw else None
+            except ValueError:
+                data = None
+            if not VISITOR_RE.match(visitor) or not allowed(ip):
+                return self.reply(400, {'error': 'visitor'})
+            return self.reply(200 if subscribe(visitor, data) else 400, {})
         if path != '/api/chat/send':
             return self.reply(404, {'error': 'not found'})
         raw = self.body(MAX_BODY)
