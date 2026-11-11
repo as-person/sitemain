@@ -1141,15 +1141,17 @@ def file_view(fid, name, size, image):
 
 
 def thread_view(visitor, after):
-    thread = q('SELECT contact FROM threads WHERE id = ?', visitor)
+    thread = q('SELECT contact, verified FROM threads WHERE id = ?', visitor)
     if not thread:
-        return {'messages': [], 'contact': False}
+        return {'messages': [], 'contact': False, 'verified': False}
     rows = q('SELECT m.id, m.owner, m.text, m.t, f.id, f.name, f.size, f.image FROM messages m '
              "LEFT JOIN files f ON f.id = m.file WHERE m.thread = ? AND m.id > ? AND m.src = '' "   # never letters
              'ORDER BY m.id LIMIT 500', visitor, after)
     return {'messages': [{'id': i, 'owner': bool(o), 'text': x, 't': t, 'file': file_view(fid, name, size, image)}
                          for i, o, x, t, fid, name, size, image in rows],
-            'contact': bool(thread[0][0])}
+            'contact': bool(thread[0][0]),
+            # the address in the chat is confirmed from its mailbox: answers also go there
+            'verified': bool(thread[0][0]) and thread[0][0].lower() == thread[0][1].lower()}
 
 
 def add_message(visitor, text, page, contact, lang, fid='', cc=''):

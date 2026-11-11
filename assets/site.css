@@ -1392,6 +1392,18 @@ html:not([data-image]) .img-ru { display: none !important; }
   transition: background var(--ease);
 }
 .chat-intro button:hover { background: rgb(94 166 232 / .26); }
+.chat-verify {
+  align-self: center;
+  max-width: 300px;
+  margin: 4px 0 10px;
+  padding: 7px 12px;
+  border-radius: var(--r-md);
+  background: rgb(0 0 0 / .28);
+  color: rgb(255 255 255 / .6);
+  font-size: 12.5px;
+  line-height: 1.45;
+  text-align: center;
+}
 .chat-day {
   align-self: center;
   margin: 8px 0 4px;
