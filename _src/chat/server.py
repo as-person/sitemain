@@ -11,9 +11,13 @@ salted hashes in memory. Files live next to the database and are served only to 
 that is not a picture is always served as a download, never shown by the browser. The owner sees the visitor's
 country as a flag: it is looked up in a local copy of the free DB-IP country database (no outside service), and
 only the country code is kept. A visitor who allows notifications gets a browser push (Web Push, encrypted
-for their browser only) when the owner answers, even with the site closed.
+for their browser only) when the owner answers, even with the site closed. A visitor who leaves an email gets one
+"we got your question" letter from me@somov.org (Gmail SMTP); it never carries what the visitor typed. Every answer
+of the owner is also sent to that email (with the photo or file attached).
 """
-import base64, csv, gzip, hashlib, io, ipaddress, json, os, re, secrets, socket, sqlite3, sys, threading, time, urllib.error, urllib.request
+import base64, csv, gzip, smtplib, hashlib, io, ipaddress, json, os, re, secrets, socket, sqlite3, sys, threading, time, urllib.error, urllib.request
+from email.message import EmailMessage
+from email.utils import formataddr, make_msgid
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, quote, urlsplit
 
@@ -29,6 +33,11 @@ API = f'https://api.telegram.org/bot{TOKEN}/'
 FILE_API = f'https://api.telegram.org/file/bot{TOKEN}/'
 VAPID_PRIVATE = os.environ.get('VAPID_PRIVATE', '')   # base64url P-256 private number; signs the pushes
 VAPID_PUBLIC = os.environ.get('VAPID_PUBLIC', '')     # base64url uncompressed public point; given to browsers
+SMTP_USER = os.environ.get('GMAIL_USER', '')           # the Gmail account that has me@somov.org as "Send mail as"
+SMTP_PASSWORD = os.environ.get('GMAIL_APP_PASSWORD', '').replace(' ', '')   # Google shows it in groups of four
+MAIL_FROM = os.environ.get('MAIL_FROM', 'me@somov.org')
+MAIL_PER_IP, MAIL_PER_DAY = 3, 50   # letters: anyone can type somebody else's address, so they are few
+EMAIL_RE = re.compile(r'^[^@\s<>"]+@[^@\s<>"]+\.[A-Za-z]{2,}$')
 
 MAX_TEXT, MAX_CONTACT, MAX_PAGE, MAX_BODY = 2000, 120, 200, 8192
 MAX_FILE = 10 * 1024 * 1024                       # one file from a visitor
@@ -66,6 +75,8 @@ if 'file' not in [row[1] for row in db.execute('PRAGMA table_info(messages)')]:
     db.execute("ALTER TABLE messages ADD COLUMN file TEXT NOT NULL DEFAULT ''")
 if 'cc' not in [row[1] for row in db.execute('PRAGMA table_info(messages)')]:
     db.execute("ALTER TABLE messages ADD COLUMN cc TEXT NOT NULL DEFAULT ''")
+if 'mailed' not in [row[1] for row in db.execute('PRAGMA table_info(threads)')]:
+    db.execute("ALTER TABLE threads ADD COLUMN mailed TEXT NOT NULL DEFAULT ''")
 db.execute('CREATE TABLE IF NOT EXISTS push (endpoint TEXT PRIMARY KEY, thread TEXT NOT NULL, p256dh TEXT NOT NULL, '
            'auth TEXT NOT NULL, t INTEGER NOT NULL)')
 db.commit()
@@ -338,6 +349,7 @@ def owner_message(message):
     run('UPDATE threads SET active = ? WHERE id = ?', now, thread)
     run('INSERT OR REPLACE INTO tg (msg, thread) VALUES (?, ?)', message['message_id'], thread)
     threading.Thread(target=push, args=(thread, text, fid), daemon=True).start()
+    threading.Thread(target=reply_letter, args=(thread, text, fid), daemon=True).start()
     try:   # a quiet "delivered" mark on the answer
         tg('setMessageReaction', chat_id=OWNER, message_id=message['message_id'],
            reaction=[{'type': 'emoji', 'emoji': '👍'}])
@@ -508,6 +520,133 @@ def subscribe(visitor, data):
                    '(SELECT endpoint FROM push WHERE thread = ? ORDER BY t DESC LIMIT 5)', (visitor, visitor))
         db.commit()
     return True
+
+
+# -- "We got your question" letter -------------------------------------------
+
+LETTER = {
+    'ru': ('Мы получили ваш вопрос — somov.org',
+           'Здравствуйте!\n\n'
+           'Спасибо, что написали в чат на somov.org. Мы получили ваш вопрос и ответим в ближайшее время: '
+           'ответ придёт в чат на сайте и на эту почту.\n\n'
+           'Чат на сайте (в том же браузере): https://somov.org/#chat\n\n'
+           'Если вы ничего не писали на somov.org, просто не обращайте внимания на это письмо.\n\n'
+           '— somov\nhttps://somov.org\n'),
+    'en': ('We got your question — somov.org',
+           'Hello!\n\n'
+           'Thank you for writing in the chat on somov.org. We got your question and will answer soon: '
+           'the answer will come to the chat on the site and to this email.\n\n'
+           'The chat on the site (in the same browser): https://somov.org/#chat\n\n'
+           'If you did not write anything on somov.org, please ignore this email.\n\n'
+           '— somov\nhttps://somov.org\n'),
+}
+mail_hits = {}     # hash of IP -> [times]
+mail_all = []      # times of all letters
+
+
+def mail_allowed(ip):
+    now = time.time()
+    key = hashlib.sha256((salt + 'mail' + ip).encode()).hexdigest()[:24]
+    with lock:
+        mine = [t for t in mail_hits.get(key, []) if now - t < 86400]
+        mail_all[:] = [t for t in mail_all if now - t < 86400]
+        if len(mine) >= MAIL_PER_IP or len(mail_all) >= MAIL_PER_DAY:
+            mail_hits[key] = mine
+            return False
+        mine.append(now)
+        mail_all.append(now)
+        mail_hits[key] = mine
+        return True
+
+
+def send_letter(letter):
+    try:
+        with smtplib.SMTP('smtp.gmail.com', 587, timeout=60) as smtp:
+            smtp.starttls()
+            smtp.login(SMTP_USER, SMTP_PASSWORD)
+            smtp.send_message(letter)
+        return True
+    except (smtplib.SMTPException, OSError) as error:
+        log('mail:', type(error).__name__, str(error)[:160])
+        return False
+
+
+REPLY = {
+    'ru': ('Ответ на ваш вопрос — somov.org',
+           'Ответить можно прямо на это письмо или в чате на сайте (в том же браузере): https://somov.org/#chat'),
+    'en': ('Answer to your question — somov.org',
+           'You can reply to this email or in the chat on the site (in the same browser): https://somov.org/#chat'),
+}
+
+
+def reply_letter(thread, text, fid):
+    """The owner's answer, also by email when the visitor left one (the answer is the owner's, so no limits)."""
+    if not (SMTP_USER and SMTP_PASSWORD):
+        return
+    row = q('SELECT n, contact, lang FROM threads WHERE id = ?', thread)
+    if not row or not EMAIL_RE.match(row[0][1]):
+        return
+    n, contact, lang = row[0]
+    subject, footer = REPLY['ru' if lang == 'ru' else 'en']
+    letter = EmailMessage()
+    letter['From'] = formataddr(('somov', MAIL_FROM))
+    letter['To'] = contact
+    letter['Subject'] = subject
+    letter['Reply-To'] = MAIL_FROM
+    letter['Message-ID'] = make_msgid(domain='somov.org')
+    letter.set_content(f'{text}\n\n—\n{footer}\n' if text else f'{footer}\n')
+    stored = q('SELECT name, mime FROM files WHERE id = ?', fid) if fid else []
+    if stored:
+        name, mime = stored[0]
+        try:
+            with open(os.path.join(FILES_DIR, fid), 'rb') as source:
+                main, _, sub = mime.partition('/')
+                letter.add_attachment(source.read(), maintype=main, subtype=sub or 'octet-stream', filename=name)
+        except OSError as error:
+            log('mail file:', error)
+    if not send_letter(letter):
+        say(f'⚠️ #{n}: не удалось отправить ответ на почту {contact}')
+        return
+    if not state(f'mailnote:{thread}'):   # said once per conversation, then quietly
+        state(f'mailnote:{thread}', 1)
+        sent = say(f'📧 #{n}: ваши ответы в этой переписке дублируются на почту {contact}')
+        run('INSERT OR REPLACE INTO tg (msg, thread) VALUES (?, ?)', sent['message_id'], thread)
+
+
+def confirm_letter(thread, ip):
+    """Sends the letter once to an email the visitor left; tells the owner it went out."""
+    if not (SMTP_USER and SMTP_PASSWORD):
+        return
+    row = q('SELECT n, contact, lang, mailed FROM threads WHERE id = ?', thread)
+    if not row:
+        return
+    n, contact, lang, mailed = row[0]
+    if not EMAIL_RE.match(contact) or contact.lower() == mailed.lower():
+        return
+    if not mail_allowed(ip):
+        log('mail: limit')
+        return
+    subject, body = LETTER['ru' if lang == 'ru' else 'en']
+    letter = EmailMessage()
+    letter['From'] = formataddr(('somov', MAIL_FROM))
+    letter['To'] = contact
+    letter['Subject'] = subject
+    letter['Reply-To'] = MAIL_FROM
+    letter['Message-ID'] = make_msgid(domain='somov.org')
+    letter['Auto-Submitted'] = 'auto-replied'
+    letter.set_content(body)
+    if not send_letter(letter):
+        return
+    run('UPDATE threads SET mailed = ? WHERE id = ?', contact, thread)
+    try:
+        sent = say(f'📧 #{n}: письмо «мы получили ваш вопрос» отправлено на {contact}')
+        run('INSERT OR REPLACE INTO tg (msg, thread) VALUES (?, ?)', sent['message_id'], thread)
+    except RuntimeError as error:
+        log('mail note:', error)
+
+
+def letter_later(thread, ip):
+    threading.Thread(target=confirm_letter, args=(thread, ip), daemon=True).start()
 
 
 # -- Rate limits (salted hashes of IPs, in memory only) -------------------------
@@ -697,6 +836,7 @@ class Handler(BaseHTTPRequestHandler):
                                    clean(params.get('contact'), MAX_CONTACT).replace('\n', ' '),
                                    'ru' if params.get('lang') == 'ru' else 'en', fid, country(ip))
             row = q('SELECT name, size, image FROM files WHERE id = ?', fid)[0]
+            letter_later(visitor, ip)
             return self.reply(200, {'id': mid, 't': now, 'file': file_view(fid, *row)})
         if path == '/api/chat/subscribe':
             visitor = self.params().get('v', '')
@@ -719,7 +859,10 @@ class Handler(BaseHTTPRequestHandler):
                 return self.reply(400, {'error': 'body'})
             if not allowed(ip):
                 return self.reply(429, {'error': 'limit'})
-            return self.reply(200 if set_contact(visitor, clean(data.get('contact'), MAX_CONTACT).replace('\n', ' ')) else 404, {})
+            if not set_contact(visitor, clean(data.get('contact'), MAX_CONTACT).replace('\n', ' ')):
+                return self.reply(404, {})
+            letter_later(visitor, ip)
+            return self.reply(200, {})
         if path != '/api/chat/send':
             return self.reply(404, {'error': 'not found'})
         raw = self.body(MAX_BODY)
@@ -740,6 +883,7 @@ class Handler(BaseHTTPRequestHandler):
         mid, now = add_message(visitor, text, clean(data.get('page'), MAX_PAGE).replace('\n', ' '),
                                clean(data.get('contact'), MAX_CONTACT).replace('\n', ' '),
                                'ru' if data.get('lang') == 'ru' else 'en', cc=country(ip))
+        letter_later(visitor, ip)
         self.reply(200, {'id': mid, 't': now})
 
 
