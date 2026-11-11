@@ -974,8 +974,8 @@
      owner, and his Telegram replies come back here. A visitor is a random id kept in this browser. */
   const CHAT = 'https://dl.somov.org/api/chat';
   const CHAT_TEXT = {
-    en: { title: 'somov', sub: 'ask a question and I will answer', hello: 'Hi! Ask about the builds, the tweaks or the site. I will answer right here.', contact: 'Email or Telegram for a reply', placeholder: 'Message', send: 'Send', close: 'Close', today: 'Today', yesterday: 'Yesterday', failed: 'Not sent. Tap to retry', limit: 'Too many messages. Try again a bit later.', attach: 'Attach a photo or file', tooLarge: 'The file is larger than 10 MB', kb: 'KB', mb: 'MB', notify: 'Let me know when the answer comes', notifyHint: 'A notification will come even if the site is closed', pushOn: 'Notifications are on', pushDenied: 'Notifications are blocked in the browser settings', pushFailed: 'Could not turn notifications on', contactToggle: 'Email or Telegram for a reply', contactSave: 'Save', contactHide: 'Hide', contactSaved: 'Contact saved', contactRemoved: 'Contact removed', contactLater: 'The contact will go with your first message', contactFailed: 'Could not save the contact', pushOnHint: 'Notifications are on. They can be turned off in the browser settings' },
-    ru: { title: 'somov', sub: 'задайте вопрос — я отвечу', hello: 'Привет! Спросите о сборках, настройках или сайте. Отвечу прямо здесь.', contact: 'Почта или Telegram для ответа', placeholder: 'Сообщение', send: 'Отправить', close: 'Закрыть', today: 'Сегодня', yesterday: 'Вчера', failed: 'Не отправлено. Нажмите, чтобы повторить', limit: 'Слишком много сообщений. Попробуйте чуть позже.', attach: 'Прикрепить фото или файл', tooLarge: 'Файл больше 10 МБ', kb: 'КБ', mb: 'МБ', notify: 'Сообщить, когда придёт ответ', notifyHint: 'Уведомление придёт, даже если сайт будет закрыт', pushOn: 'Уведомления включены', pushDenied: 'Уведомления запрещены в настройках браузера', pushFailed: 'Не удалось включить уведомления', contactToggle: 'Почта или Telegram для ответа', contactSave: 'Сохранить', contactHide: 'Скрыть', contactSaved: 'Контакт сохранён', contactRemoved: 'Контакт удалён', contactLater: 'Контакт уйдёт вместе с первым сообщением', contactFailed: 'Не удалось сохранить контакт', pushOnHint: 'Уведомления включены. Выключить их можно в настройках браузера' },
+    en: { title: 'somov', sub: 'ask a question', contact: 'Email or Telegram for a reply', placeholder: 'Message', send: 'Send', close: 'Close', today: 'Today', yesterday: 'Yesterday', failed: 'Not sent. Tap to retry', limit: 'Too many messages. Try again a bit later.', attach: 'Attach a photo or file', tooLarge: 'The file is larger than 10 MB', kb: 'KB', mb: 'MB', notify: 'Let me know when the answer comes', notifyHint: 'A notification will come even if the site is closed', pushOn: 'Notifications are on', pushDenied: 'Notifications are blocked in the browser settings', pushFailed: 'Could not turn notifications on', contactToggle: 'Email or Telegram for a reply', contactSave: 'Save', contactHide: 'Hide', contactSaved: 'Contact saved', contactRemoved: 'Contact removed', contactLater: 'The contact will go with your first message', contactFailed: 'Could not save the contact', pushOnHint: 'Notifications are on. They can be turned off in the browser settings', unread: 'New answers' },
+    ru: { title: 'somov', sub: 'задайте вопрос', contact: 'Почта или Telegram для ответа', placeholder: 'Сообщение', send: 'Отправить', close: 'Закрыть', today: 'Сегодня', yesterday: 'Вчера', failed: 'Не отправлено. Нажмите, чтобы повторить', limit: 'Слишком много сообщений. Попробуйте чуть позже.', attach: 'Прикрепить фото или файл', tooLarge: 'Файл больше 10 МБ', kb: 'КБ', mb: 'МБ', notify: 'Сообщить, когда придёт ответ', notifyHint: 'Уведомление придёт, даже если сайт будет закрыт', pushOn: 'Уведомления включены', pushDenied: 'Уведомления запрещены в настройках браузера', pushFailed: 'Не удалось включить уведомления', contactToggle: 'Почта или Telegram для ответа', contactSave: 'Сохранить', contactHide: 'Скрыть', contactSaved: 'Контакт сохранён', contactRemoved: 'Контакт удалён', contactLater: 'Контакт уйдёт вместе с первым сообщением', contactFailed: 'Не удалось сохранить контакт', pushOnHint: 'Уведомления включены. Выключить их можно в настройках браузера', unread: 'Новые ответы' },
   };
   const openers = $$('[data-chat-open]');
   if (openers.length) {
@@ -994,7 +994,6 @@
     const messages = [];      // {id, owner, text, t, state}
 
     const seenId = () => Number(store.get('chatSeen') || 0);
-    const setDot = on => openers.forEach(o => { const dot = $('.chat-dot', o); if (dot) dot.hidden = !on; });
 
     function fetchNew() {
       if (!visitor) return Promise.resolve([]);
@@ -1025,11 +1024,9 @@
       const list = $('.chat-list', panel);
       const nearBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 80;
       list.textContent = '';
-      const hello = document.createElement('div');
-      hello.className = 'chat-hello';
-      hello.textContent = ct('hello');
-      list.append(hello);
       let day = '';
+      // The notification offer stays right under the visitor's first message: new messages go below it
+      const offerAfter = pushOffer() && store.get('chatPushOffer') !== 'done' ? messages.find(m => !m.owner && m.id) : null;
       messages.forEach(m => {
         const label = dayOf(m.t);
         if (label !== day) {
@@ -1060,34 +1057,36 @@
           bubble.addEventListener('click', () => (m.blob ? sendFile(m) : sendMessage(m)));
         }
         list.append(bubble);
+        if (m === offerAfter) list.append(offerNode());
       });
-      if (pushOffer() && store.get('chatPushOffer') !== 'done') {
-        const offer = document.createElement('div');
-        offer.className = 'chat-notify';
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.textContent = '🔔 ' + ct('notify');
-        button.addEventListener('click', () => enablePush(button));
-        const hint = document.createElement('span');
-        hint.textContent = ct('notifyHint');
-        offer.append(button, hint);
-        list.append(offer);
-        // Shown once: in 20 s it goes into the bell in the header, which keeps the same offer
-        if (!pushOfferTimer) {
-          pushOfferTimer = setTimeout(() => {
-            store.set('chatPushOffer', 'done');
-            render();
-            pulse($('.chat-bell', panel));
-          }, 20000);
-        }
-      }
       contactUi();
       bellUi();
       if (nearBottom || !render.done) list.scrollTop = list.scrollHeight;
       render.done = true;
       const ownerIds = messages.filter(m => m.owner).map(m => m.id);
       if (ownerIds.length) store.set('chatSeen', String(Math.max(seenId(), ...ownerIds)));
-      setDot(false);
+      updateUnread();
+    }
+
+    function offerNode() {
+      const offer = document.createElement('div');
+      offer.className = 'chat-notify';
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = '🔔 ' + ct('notify');
+      button.addEventListener('click', () => enablePush(button));
+      const hint = document.createElement('span');
+      hint.textContent = ct('notifyHint');
+      offer.append(button, hint);
+      // Shown once: in 20 s it goes into the bell in the header, which keeps the same offer
+      if (!pushOfferTimer) {
+        pushOfferTimer = setTimeout(() => {
+          store.set('chatPushOffer', 'done');
+          render();
+          pulse($('.chat-bell', panel));
+        }, 20000);
+      }
+      return offer;
     }
 
     // Browser notifications about answers (Web Push through /sw.js): offered after the visitor's first message,
@@ -1462,12 +1461,57 @@
       });
     }
 
-    // "(1) " in the tab title while the visitor is on another tab
-    let titleMark = false;
-    function markTitle(on) {
-      if (on && !titleMark) document.title = '(1) ' + document.title;
-      if (!on && titleMark) document.title = document.title.replace(/^\(1\) /, '');
-      titleMark = on;
+    /* Unread answers while the chat is closed: a red counter on "Chat", "(n)" in the tab title, and a floating
+       avatar in the corner with a counter and, for a few seconds, a preview of the answer (like Telegram).
+       The footer link is far below, so the floating avatar is what the visitor actually sees. */
+    let fab = null;
+    let peekTimer = null;
+    const unread = () => messages.filter(m => m.owner && m.id > seenId());
+    const countText = n => (n > 9 ? '9+' : String(n));
+
+    function setTitleCount(n) {
+      const plain = document.title.replace(/^\(\d+\+?\) /, '');
+      document.title = n ? `(${countText(n)}) ${plain}` : plain;
+    }
+
+    // One glass pill: a small round button that unfolds to the left with the preview, then folds back
+    function buildFab() {
+      fab = document.createElement('button');
+      fab.type = 'button';
+      fab.className = 'chat-fab';
+      fab.hidden = true;
+      fab.innerHTML = '<span class="chat-avatar" aria-hidden="true">S</span>'
+        + '<span class="chat-peek"><b>somov</b><span class="chat-peek-text"></span></span><span class="chat-fab-count"></span>';
+      document.body.append(fab);
+      fab.addEventListener('click', open);
+    }
+
+    function hidePeek() {
+      clearTimeout(peekTimer);
+      if (fab) fab.classList.remove('is-peek');
+    }
+
+    function showPeek(m) {
+      $('.chat-peek-text', fab).textContent = m.text || (m.file ? (m.file.image ? '📷 ' : '📎 ') + m.file.name : '');
+      fab.classList.add('is-peek');
+      clearTimeout(peekTimer);
+      peekTimer = setTimeout(hidePeek, 8000);
+    }
+
+    function updateUnread(peek) {
+      const list = unread();
+      const n = panel && !panel.hidden ? 0 : list.length;
+      openers.forEach(o => {
+        const dot = $('.chat-dot', o);
+        if (dot) dot.hidden = !n;
+      });
+      setTitleCount(n);
+      if (n && !fab) buildFab();
+      if (!fab) return;
+      fab.hidden = !n;
+      fab.setAttribute('aria-label', `${ct('unread')}: ${n}`);
+      if (n && peek) showPeek(list[list.length - 1]);
+      if (!n) hidePeek();
     }
 
     let notified = seenId();
@@ -1476,8 +1520,7 @@
       if (!answers.length) return;
       notified = Math.max(...answers.map(m => m.id));
       chime();
-      if (!panel || panel.hidden) setDot(true);
-      if (document.hidden) markTitle(true);
+      updateUnread(true);
     }
 
     // While the chat is open: every 5 s. Closed or on another tab: every 20 s, and only for a day after the
@@ -1504,11 +1547,36 @@
       render();
       fetchNew().then(render).catch(() => {});
       poll();
-      setTimeout(() => $('.chat-input', panel).focus({ preventScroll: true }), 50);
+      fitViewport();
+      // On a phone the keyboard would cover half the chat at once: it opens when the visitor taps the field
+      if (!matchMedia('(pointer: coarse)').matches) setTimeout(() => $('.chat-input', panel).focus({ preventScroll: true }), 50);
+    }
+
+    /* Phones: the on-screen keyboard shrinks only the visible part of the page and the browser pushes the page up,
+       so a full-screen chat lost its header. While the chat is open it is fitted to the visible area instead. */
+    function fitViewport() {
+      if (!panel) return;
+      const vv = window.visualViewport;
+      const phone = matchMedia('(max-width: 720px)').matches;
+      if (!vv || !phone || panel.hidden) {
+        panel.style.top = panel.style.height = panel.style.bottom = '';
+        return;
+      }
+      const list = $('.chat-list', panel);
+      const nearBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 80;
+      panel.style.top = vv.offsetTop + 'px';
+      panel.style.height = vv.height + 'px';
+      panel.style.bottom = 'auto';
+      if (nearBottom) list.scrollTop = list.scrollHeight;
+    }
+    if (window.visualViewport) {
+      visualViewport.addEventListener('resize', fitViewport);
+      visualViewport.addEventListener('scroll', fitViewport);
     }
 
     function close() {
       panel.hidden = true;
+      fitViewport();
       root.classList.remove('chat-open');
       poll();   // keeps listening for an answer in the background (see poll)
       if (location.hash === '#chat') history.replaceState(null, '', location.pathname + location.search);
@@ -1517,16 +1585,13 @@
 
     openers.forEach(o => o.addEventListener('click', open));
     ['pointerdown', 'keydown'].forEach(type => document.addEventListener(type, () => { if (visitor) unlockAudio(); }, { passive: true }));
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) return;
-      markTitle(false);
-      poll();
-    });
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) poll(); });
+    languageListeners.push(() => updateUnread());   // the language switch rewrites the tab title
     if (location.hash === '#chat') open();
-    // A returning visitor: a dot on "Chat" when an answer came while they were away, then keep listening
+    // A returning visitor: the counters and the preview when an answer came while they were away, then keep listening
     else if (visitor) {
       fetchNew().then(() => {
-        setDot(messages.some(m => m.owner && m.id > seenId()));
+        updateUnread(true);
         notified = Math.max(notified, ...messages.filter(m => m.owner).map(m => m.id));
         pollTimer = setTimeout(poll, 20000);
       }).catch(() => {});
