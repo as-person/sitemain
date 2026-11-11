@@ -90,6 +90,12 @@ if 'nomail' not in thread_columns:   # the visitor unsubscribed from letters
     db.execute('ALTER TABLE threads ADD COLUMN nomail INTEGER NOT NULL DEFAULT 0')
 if 'unsub' not in thread_columns:    # random token of the unsubscribe link (the visitor id must stay secret)
     db.execute("ALTER TABLE threads ADD COLUMN unsub TEXT NOT NULL DEFAULT ''")
+if 'mail' not in thread_columns:     # 1: a conversation started by a letter to me@somov.org (no browser has its id)
+    db.execute('ALTER TABLE threads ADD COLUMN mail INTEGER NOT NULL DEFAULT 0')
+if 'verified' not in thread_columns:  # the address the visitor confirmed from its mailbox; answers go only there
+    db.execute("ALTER TABLE threads ADD COLUMN verified TEXT NOT NULL DEFAULT ''")
+if 'vtoken' not in thread_columns:    # token of the link in the last confirmation letter (sent to `mailed`)
+    db.execute("ALTER TABLE threads ADD COLUMN vtoken TEXT NOT NULL DEFAULT ''")
 db.execute('CREATE TABLE IF NOT EXISTS push (endpoint TEXT PRIMARY KEY, thread TEXT NOT NULL, p256dh TEXT NOT NULL, '
            'auth TEXT NOT NULL, t INTEGER NOT NULL)')
 db.commit()
@@ -274,15 +280,16 @@ def say(text, reply_to=None):
 
 def deliver():
     """Sends stored visitor messages to the owner; whatever fails is retried later."""
-    rows = q('SELECT m.id, m.thread, m.text, m.page, m.file, m.cc, t.n, t.contact, t.lang, '
+    rows = q('SELECT m.id, m.thread, m.text, m.page, m.file, m.cc, t.n, t.contact, t.lang, t.verified, '
              '(SELECT COUNT(*) FROM messages WHERE thread = m.thread AND id < m.id) '
              'FROM messages m JOIN threads t ON t.id = m.thread WHERE m.owner = 0 AND m.sent = 0 ORDER BY m.id')
-    for mid, thread, text, page, fid, cc, n, contact, lang, before in rows:
+    for mid, thread, text, page, fid, cc, n, contact, lang, verified, before in rows:
         lines = [f'💬 #{n}' + (' · новый собеседник' if before == 0 else ''), '']
         if text:
             lines += [text, '']
         if contact:
-            lines.append(f'✉️ {contact}')
+            confirmed = not EMAIL_RE.match(contact) or verified.lower() == contact.lower()
+            lines.append(f'✉️ {contact}' + ('' if confirmed else ' (не подтверждена)'))
         lines.append(' · '.join(x for x in (flag(cc), f'📄 {page or "/"}', lang) if x))
         caption = '\n'.join(lines).strip()
         try:
@@ -538,28 +545,30 @@ def subscribe(visitor, data):
 # -- "We got your question" letter -------------------------------------------
 
 LETTER = {
-    'ru': ('Мы получили ваш вопрос — somov.org',
+    'ru': ('Подтвердите почту — somov.org',
            'Здравствуйте!\n\n'
-           'Спасибо, что написали в чат на somov.org. Мы получили ваш вопрос и ответим в ближайшее время: '
-           'ответ придёт в чат на сайте и на эту почту.\n\n'
-           'Чат на сайте (в том же браузере): https://somov.org/#chat\n\n'
-           'Если вы ничего не писали на somov.org, просто не обращайте внимания на это письмо.\n\n'
+           'Мы получили ваш вопрос в чате на somov.org и ответим в ближайшее время. Чтобы ответ пришёл и на эту '
+           'почту, подтвердите её:\n{link}\n\n'
+           'Ответ в любом случае появится в чате на сайте (в том же браузере): https://somov.org/#chat\n\n'
+           'Если вы ничего не писали на somov.org, просто не обращайте внимания на это письмо — больше писем не будет.\n\n'
            '— somov\nhttps://somov.org\n'),
-    'en': ('We got your question — somov.org',
+    'en': ('Confirm your email — somov.org',
            'Hello!\n\n'
-           'Thank you for writing in the chat on somov.org. We got your question and will answer soon: '
-           'the answer will come to the chat on the site and to this email.\n\n'
-           'The chat on the site (in the same browser): https://somov.org/#chat\n\n'
-           'If you did not write anything on somov.org, please ignore this email.\n\n'
+           'We got your question in the chat on somov.org and will answer soon. For the answer to come to this email '
+           'too, please confirm it:\n{link}\n\n'
+           'The answer will appear in the chat on the site anyway (in the same browser): https://somov.org/#chat\n\n'
+           'If you did not write anything on somov.org, please ignore this email — no more emails will come.\n\n'
            '— somov\nhttps://somov.org\n'),
 }
 CONFIRM_BUBBLES = {
-    'ru': ('Здравствуйте! Спасибо, что написали в чат на somov.org.<br><br>'
-           'Мы получили ваш вопрос и ответим в ближайшее время — ответ придёт в чат на сайте и на эту почту.',
-           'Если вы ничего не писали на somov.org, просто не обращайте внимания на это письмо.'),
-    'en': ('Hello! Thank you for writing in the chat on somov.org.<br><br>'
-           'We got your question and will answer soon — the answer will come to the chat on the site and to this email.',
-           'If you did not write anything on somov.org, please ignore this email.'),
+    'ru': ('Здравствуйте! Мы получили ваш вопрос в чате на somov.org и ответим в ближайшее время.<br><br>'
+           'Чтобы ответ пришёл и на эту почту, подтвердите её. В чате на сайте он появится в любом случае.',
+           'Если вы ничего не писали на somov.org, просто не обращайте внимания на это письмо — больше писем не будет.',
+           'Подтвердить почту', ''),
+    'en': ('Hello! We got your question in the chat on somov.org and will answer soon.<br><br>'
+           'For the answer to come to this email too, please confirm it. It will appear in the chat on the site anyway.',
+           'If you did not write anything on somov.org, please ignore this email — no more emails will come.',
+           'Confirm email', ''),
 }
 mail_hits = {}     # hash of IP -> [times]
 mail_all = []      # times of all letters
@@ -594,8 +603,8 @@ def unsub_link(thread):
 
 FONT = "-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif"
 HTML_TEXT = {
-    'ru': {'open': 'Открыть чат', 'reply': 'Ответить можно прямо на это письмо', 'unsub': 'Больше не присылать письма'},
-    'en': {'open': 'Open the chat', 'reply': 'You can reply right to this email', 'unsub': 'Stop these emails'},
+    'ru': {'open': 'Открыть чат', 'reply': 'Или ответить можно прямо на это письмо', 'unsub': 'Больше не присылать письма'},
+    'en': {'open': 'Open the chat', 'reply': 'Or reply right to this email', 'unsub': 'Stop these emails'},
 }
 
 
@@ -616,16 +625,17 @@ def bubble(inner, note=False):
             f'color:#14171c;font:15px/1.55 {FONT};max-width:400px">{inner}</td></tr></table>')
 
 
-def letter_html(lang, subject, bubbles, unsub, chat=True):
+def letter_html(lang, subject, bubbles, unsub, chat=True, action=None):
     """The whole letter: a white card with the chat header, the bubbles, a button to the chat and a quiet footer.
     Light, like the letters of messengers: on Gmail's white page a dark block looks heavy, and mail apps darken
     a light letter themselves in their dark mode. Tables and inline styles only: all mail apps show them the same."""
     t = HTML_TEXT['ru' if lang == 'ru' else 'en']
     sub = {'ru': 'чат на сайте', 'en': 'chat on the site'}['ru' if lang == 'ru' else 'en']
-    button = (f'<a href="https://somov.org/#chat" style="display:inline-block;padding:12px 28px;border-radius:999px;'
-              f'background:#2563eb;color:#ffffff;font:600 14px/1 {FONT};text-decoration:none">{t["open"]}</a>'
-              f'<div style="padding-top:12px;color:#8b919a;font:13px/1.4 {FONT}">{t["reply"]}</div>'
-              if chat else f'<div style="color:#8b919a;font:13px/1.4 {FONT}">{t["reply"]}</div>')
+    href, label, hint = action or ('https://somov.org/#chat', t['open'], t['reply'])
+    button = (f'<a href="{href}" style="display:inline-block;padding:12px 28px;border-radius:999px;'
+              f'background:#2563eb;color:#ffffff;font:600 14px/1 {FONT};text-decoration:none">{label}</a>'
+              + (f'<div style="padding-top:12px;color:#8b919a;font:13px/1.4 {FONT}">{hint}</div>' if hint else '')
+              if chat or action else f'<div style="color:#8b919a;font:13px/1.4 {FONT}">{hint}</div>')
     # The site name is a link styled grey on purpose: as plain text Gmail turns it into a blue underlined link itself
     site = '<a href="https://somov.org" style="color:#9aa0a6;text-decoration:none">somov.org</a>'
     unsub_line = (f' &nbsp;·&nbsp; <a href="{unsub}" style="color:#9aa0a6;text-decoration:underline">{t["unsub"]}</a>'
@@ -708,8 +718,8 @@ UNSUB_PAGE = {
 }
 
 
-def unsub_page(lang, stage):
-    t = UNSUB_PAGE['ru' if lang == 'ru' else 'en']
+def unsub_page(lang, stage, texts=None):
+    t = (texts or UNSUB_PAGE)['ru' if lang == 'ru' else 'en']
     action = ('<form method="post"><button type="submit">' + t['button'] + '</button></form>') if stage == 'ready' else ''
     return f"""<!doctype html><html lang="{lang}"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex">
@@ -721,6 +731,41 @@ background:#171a21;text-align:center}}p{{margin:0 0 18px}}a{{color:#8fb4ff}}
 button{{padding:10px 22px;border:0;border-radius:999px;background:#2563eb;color:#fff;font:inherit;font-weight:600;cursor:pointer}}
 </style></head><body><main><p>{t[stage]}</p>{action}<p style="margin:18px 0 0;font-size:14px">
 <a href="https://somov.org/">somov.org</a></p></main></body></html>"""
+
+
+VERIFY_URL = 'https://dl.somov.org/api/chat/verify?t='
+VERIFY_PAGE = {
+    'ru': {'title': 'Подтверждение почты — somov.org', 'ready': 'Подтвердить эту почту для ответов из чата на somov.org?',
+           'button': 'Подтвердить', 'done': 'Готово: почта подтверждена. Ответы будут приходить и сюда, и в чат на сайте.',
+           'bad': 'Ссылка устарела или неверна.'},
+    'en': {'title': 'Email confirmation — somov.org', 'ready': 'Confirm this email for answers from the chat on somov.org?',
+           'button': 'Confirm', 'done': 'Done: the email is confirmed. Answers will come here and to the chat on the site.',
+           'bad': 'The link is old or wrong.'},
+}
+
+
+def verify(token, really):
+    """(language, state) of a confirmation link: 'bad', 'ready' (GET, a page with a button) or 'done' (POST)."""
+    if not re.fullmatch(r'[A-Za-z0-9_-]{20,40}', token or ''):
+        return 'en', 'bad'
+    row = q('SELECT id, n, lang, mailed, verified FROM threads WHERE vtoken = ?', token)
+    if not row:
+        return 'en', 'bad'
+    thread, n, lang, mailed, verified = row[0]
+    if not really:
+        return lang, 'done' if verified.lower() == mailed.lower() else 'ready'
+    if verified.lower() != mailed.lower():
+        # the address the letter went to: only its mailbox could open the link
+        run('UPDATE threads SET verified = ?, nomail = 0 WHERE id = ?', mailed, thread)
+
+        def tell():
+            try:
+                sent = say(f'✅ #{n}: почта {mailed} подтверждена — ответы будут приходить и туда')
+                run('INSERT OR REPLACE INTO tg (msg, thread) VALUES (?, ?)', sent['message_id'], thread)
+            except RuntimeError as error:
+                log('verify note:', error)
+        threading.Thread(target=tell, daemon=True).start()
+    return lang, 'done'
 
 
 def send_letter(letter):
@@ -747,10 +792,17 @@ def reply_letter(thread, text, fid):
     """The owner's answer, also by email when the visitor left one (the answer is the owner's, so no limits)."""
     if not (SMTP_USER and SMTP_PASSWORD):
         return
-    row = q('SELECT n, contact, lang, nomail FROM threads WHERE id = ?', thread)
+    row = q('SELECT n, contact, lang, nomail, verified, mail FROM threads WHERE id = ?', thread)
     if not row or not EMAIL_RE.match(row[0][1]):
         return
-    n, contact, lang, nomail = row[0]
+    n, contact, lang, nomail, verified, by_mail = row[0]
+    if not by_mail and verified.lower() != contact.lower():
+        # typed in the chat but not confirmed from its mailbox: could be anybody's address
+        if not state(f'unverified:{thread}:{contact.lower()}'):
+            state(f'unverified:{thread}:{contact.lower()}', 1)
+            say(f'❔ #{n}: почта {contact} не подтверждена — ответ только в чате на сайте. '
+                'Как только посетитель подтвердит её, ответы пойдут и на почту.')
+        return
     if nomail:   # say where the answer went, or the owner would think it went by email
         on_site = q("SELECT 1 FROM messages WHERE thread = ? AND owner = 0 AND src = '' LIMIT 1", thread)
         say(f'📭 #{n}: {contact} отписался от писем — ' + (
@@ -877,17 +929,19 @@ def confirm_letter(thread, ip):
     if not mail_allowed(ip):
         log('mail: limit')
         return
+    token = secrets.token_urlsafe(18)
+    link = VERIFY_URL + token
     subject, body = LETTER['ru' if lang == 'ru' else 'en']
-    letter = visitor_letter(thread, lang, contact, subject, body.rstrip('\n'))
-    hello, ignore = CONFIRM_BUBBLES['ru' if lang == 'ru' else 'en']
+    letter = visitor_letter(thread, lang, contact, subject, body.format(link=link).rstrip('\n'))
+    hello, ignore, label, hint = CONFIRM_BUBBLES['ru' if lang == 'ru' else 'en']
     letter.add_alternative(letter_html(lang, subject, [bubble(hello), bubble(ignore, note=True)],
-                                       unsub_link(thread)), subtype='html')
+                                       unsub_link(thread), action=(link, label, hint)), subtype='html')
     letter['Auto-Submitted'] = 'auto-replied'
     if not send_letter(letter):
         return
-    run('UPDATE threads SET mailed = ? WHERE id = ?', contact, thread)
+    run('UPDATE threads SET mailed = ?, vtoken = ? WHERE id = ?', contact, token, thread)
     try:
-        sent = say(f'📧 #{n}: письмо «мы получили ваш вопрос» отправлено на {contact}')
+        sent = say(f'📧 #{n}: на {contact} отправлено письмо для подтверждения почты')
         run('INSERT OR REPLACE INTO tg (msg, thread) VALUES (?, ?)', sent['message_id'], thread)
     except RuntimeError as error:
         log('mail note:', error)
@@ -945,15 +999,18 @@ def letter_text(letter):
 
 
 def mail_thread(sender, text):
-    """The conversation of this address: a chat visitor who left it, or a new one."""
-    row = q('SELECT id, n FROM threads WHERE lower(contact) = ? ORDER BY active DESC LIMIT 1', sender.lower())
+    """The mail conversation of this address, or a new one. Never a site chat: the contact in a chat is typed by the
+    visitor and not confirmed, so anyone could put somebody else's address there and read that person's letters
+    (and the owner's answers) in their chat window. A mail conversation's id is never given to any browser."""
+    row = q('SELECT id, n FROM threads WHERE lower(contact) = ? AND mail = 1 ORDER BY active DESC LIMIT 1',
+            sender.lower())
     if row:
         return row[0][0], row[0][1], False
     thread, now = secrets.token_hex(16), int(time.time())
     lang = 'ru' if re.search('[а-яё]', text, re.I) else 'en'
     with lock:
         n = db.execute('SELECT COALESCE(MAX(n), 0) + 1 FROM threads').fetchone()[0]
-        db.execute('INSERT INTO threads (id, n, contact, lang, created, active) VALUES (?, ?, ?, ?, ?, ?)',
+        db.execute('INSERT INTO threads (id, n, contact, lang, created, active, mail) VALUES (?, ?, ?, ?, ?, ?, 1)',
                    (thread, n, sender, lang, now, now))
         db.commit()
     return thread, n, True
@@ -1088,7 +1145,8 @@ def thread_view(visitor, after):
     if not thread:
         return {'messages': [], 'contact': False}
     rows = q('SELECT m.id, m.owner, m.text, m.t, f.id, f.name, f.size, f.image FROM messages m '
-             'LEFT JOIN files f ON f.id = m.file WHERE m.thread = ? AND m.id > ? ORDER BY m.id LIMIT 500', visitor, after)
+             "LEFT JOIN files f ON f.id = m.file WHERE m.thread = ? AND m.id > ? AND m.src = '' "   # never letters
+             'ORDER BY m.id LIMIT 500', visitor, after)
     return {'messages': [{'id': i, 'owner': bool(o), 'text': x, 't': t, 'file': file_view(fid, name, size, image)}
                          for i, o, x, t, fid, name, size, image in rows],
             'contact': bool(thread[0][0])}
@@ -1183,6 +1241,9 @@ class Handler(BaseHTTPRequestHandler):
         if path == '/api/chat/unsubscribe':
             lang, stage = unsubscribe(params.get('t', ''), False)
             return self.page(200 if stage != 'bad' else 404, unsub_page(lang, stage))
+        if path == '/api/chat/verify':
+            lang, stage = verify(params.get('t', ''), False)
+            return self.page(200 if stage != 'bad' else 404, unsub_page(lang, stage, VERIFY_PAGE))
         if path == '/api/chat/push-key':
             return self.reply(200, {'key': VAPID_PUBLIC if push_ready() else ''})
         visitor = params.get('v', '')
@@ -1227,6 +1288,10 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         path = urlsplit(self.path).path
         ip = self.headers.get('X-Real-IP') or self.client_address[0]
+        if path == '/api/chat/verify':
+            self.body(MAX_BODY)
+            lang, stage = verify(self.params().get('t', ''), True)
+            return self.page(200 if stage != 'bad' else 404, unsub_page(lang, stage, VERIFY_PAGE))
         if path == '/api/chat/unsubscribe':
             self.body(MAX_BODY)   # Gmail's one-click sends "List-Unsubscribe=One-Click"
             lang, stage = unsubscribe(self.params().get('t', ''), True)
