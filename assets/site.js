@@ -974,8 +974,8 @@
      owner, and his Telegram replies come back here. A visitor is a random id kept in this browser. */
   const CHAT = 'https://dl.somov.org/api/chat';
   const CHAT_TEXT = {
-    en: { title: 'somov', sub: 'ask a question', contact: 'Your email for a reply', placeholder: 'Message', send: 'Send', close: 'Close', today: 'Today', yesterday: 'Yesterday', failed: 'Not sent. Tap to retry', limit: 'Too many messages. Try again a bit later.', attach: 'Attach a photo or file', tooLarge: 'The file is larger than 10 MB', kb: 'KB', mb: 'MB', notify: 'Let me know when the answer comes', notifyHint: 'A notification will come even if the site is closed', pushOn: 'Notifications are on', pushDenied: 'Notifications are blocked in the browser settings', pushFailed: 'Could not turn notifications on', contactToggle: 'Email for a reply', contactSave: 'Save', contactHide: 'Hide', contactSaved: 'Contact saved', contactRemoved: 'Contact removed', contactLater: 'The contact will go with your first message', contactFailed: 'Could not save the contact', pushOnHint: 'Notifications are on. They can be turned off in the browser settings', unread: 'New answers', introHead: 'Ask a question and we will answer here.', introText: 'If you close the site, the answer is easy to miss. Leave your email and confirm it from the letter — we will send the answer there too.', introButton: 'Leave your email', contactBad: 'This does not look like an email', verifyTitle: 'Confirm your email', verifyWhere: 'The link is in the letter to {email}.', verifyElse: 'Until then the answer comes only here.', introSaved: 'Your email {email} is saved but not confirmed yet. When you send a message, a letter will come to it — confirm the email with its link and we will send the answer there too.', introChange: 'Change the email' },
-    ru: { title: 'somov', sub: 'задайте вопрос', contact: 'Ваша почта для ответа', placeholder: 'Сообщение', send: 'Отправить', close: 'Закрыть', today: 'Сегодня', yesterday: 'Вчера', failed: 'Не отправлено. Нажмите, чтобы повторить', limit: 'Слишком много сообщений. Попробуйте чуть позже.', attach: 'Прикрепить фото или файл', tooLarge: 'Файл больше 10 МБ', kb: 'КБ', mb: 'МБ', notify: 'Сообщить, когда придёт ответ', notifyHint: 'Уведомление придёт, даже если сайт будет закрыт', pushOn: 'Уведомления включены', pushDenied: 'Уведомления запрещены в настройках браузера', pushFailed: 'Не удалось включить уведомления', contactToggle: 'Почта для ответа', contactSave: 'Сохранить', contactHide: 'Скрыть', contactSaved: 'Контакт сохранён', contactRemoved: 'Контакт удалён', contactLater: 'Контакт уйдёт вместе с первым сообщением', contactFailed: 'Не удалось сохранить контакт', pushOnHint: 'Уведомления включены. Выключить их можно в настройках браузера', unread: 'Новые ответы', introHead: 'Напишите вопрос — мы ответим здесь.', introText: 'Если закроете сайт, ответ легко пропустить. Оставьте почту и подтвердите её по ссылке из письма — продублируем ответ туда.', introButton: 'Оставить почту', contactBad: 'Это не похоже на адрес почты', verifyTitle: 'Подтвердите почту', verifyWhere: 'Ссылка — в письме на {email}.', verifyElse: 'Без подтверждения ответ придёт только сюда.', introSaved: 'Почта {email} сохранена, но ещё не подтверждена. Когда отправите сообщение, на неё придёт письмо — подтвердите почту по ссылке, и ответ продублируем туда.', introChange: 'Изменить почту' },
+    en: { title: 'somov', sub: 'ask a question', contact: 'Your email for a reply', placeholder: 'Message', send: 'Send', close: 'Close', today: 'Today', yesterday: 'Yesterday', failed: 'Not sent. Tap to retry', limit: 'Too many messages. Try again a bit later.', attach: 'Attach a photo or file', tooLarge: 'The file is larger than 10 MB', kb: 'KB', mb: 'MB', notify: 'Let me know when the answer comes', notifyHint: 'A notification will come even if the site is closed', pushOn: 'Notifications are on', pushDenied: 'Notifications are blocked in the browser settings', pushFailed: 'Could not turn notifications on', contactToggle: 'Email for a reply', contactSave: 'Save', contactHide: 'Hide', contactSaved: 'Contact saved', contactRemoved: 'Contact removed', contactLater: 'The contact will go with your first message', contactFailed: 'Could not save the contact', pushOnHint: 'Notifications are on. They can be turned off in the browser settings', unread: 'New answers', introHead: 'Ask a question and we will answer here.', introText: 'If you close the site, the answer is easy to miss. Leave your email and *confirm it* from the letter — we will send the answer there too.', introButton: 'Leave your email', contactBad: 'This does not look like an email', verifyTitle: 'Confirm your email', verifyWhere: 'The link is in the letter to {email}.', verifyElse: '*Until you confirm it*, the answer comes only here.', introSaved: 'Your email {email} is saved but *not confirmed* yet. When you send a message, a letter will come to it — *confirm the email* with its link and we will send the answer there too.', introChange: 'Change the email' },
+    ru: { title: 'somov', sub: 'задайте вопрос', contact: 'Ваша почта для ответа', placeholder: 'Сообщение', send: 'Отправить', close: 'Закрыть', today: 'Сегодня', yesterday: 'Вчера', failed: 'Не отправлено. Нажмите, чтобы повторить', limit: 'Слишком много сообщений. Попробуйте чуть позже.', attach: 'Прикрепить фото или файл', tooLarge: 'Файл больше 10 МБ', kb: 'КБ', mb: 'МБ', notify: 'Сообщить, когда придёт ответ', notifyHint: 'Уведомление придёт, даже если сайт будет закрыт', pushOn: 'Уведомления включены', pushDenied: 'Уведомления запрещены в настройках браузера', pushFailed: 'Не удалось включить уведомления', contactToggle: 'Почта для ответа', contactSave: 'Сохранить', contactHide: 'Скрыть', contactSaved: 'Контакт сохранён', contactRemoved: 'Контакт удалён', contactLater: 'Контакт уйдёт вместе с первым сообщением', contactFailed: 'Не удалось сохранить контакт', pushOnHint: 'Уведомления включены. Выключить их можно в настройках браузера', unread: 'Новые ответы', introHead: 'Напишите вопрос — мы ответим здесь.', introText: 'Если закроете сайт, ответ легко пропустить. Оставьте почту и *подтвердите её* по ссылке из письма — продублируем ответ туда.', introButton: 'Оставить почту', contactBad: 'Это не похоже на адрес почты', verifyTitle: 'Подтвердите почту', verifyWhere: 'Ссылка — в письме на {email}.', verifyElse: '*Без подтверждения* ответ придёт только сюда.', introSaved: 'Почта {email} сохранена, но ещё *не подтверждена*. Когда отправите сообщение, на неё придёт письмо — *подтвердите почту* по ссылке, и ответ продублируем туда.', introChange: 'Изменить почту' },
   };
   const openers = $$('[data-chat-open]');
   if (openers.length) {
@@ -1081,13 +1081,30 @@
       updateUnread();
     }
 
+    // Text with *marked* words shown in the amber accent (what the visitor has to do: confirm the email).
+    // Built from text nodes, never as HTML: the email in it is typed by the visitor.
+    function accented(element, text) {
+      element.textContent = '';
+      text.split(/\*([^*]+)\*/).forEach((part, i) => {
+        if (!part) return;
+        if (i % 2) {
+          const mark = document.createElement('strong');
+          mark.className = 'chat-accent';
+          mark.textContent = part;
+          element.append(mark);
+        } else {
+          element.append(part);
+        }
+      });
+    }
+
     function introNode(saved) {
       const intro = document.createElement('div');
       intro.className = 'chat-intro';
       const head = document.createElement('b');
       head.textContent = ct('introHead');
       const text = document.createElement('span');
-      text.textContent = saved ? '✉️ ' + ct('introSaved').replace('{email}', saved) : ct('introText');
+      accented(text, saved ? '✉️ ' + ct('introSaved').replace('{email}', saved) : ct('introText'));
       const button = document.createElement('button');
       button.type = 'button';
       button.textContent = saved ? ct('introChange') : '✉️ ' + ct('introButton');
@@ -1104,7 +1121,7 @@
       if (show) {
         $('.chat-verify-title', bar).textContent = ct('verifyTitle');
         const address = savedContact();
-        $('.chat-verify-sub', bar).textContent = (address ? ct('verifyWhere').replace('{email}', address) + ' ' : '') + ct('verifyElse');
+        accented($('.chat-verify-sub', bar), (address ? ct('verifyWhere').replace('{email}', address) + ' ' : '') + ct('verifyElse'));
         if (bar.hidden) pulse(bar);
       }
       bar.hidden = !show;
