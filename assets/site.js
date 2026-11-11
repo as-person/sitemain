@@ -1531,7 +1531,11 @@
       const waiting = visitor && Date.now() - Number(store.get('chatLastSent') || 0) < 86400000;
       if (!isOpen && !waiting) return;
       fetchNew().then(fresh => {
-        if (fresh.length && isOpen && !panel.hidden) render();
+        if (fresh.length && isOpen && !panel.hidden) {
+          render();
+          // An answer is what the visitor waits for: show it even if the list was scrolled up (or squeezed by the keyboard)
+          if (fresh.some(m => m.owner)) { const list = $('.chat-list', panel); list.scrollTop = list.scrollHeight; }
+        }
         notify(fresh);
       }).catch(() => {});
       pollTimer = setTimeout(poll, isOpen && !document.hidden ? 5000 : 20000);
@@ -1585,7 +1589,10 @@
 
     openers.forEach(o => o.addEventListener('click', open));
     ['pointerdown', 'keydown'].forEach(type => document.addEventListener(type, () => { if (visitor) unlockAudio(); }, { passive: true }));
+    // Back to the page (from Telegram, another app or tab, after the phone slept): check for answers at once.
+    // Phones pause hidden pages, so the timer alone can be minutes late there.
     document.addEventListener('visibilitychange', () => { if (!document.hidden) poll(); });
+    ['focus', 'pageshow', 'online'].forEach(type => window.addEventListener(type, () => { if (visitor) poll(); }));
     languageListeners.push(() => updateUnread());   // the language switch rewrites the tab title
     if (location.hash === '#chat') open();
     // A returning visitor: the counters and the preview when an answer came while they were away, then keep listening
