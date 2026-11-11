@@ -13,8 +13,8 @@ country as a flag: it is looked up in a local copy of the free DB-IP country dat
 only the country code is kept. A visitor who allows notifications gets a browser push (Web Push, encrypted
 for their browser only) when the owner answers, even with the site closed. A visitor who leaves an email gets one
 "we got your question" letter from me@somov.org (Gmail SMTP); it never carries what the visitor typed. Every answer
-of the owner is also sent to that email (with the photo or file attached), and the owner's mailbox gets a copy of
-every visitor message with Reply-To set to the visitor, one Gmail conversation per chat. Letters to visitors carry
+of the owner is also sent to that email (with the photo or file attached). No copies go to the owner's Gmail:
+everything comes to Telegram. Letters to visitors carry
 an unsubscribe link (and List-Unsubscribe headers); after it, no more letters go to that conversation.
 Mail to me@somov.org is read from Gmail (IMAP, read-only) and brought to Telegram as a conversation; the owner's
 Telegram reply goes back as an email in the same thread. Mailing lists, auto-replies and no-reply senders are not
@@ -856,66 +856,6 @@ def reply_letter(thread, text, fid):
         run('INSERT OR REPLACE INTO tg (msg, thread) VALUES (?, ?)', sent['message_id'], thread)
 
 
-copy_lock = threading.Lock()
-
-
-def copy_to_owner(thread):
-    """Visitor messages not yet copied, in one letter to the owner's mailbox (only for a visitor with an email).
-    Header To is me@somov.org, so Gmail answers from that address; the letter itself goes straight to the Gmail
-    account (a letter to oneself through the me@somov.org forwarding would be swallowed by Gmail)."""
-    if not (SMTP_USER and SMTP_PASSWORD):
-        return
-    with copy_lock:
-        row = q('SELECT n, contact, cc FROM threads t LEFT JOIN (SELECT thread, cc FROM messages WHERE thread = ? '
-                'AND owner = 0 ORDER BY id DESC LIMIT 1) m ON m.thread = t.id WHERE t.id = ?', thread, thread)
-        if not row or not EMAIL_RE.match(row[0][1]):
-            return
-        n, contact, cc = row[0]
-        done = int(state(f'copied:{thread}') or 0)
-        rows = q('SELECT m.id, m.text, m.page, m.t, f.id, f.name, f.mime FROM messages m LEFT JOIN files f ON f.id = m.file '
-                 'WHERE m.thread = ? AND m.owner = 0 AND m.src = \'\' AND m.id > ? ORDER BY m.id', thread, done)
-        if not rows:
-            return
-        # Only the visitor's own words: when the owner answers from Gmail, Gmail quotes this letter to the visitor,
-        # so nothing meant for the owner (numbers, hints, country) may be in it. All of that is in Telegram.
-        parts, files = [], []
-        for mid, text, page, t, fid, name, mime in rows:
-            if text:
-                parts.append(text)
-            if fid:
-                files.append((fid, name, mime))
-        root = state(f'mailroot:{thread}')
-        letter = EmailMessage()
-        letter['From'] = formataddr((contact, MAIL_FROM))
-        letter['To'] = MAIL_FROM
-        letter['Reply-To'] = contact
-        letter['Subject'] = 'Сообщение с somov.org' if (q('SELECT lang FROM threads WHERE id = ?', thread)
-                                                         or [('ru',)])[0][0] == 'ru' else 'Message from somov.org'
-        letter['Message-ID'] = make_msgid(domain='somov.org')
-        if root:
-            letter['In-Reply-To'] = root
-            letter['References'] = root
-        letter.set_content('\n\n'.join(parts) + '\n' if parts else '\n')
-        for fid, name, mime in files:
-            try:
-                with open(os.path.join(FILES_DIR, fid), 'rb') as source:
-                    main, _, sub = mime.partition('/')
-                    letter.add_attachment(source.read(), maintype=main, subtype=sub or 'octet-stream', filename=name)
-            except OSError as error:
-                log('copy file:', error)
-        try:
-            with smtplib.SMTP('smtp.gmail.com', 587, timeout=60) as smtp:
-                smtp.starttls()
-                smtp.login(SMTP_USER, SMTP_PASSWORD)
-                smtp.send_message(letter, to_addrs=[SMTP_USER])
-        except (smtplib.SMTPException, OSError) as error:
-            log('copy:', type(error).__name__, str(error)[:160])
-            return
-        if not root:
-            state(f'mailroot:{thread}', letter['Message-ID'])
-        state(f'copied:{thread}', rows[-1][0])
-
-
 def confirm_letter(thread, ip):
     """Sends the letter once to an email the visitor left; tells the owner it went out."""
     if not (SMTP_USER and SMTP_PASSWORD):
@@ -948,10 +888,7 @@ def confirm_letter(thread, ip):
 
 
 def letter_later(thread, ip):
-    def both():
-        confirm_letter(thread, ip)
-        copy_to_owner(thread)
-    threading.Thread(target=both, daemon=True).start()
+    threading.Thread(target=confirm_letter, args=(thread, ip), daemon=True).start()
 
 
 # -- Mail to me@somov.org -> Telegram (Gmail IMAP, read-only) ----------------
@@ -998,10 +935,17 @@ def letter_text(letter):
     return re.sub(r'\n{3,}', '\n\n', '\n'.join(lines)).strip()
 
 
+def site_thread(sender):
+    """The site chat whose visitor confirmed this address from its mailbox (the link in the confirmation letter),
+    or None. Only a confirmed address: the contact field alone is typed by the visitor and could be anybody's."""
+    row = q("SELECT id, n FROM threads WHERE mail = 0 AND verified != '' AND lower(verified) = ? AND lower(contact) = ? "
+            'ORDER BY active DESC LIMIT 1', sender.lower(), sender.lower())
+    return (row[0][0], row[0][1]) if row else None
+
+
 def mail_thread(sender, text):
-    """The mail conversation of this address, or a new one. Never a site chat: the contact in a chat is typed by the
-    visitor and not confirmed, so anyone could put somebody else's address there and read that person's letters
-    (and the owner's answers) in their chat window. A mail conversation's id is never given to any browser."""
+    """The mail conversation of this address, or a new one. Not a site chat (see site_thread for that):
+    a mail conversation's id is never given to any browser."""
     row = q('SELECT id, n FROM threads WHERE lower(contact) = ? AND mail = 1 ORDER BY active DESC LIMIT 1',
             sender.lower())
     if row:
@@ -1027,7 +971,8 @@ def bring_letter(raw):
         return   # stays in Gmail; the owner asked for no summaries in Telegram
     subject = str(letter.get('Subject', '') or '').strip()
     text = letter_text(letter)
-    thread, n, new = mail_thread(sender, f'{subject} {text}')
+    joined = site_thread(sender)
+    thread, n, new = (joined[0], joined[1], False) if joined else mail_thread(sender, f'{subject} {text}')
     msgid = str(letter.get('Message-ID', '') or '').strip()
     if msgid:
         state(f'mailmsgid:{thread}', msgid)
@@ -1044,7 +989,7 @@ def bring_letter(raw):
         log('mail to telegram:', error)
         return False
     run('INSERT INTO messages (thread, owner, text, page, t, sent, src) VALUES (?, 0, ?, ?, ?, 1, ?)',
-        thread, (f'{subject}\n\n{text}' if subject else text)[:MAX_TEXT * 2], 'email', now, 'mail')
+        thread, (text if joined or not subject else f'{subject}\n\n{text}')[:MAX_TEXT * 2], 'email', now, 'mail')
     for part in letter.iter_attachments():
         data = part.get_payload(decode=True) or b''
         if not data or len(data) > OWNER_FILE or files_total() + len(data) > FILES_TOTAL:
@@ -1144,9 +1089,11 @@ def thread_view(visitor, after):
     thread = q('SELECT contact, verified FROM threads WHERE id = ?', visitor)
     if not thread:
         return {'messages': [], 'contact': False, 'verified': False}
+    confirmed = bool(thread[0][0]) and thread[0][0].lower() == thread[0][1].lower()
+    # Letters (src 'mail') get into a chat only from its confirmed address (site_thread); shown only while it is so
     rows = q('SELECT m.id, m.owner, m.text, m.t, f.id, f.name, f.size, f.image FROM messages m '
-             "LEFT JOIN files f ON f.id = m.file WHERE m.thread = ? AND m.id > ? AND m.src = '' "   # never letters
-             'ORDER BY m.id LIMIT 500', visitor, after)
+             "LEFT JOIN files f ON f.id = m.file WHERE m.thread = ? AND m.id > ? AND (m.src = '' OR ?) "
+             'ORDER BY m.id LIMIT 500', visitor, after, int(confirmed))
     return {'messages': [{'id': i, 'owner': bool(o), 'text': x, 't': t, 'file': file_view(fid, name, size, image)}
                          for i, o, x, t, fid, name, size, image in rows],
             'contact': bool(thread[0][0]),
