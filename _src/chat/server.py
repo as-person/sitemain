@@ -581,7 +581,7 @@ def mail_allowed(ip):
 
 
 UNSUB_URL = 'https://dl.somov.org/api/chat/unsubscribe?t='
-UNSUB_TEXT = {'ru': 'Не хотите получать письма? Отписаться: ', 'en': 'Do not want these emails? Unsubscribe: '}
+UNSUB_TEXT = {'ru': 'Больше не присылать письма об этой переписке: ', 'en': 'Stop emails about this conversation: '}
 
 
 def unsub_link(thread):
@@ -594,8 +594,8 @@ def unsub_link(thread):
 
 FONT = "-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif"
 HTML_TEXT = {
-    'ru': {'open': 'Открыть чат', 'reply': 'Ответить можно прямо на это письмо', 'unsub': 'Отписаться'},
-    'en': {'open': 'Open the chat', 'reply': 'You can reply right to this email', 'unsub': 'Unsubscribe'},
+    'ru': {'open': 'Открыть чат', 'reply': 'Ответить можно прямо на это письмо', 'unsub': 'Больше не присылать письма'},
+    'en': {'open': 'Open the chat', 'reply': 'You can reply right to this email', 'unsub': 'Stop these emails'},
 }
 
 
@@ -603,49 +603,52 @@ def html_text(text):
     """Escaped text with line breaks and clickable links."""
     out = html.escape(text).replace('\n', '<br>')
     return re.sub(r'(https?://[^\s<]+[^\s<.,;:!?)])',
-                  r'<a href="\1" style="color:#8fc1f0;text-decoration:underline">\1</a>', out)
+                  r'<a href="\1" style="color:#2563eb;text-decoration:none">\1</a>', out)
 
 
 def bubble(inner, note=False):
-    """One message from somov on the left, like in the chat window; note=True: a quiet line in the middle."""
+    """One message from somov on the left, like in the chat window; note=True: a quiet line under it."""
     if note:
-        return (f'<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" '
-                f'style="padding:6px 8px 2px"><span style="display:inline-block;padding:6px 12px;border-radius:12px;'
-                f'background:#121b26;color:#8a96a3;font:13px/1.45 {FONT}">{inner}</span></td></tr></table>')
+        return (f'<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td '
+                f'style="padding:10px 4px 0;color:#8b919a;font:13px/1.5 {FONT}">{inner}</td></tr></table>')
     return (f'<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 6px"><tr>'
-            f'<td bgcolor="#182533" style="background:#182533;border-radius:16px 16px 16px 5px;padding:9px 13px;'
-            f'color:#ffffff;font:15px/1.5 {FONT};max-width:380px">{inner}</td></tr></table>')
+            f'<td bgcolor="#eef1f5" style="background:#eef1f5;border-radius:18px 18px 18px 6px;padding:10px 14px;'
+            f'color:#14171c;font:15px/1.55 {FONT};max-width:400px">{inner}</td></tr></table>')
 
 
 def letter_html(lang, subject, bubbles, unsub, chat=True):
-    """The whole letter: the chat header, the bubbles, a button to the chat and a quiet unsubscribe line.
-    Tables and inline styles only: that is what all mail apps show the same."""
+    """The whole letter: a white card with the chat header, the bubbles, a button to the chat and a quiet footer.
+    Light, like the letters of messengers: on Gmail's white page a dark block looks heavy, and mail apps darken
+    a light letter themselves in their dark mode. Tables and inline styles only: all mail apps show them the same."""
     t = HTML_TEXT['ru' if lang == 'ru' else 'en']
-    button = (f'<a href="https://somov.org/#chat" style="display:inline-block;padding:11px 26px;border-radius:999px;'
-              f'background:#5ea6e8;color:#ffffff;font:600 14px/1 {FONT};text-decoration:none">{t["open"]}</a>'
-              f'<div style="padding-top:12px;color:#8a96a3;font:13px/1.4 {FONT}">{t["reply"]}</div>'
-              if chat else f'<div style="color:#8a96a3;font:13px/1.4 {FONT}">{t["reply"]}</div>')
-    unsub_line = (f' · <a href="{unsub}" style="color:#5d6773;text-decoration:underline">{t["unsub"]}</a>'
+    sub = {'ru': 'чат на сайте', 'en': 'chat on the site'}['ru' if lang == 'ru' else 'en']
+    button = (f'<a href="https://somov.org/#chat" style="display:inline-block;padding:12px 28px;border-radius:999px;'
+              f'background:#2563eb;color:#ffffff;font:600 14px/1 {FONT};text-decoration:none">{t["open"]}</a>'
+              f'<div style="padding-top:12px;color:#8b919a;font:13px/1.4 {FONT}">{t["reply"]}</div>'
+              if chat else f'<div style="color:#8b919a;font:13px/1.4 {FONT}">{t["reply"]}</div>')
+    # The site name is a link styled grey on purpose: as plain text Gmail turns it into a blue underlined link itself
+    site = '<a href="https://somov.org" style="color:#9aa0a6;text-decoration:none">somov.org</a>'
+    unsub_line = (f' &nbsp;·&nbsp; <a href="{unsub}" style="color:#9aa0a6;text-decoration:underline">{t["unsub"]}</a>'
                   if unsub else '')
     return f"""<!doctype html>
 <html lang="{lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="color-scheme" content="dark"><meta name="supported-color-schemes" content="dark"><title>{html.escape(subject)}</title></head>
-<body style="margin:0;padding:0;background:#0b0e13" bgcolor="#0b0e13">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#0b0e13" style="background:#0b0e13"><tr>
-<td align="center" style="padding:28px 12px">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#0e1621"
- style="max-width:480px;background:#0e1621;border:1px solid #1f2a36;border-radius:18px;border-collapse:separate;overflow:hidden">
-<tr><td bgcolor="#17212b" style="background:#17212b;padding:14px 18px;border-bottom:1px solid #0b1118">
+<meta name="color-scheme" content="light dark"><meta name="supported-color-schemes" content="light dark"><title>{html.escape(subject)}</title></head>
+<body style="margin:0;padding:0;background:#f4f5f7" bgcolor="#f4f5f7">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#f4f5f7" style="background:#f4f5f7"><tr>
+<td align="center" style="padding:32px 12px">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#ffffff"
+ style="max-width:460px;background:#ffffff;border:1px solid #e6e8eb;border-radius:20px;border-collapse:separate">
+<tr><td style="padding:20px 22px 16px;border-bottom:1px solid #f0f1f3">
 <table role="presentation" cellpadding="0" cellspacing="0"><tr>
-<td width="40" height="40" align="center" valign="middle" bgcolor="#6d6cf2"
- style="width:40px;height:40px;border-radius:20px;background:#6d6cf2;background-image:linear-gradient(135deg,#3a8dff,#a855f7);color:#ffffff;font:700 17px/40px {FONT}">S</td>
-<td style="padding-left:12px"><div style="color:#f0f2f5;font:600 15px/1.3 {FONT}">somov</div>
-<div style="color:#8a96a3;font:13px/1.3 {FONT}">somov.org</div></td>
+<td width="38" height="38" align="center" valign="middle" bgcolor="#6d6cf2"
+ style="width:38px;height:38px;border-radius:19px;background:#6d6cf2;background-image:linear-gradient(135deg,#3a8dff,#a855f7);color:#ffffff;font:700 16px/38px {FONT}">S</td>
+<td style="padding-left:12px"><div style="color:#14171c;font:600 15px/1.3 {FONT}">somov</div>
+<div style="color:#8b919a;font:13px/1.3 {FONT}">{sub}</div></td>
 </tr></table></td></tr>
-<tr><td style="padding:20px 16px 10px">{''.join(bubbles)}</td></tr>
-<tr><td align="center" style="padding:14px 18px 24px">{button}</td></tr>
+<tr><td style="padding:22px 22px 8px">{''.join(bubbles)}</td></tr>
+<tr><td align="center" style="padding:18px 22px 26px">{button}</td></tr>
 </table>
-<div style="padding-top:16px;color:#5d6773;font:12px/1.5 {FONT}"><a href="https://somov.org" style="color:#5d6773;text-decoration:none">somov.org</a>{unsub_line}</div>
+<div style="padding-top:18px;color:#9aa0a6;font:12px/1.5 {FONT}">{site}{unsub_line}</div>
 </td></tr></table></body></html>"""
 
 
@@ -696,11 +699,11 @@ def unsubscribe(token, really):
 
 
 UNSUB_PAGE = {
-    'ru': {'title': 'Отписка от писем somov.org', 'ready': 'Больше не присылать письма об этой переписке?',
-           'button': 'Отписаться', 'done': 'Готово: писем больше не будет. Чат на сайте работает как прежде.',
+    'ru': {'title': 'Письма от somov.org', 'ready': 'Больше не присылать письма об этой переписке?',
+           'button': 'Не присылать', 'done': 'Готово: писем больше не будет. Чат на сайте работает как прежде.',
            'bad': 'Ссылка устарела или неверна.'},
-    'en': {'title': 'Unsubscribe from somov.org emails', 'ready': 'Stop emails about this conversation?',
-           'button': 'Unsubscribe', 'done': 'Done: no more emails. The chat on the site works as before.',
+    'en': {'title': 'Emails from somov.org', 'ready': 'Stop emails about this conversation?',
+           'button': 'Stop emails', 'done': 'Done: no more emails. The chat on the site works as before.',
            'bad': 'The link is old or wrong.'},
 }
 
@@ -784,7 +787,7 @@ def reply_letter(thread, text, fid):
             bubbles.append(bubble(f'📎 <b>{html.escape(name)}</b> <span style="color:#8a96a3">· {size_text(size)}</span>'))
     if text:
         bubbles.append(bubble(html_text(text)))
-    letter.add_alternative(letter_html(lang, subject, bubbles, unsub_link(thread), chat=not origin), subtype='html')
+    letter.add_alternative(letter_html(lang, subject, bubbles, unsub_link(thread)), subtype="html")   # the chat button always
     if stored:
         name, mime, size, image = stored[0]
         main, _, sub = mime.partition('/')
