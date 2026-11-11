@@ -974,8 +974,8 @@
      owner, and his Telegram replies come back here. A visitor is a random id kept in this browser. */
   const CHAT = 'https://dl.somov.org/api/chat';
   const CHAT_TEXT = {
-    en: { title: 'somov', sub: 'ask a question and I will answer', hello: 'Hi! Ask about the builds, the tweaks or the site. I will answer right here.', contact: 'Email or Telegram for a reply (optional)', placeholder: 'Message', send: 'Send', close: 'Close', today: 'Today', yesterday: 'Yesterday', failed: 'Not sent. Tap to retry', limit: 'Too many messages. Try again a bit later.', attach: 'Attach a photo or file', tooLarge: 'The file is larger than 10 MB', kb: 'KB', mb: 'MB', notify: 'Let me know when the answer comes', notifyHint: 'A notification will come even if the site is closed', pushOn: 'Notifications are on', pushDenied: 'Notifications are blocked in the browser settings', pushFailed: 'Could not turn notifications on' },
-    ru: { title: 'somov', sub: 'задайте вопрос — я отвечу', hello: 'Привет! Спросите о сборках, настройках или сайте. Отвечу прямо здесь.', contact: 'Почта или Telegram для ответа (необязательно)', placeholder: 'Сообщение', send: 'Отправить', close: 'Закрыть', today: 'Сегодня', yesterday: 'Вчера', failed: 'Не отправлено. Нажмите, чтобы повторить', limit: 'Слишком много сообщений. Попробуйте чуть позже.', attach: 'Прикрепить фото или файл', tooLarge: 'Файл больше 10 МБ', kb: 'КБ', mb: 'МБ', notify: 'Сообщить, когда придёт ответ', notifyHint: 'Уведомление придёт, даже если сайт будет закрыт', pushOn: 'Уведомления включены', pushDenied: 'Уведомления запрещены в настройках браузера', pushFailed: 'Не удалось включить уведомления' },
+    en: { title: 'somov', sub: 'ask a question and I will answer', hello: 'Hi! Ask about the builds, the tweaks or the site. I will answer right here.', contact: 'Email or Telegram for a reply', placeholder: 'Message', send: 'Send', close: 'Close', today: 'Today', yesterday: 'Yesterday', failed: 'Not sent. Tap to retry', limit: 'Too many messages. Try again a bit later.', attach: 'Attach a photo or file', tooLarge: 'The file is larger than 10 MB', kb: 'KB', mb: 'MB', notify: 'Let me know when the answer comes', notifyHint: 'A notification will come even if the site is closed', pushOn: 'Notifications are on', pushDenied: 'Notifications are blocked in the browser settings', pushFailed: 'Could not turn notifications on', contactToggle: 'Email or Telegram for a reply', contactSave: 'Save', contactHide: 'Hide', contactSaved: 'Contact saved', contactRemoved: 'Contact removed', contactLater: 'The contact will go with your first message', contactFailed: 'Could not save the contact' },
+    ru: { title: 'somov', sub: 'задайте вопрос — я отвечу', hello: 'Привет! Спросите о сборках, настройках или сайте. Отвечу прямо здесь.', contact: 'Почта или Telegram для ответа', placeholder: 'Сообщение', send: 'Отправить', close: 'Закрыть', today: 'Сегодня', yesterday: 'Вчера', failed: 'Не отправлено. Нажмите, чтобы повторить', limit: 'Слишком много сообщений. Попробуйте чуть позже.', attach: 'Прикрепить фото или файл', tooLarge: 'Файл больше 10 МБ', kb: 'КБ', mb: 'МБ', notify: 'Сообщить, когда придёт ответ', notifyHint: 'Уведомление придёт, даже если сайт будет закрыт', pushOn: 'Уведомления включены', pushDenied: 'Уведомления запрещены в настройках браузера', pushFailed: 'Не удалось включить уведомления', contactToggle: 'Почта или Telegram для ответа', contactSave: 'Сохранить', contactHide: 'Скрыть', contactSaved: 'Контакт сохранён', contactRemoved: 'Контакт удалён', contactLater: 'Контакт уйдёт вместе с первым сообщением', contactFailed: 'Не удалось сохранить контакт' },
   };
   const openers = $$('[data-chat-open]');
   if (openers.length) {
@@ -1073,7 +1073,7 @@
         offer.append(button, hint);
         list.append(offer);
       }
-      $('.chat-contact', panel).hidden = hasContact;
+      contactUi();
       if (nearBottom || !render.done) list.scrollTop = list.scrollHeight;
       render.done = true;
       const ownerIds = messages.filter(m => m.owner).map(m => m.id);
@@ -1118,12 +1118,77 @@
       });
     }
 
+    /* Contact for an answer by email or Telegram: a bar under the header, like a pinned message in Telegram.
+       It is open until the visitor saves a contact or hides it; after the first message without a contact it
+       folds by itself in 30 s. The envelope in the header brings it back at any time (a green dot: saved). */
+    let contactOpen = null;   // null: decided by the rules above; true / false: the visitor chose
+    let contactTimer = null;
+    const savedContact = () => store.get('chatContact') || '';
+    const hasThread = () => messages.some(m => !m.owner && m.id);
+    // What goes with the next message: a contact typed or saved but not yet on the server
+    const pendingContact = () => (hasContact ? '' : ($('.chat-contact', panel).value.trim() || savedContact()));
+
+    function contactShown() {
+      if (contactOpen !== null) return contactOpen;
+      return !hasContact && !savedContact() && store.get('chatContactBar') !== 'closed';
+    }
+
+    function contactUi() {
+      const bar = $('.chat-contact-bar', panel);
+      const shown = contactShown();
+      if (shown && bar.hidden) $('.chat-contact', panel).value = savedContact();
+      bar.hidden = !shown;
+      const toggle = $('.chat-contact-toggle', panel);
+      toggle.classList.toggle('is-set', hasContact || !!savedContact());
+      toggle.setAttribute('aria-expanded', String(shown));
+    }
+
+    function setContact(open, focus) {
+      contactOpen = open;
+      clearTimeout(contactTimer);
+      if (!open) store.set('chatContactBar', 'closed');
+      contactUi();
+      if (open && focus) $('.chat-contact', panel).focus();
+    }
+
+    // After a message: the bar is not needed now, fold it soon (unless the visitor is typing in it)
+    function foldContactLater() {
+      if (contactTimer || !contactShown() || hasContact) return;
+      contactTimer = setTimeout(() => {
+        const field = $('.chat-contact', panel);
+        if (!contactShown() || document.activeElement === field || field.value.trim()) return;
+        setContact(false);
+        const toggle = $('.chat-contact-toggle', panel);
+        toggle.classList.remove('is-pulse');
+        void toggle.offsetWidth;   // restart the animation
+        toggle.classList.add('is-pulse');
+      }, 30000);
+    }
+
+    function saveContact() {
+      const value = $('.chat-contact', panel).value.trim().slice(0, 120);
+      store.set('chatContact', value);
+      if (!hasThread()) {   // no conversation yet: it goes with the first message
+        setContact(false);
+        if (value) showToast(ct('contactLater'));
+        return;
+      }
+      fetch(`${CHAT}/contact?v=${visitor}`, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=UTF-8' }, body: JSON.stringify({ contact: value }) })
+        .then(r => {
+          if (!r.ok) throw new Error('contact');
+          hasContact = !!value;
+          setContact(false);
+          showToast(ct(value ? 'contactSaved' : 'contactRemoved'));
+        })
+        .catch(() => showToast(ct('contactFailed')));
+    }
+
     function sendMessage(m) {
       m.state = 'sending';
       render();
-      const contact = $('.chat-contact', panel);
+      const sentContact = pendingContact();
       const body = JSON.stringify({
-        v: visitor, text: m.text, contact: hasContact ? '' : contact.value.trim(),
+        v: visitor, text: m.text, contact: sentContact,
         page: location.pathname, lang: currentLang(), website: $('.chat-hp', panel).value,
       });
       // text/plain keeps it a simple request: no CORS preflight
@@ -1139,12 +1204,22 @@
           m.id = data.id;
           m.t = data.t;
           lastId = Math.max(lastId, data.id);
-          if (contact.value.trim()) hasContact = true;
-          store.set('chatVisitor', visitor);
-          store.set('chatLastSent', String(Date.now()));
+          sentWith(sentContact);
           render();
         })
         .catch(() => { m.state = 'failed'; render(); });
+    }
+
+    // After a message reached the server: remember the visitor, the contact that went with it, fold the bar
+    function sentWith(sentContact) {
+      if (sentContact) {
+        hasContact = true;
+        store.set('chatContact', sentContact);
+        if (contactShown()) setContact(false);
+      }
+      store.set('chatVisitor', visitor);
+      store.set('chatLastSent', String(Date.now()));
+      foldContactLater();
     }
 
     const fileUrl = file => `${CHAT}/file/${file.id}?v=${visitor}`;
@@ -1187,10 +1262,9 @@
     function sendFile(m) {
       m.state = 'sending';
       render();
-      const contact = $('.chat-contact', panel);
+      const sentContact = pendingContact();
       const query = new URLSearchParams({
-        v: visitor, name: m.file.name, page: location.pathname, lang: currentLang(),
-        contact: hasContact ? '' : contact.value.trim(),
+        v: visitor, name: m.file.name, page: location.pathname, lang: currentLang(), contact: sentContact,
       });
       fetch(`${CHAT}/upload?${query}`, { method: 'POST', headers: { 'Content-Type': m.blob.type || 'application/octet-stream' }, body: m.blob })
         .then(r => r.json().then(data => ({ ok: r.ok, status: r.status, data })))
@@ -1206,9 +1280,7 @@
           m.file = Object.assign(data.file, { local: m.file.local });
           m.blob = null;
           lastId = Math.max(lastId, data.id);
-          if (contact.value.trim()) hasContact = true;
-          store.set('chatVisitor', visitor);
-          store.set('chatLastSent', String(Date.now()));
+          sentWith(sentContact);
           render();
         })
         .catch(() => { m.state = 'failed'; render(); });
@@ -1255,10 +1327,15 @@
           <button type="button" class="chat-close" data-chat-close><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
           <span class="chat-avatar" aria-hidden="true">S</span>
           <span class="chat-who"><b class="chat-title"></b><span class="chat-sub"></span></span>
+          <button type="button" class="chat-contact-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></button>
         </header>
+        <div class="chat-contact-bar" hidden>
+          <input class="chat-contact" type="text" maxlength="120" autocomplete="email" enterkeyhint="done">
+          <button type="button" class="chat-contact-save"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17l9-10"/></svg></button>
+          <button type="button" class="chat-contact-close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M17 7 7 17M7 7l10 10"/></svg></button>
+        </div>
         <div class="chat-list" aria-live="polite"></div>
         <form class="chat-form">
-          <input class="chat-contact" type="text" maxlength="120" autocomplete="email">
           <input class="chat-hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
           <div class="chat-row">
             <button type="button" class="chat-attach"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.4 11.1-9.2 9.2a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5"/></svg></button>
@@ -1280,6 +1357,14 @@
         }
       });
       panel.addEventListener('keydown', event => { if (event.key === 'Escape') close(); });
+      const contactField = $('.chat-contact', panel);
+      $('.chat-contact-toggle', panel).addEventListener('click', () => setContact(!contactShown(), true));
+      $('.chat-contact-save', panel).addEventListener('click', saveContact);
+      $('.chat-contact-close', panel).addEventListener('click', () => setContact(false));
+      contactField.addEventListener('keydown', event => {
+        if (event.key === 'Enter') { event.preventDefault(); saveContact(); }
+        if (event.key === 'Escape') { event.stopPropagation(); setContact(false); }
+      });
       // Files: the paper clip, a screenshot pasted with Ctrl+V, or files dropped on the window
       const picker = $('.chat-file-input', panel);
       $('.chat-attach', panel).addEventListener('click', () => picker.click());
@@ -1307,6 +1392,12 @@
       $('.chat-attach', panel).setAttribute('aria-label', ct('attach'));
       $('.chat-attach', panel).title = ct('attach');
       $('.chat-contact', panel).placeholder = ct('contact');
+      $('.chat-contact-toggle', panel).setAttribute('aria-label', ct('contactToggle'));
+      $('.chat-contact-toggle', panel).title = ct('contactToggle');
+      $('.chat-contact-save', panel).setAttribute('aria-label', ct('contactSave'));
+      $('.chat-contact-save', panel).title = ct('contactSave');
+      $('.chat-contact-close', panel).setAttribute('aria-label', ct('contactHide'));
+      $('.chat-contact-close', panel).title = ct('contactHide');
       $('.chat-input', panel).placeholder = ct('placeholder');
       panel.setAttribute('aria-label', ct('title'));
     }

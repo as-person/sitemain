@@ -1350,13 +1350,55 @@ html:not([data-image]) .img-ru { display: none !important; }
   color: var(--text);
   background: transparent;
 }
-.chat-contact {
-  padding: 8px 12px;
-  border-radius: var(--r-sm);
-  background: rgb(255 255 255 / .05);
-  font-size: var(--fs-sm);
+.chat-contact-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 6px 6px 12px;
+  background: #1a2633;
+  border-bottom: 1px solid rgb(0 0 0 / .3);
+  box-shadow: inset 3px 0 0 var(--chat-accent);
 }
-.chat-contact[hidden] { display: none; }
+.chat-contact-bar[hidden] { display: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .chat-contact-bar { animation: chat-bar-in 160ms cubic-bezier(.2, 0, 0, 1); }
+  @keyframes chat-bar-in { from { opacity: 0; transform: translateY(-6px); } }
+}
+.chat-contact { flex: 1; min-width: 0; padding: 6px 4px; font-size: var(--fs-sm); }
+.chat-contact-save, .chat-contact-close, .chat-contact-toggle {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: var(--muted);
+  transition: color var(--ease), background var(--ease);
+}
+.chat-contact-save { color: var(--chat-accent); }
+.chat-contact-save:hover, .chat-contact-close:hover, .chat-contact-toggle:hover { background: rgb(255 255 255 / .06); color: var(--text); }
+.chat-contact-save svg, .chat-contact-close svg { width: 18px; height: 18px; }
+.chat-contact-toggle { position: relative; width: 36px; height: 36px; margin-left: auto; }
+.chat-contact-toggle svg { width: 20px; height: 20px; }
+.chat-contact-toggle[aria-expanded="true"] { color: var(--chat-accent); }
+.chat-contact-toggle.is-set::after {
+  content: "";
+  position: absolute;
+  top: 7px;
+  right: 6px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #4fae4e;
+  box-shadow: 0 0 0 2px var(--chat-head);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .chat-contact-toggle.is-pulse { animation: chat-pulse 1.2s ease-out 2; }
+  @keyframes chat-pulse {
+    0% { box-shadow: 0 0 0 0 rgb(94 166 232 / .55); color: var(--chat-accent); }
+    100% { box-shadow: 0 0 0 12px rgb(94 166 232 / 0); }
+  }
+}
 .chat-contact::placeholder, .chat-input::placeholder { color: rgb(255 255 255 / .4); }
 .chat-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 .chat-row { display: flex; align-items: flex-end; gap: 8px; }

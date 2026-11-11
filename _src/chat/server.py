@@ -578,6 +578,26 @@ def add_message(visitor, text, page, contact, lang, fid='', cc=''):
     return cur.lastrowid, now
 
 
+def set_contact(visitor, contact):
+    """A visitor left (or changed, or removed) a contact after the conversation started: tell the owner."""
+    row = q('SELECT n, contact FROM threads WHERE id = ?', visitor)
+    if not row:
+        return False
+    n, old = row[0]
+    if contact == old:
+        return True
+    run('UPDATE threads SET contact = ? WHERE id = ?', contact, visitor)
+
+    def tell():
+        try:
+            sent = say(f'✉️ #{n}: контакт — {contact}' if contact else f'✉️ #{n}: контакт удалён')
+            run('INSERT OR REPLACE INTO tg (msg, thread) VALUES (?, ?)', sent['message_id'], visitor)
+        except RuntimeError as error:
+            log('contact:', error)
+    threading.Thread(target=tell, daemon=True).start()
+    return True
+
+
 class Handler(BaseHTTPRequestHandler):
     server_version = 'somov-chat'
     sys_version = ''
@@ -688,6 +708,18 @@ class Handler(BaseHTTPRequestHandler):
             if not VISITOR_RE.match(visitor) or not allowed(ip):
                 return self.reply(400, {'error': 'visitor'})
             return self.reply(200 if subscribe(visitor, data) else 400, {})
+        if path == '/api/chat/contact':
+            visitor = self.params().get('v', '')
+            raw = self.body(MAX_BODY)
+            try:
+                data = json.loads(raw) if raw else None
+            except ValueError:
+                data = None
+            if not VISITOR_RE.match(visitor) or not isinstance(data, dict):
+                return self.reply(400, {'error': 'body'})
+            if not allowed(ip):
+                return self.reply(429, {'error': 'limit'})
+            return self.reply(200 if set_contact(visitor, clean(data.get('contact'), MAX_CONTACT).replace('\n', ' ')) else 404, {})
         if path != '/api/chat/send':
             return self.reply(404, {'error': 'not found'})
         raw = self.body(MAX_BODY)
