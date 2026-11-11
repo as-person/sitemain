@@ -1365,6 +1365,33 @@ html:not([data-image]) .img-ru { display: none !important; }
     radial-gradient(circle at 85% 80%, rgb(168 85 247 / .06), transparent 45%),
     var(--chat-bg);
 }
+.chat-intro {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  align-self: center;
+  max-width: 300px;
+  margin: 8px 0 12px;
+  padding: 12px 14px;
+  border-radius: var(--r-md);
+  background: rgb(0 0 0 / .28);
+  font-size: 13px;
+  line-height: 1.45;
+  text-align: center;
+}
+.chat-intro b { color: var(--text); font-size: var(--fs-sm); font-weight: 600; }
+.chat-intro span { color: rgb(255 255 255 / .6); }
+.chat-intro button {
+  margin-top: 6px;
+  padding: 6px 12px;
+  border-radius: var(--pill);
+  background: rgb(94 166 232 / .16);
+  color: #9cc8f2;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background var(--ease);
+}
+.chat-intro button:hover { background: rgb(94 166 232 / .26); }
 .chat-day {
   align-self: center;
   margin: 8px 0 4px;

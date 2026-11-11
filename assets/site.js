@@ -974,8 +974,8 @@
      owner, and his Telegram replies come back here. A visitor is a random id kept in this browser. */
   const CHAT = 'https://dl.somov.org/api/chat';
   const CHAT_TEXT = {
-    en: { title: 'somov', sub: 'ask a question', contact: 'Email or Telegram for a reply', placeholder: 'Message', send: 'Send', close: 'Close', today: 'Today', yesterday: 'Yesterday', failed: 'Not sent. Tap to retry', limit: 'Too many messages. Try again a bit later.', attach: 'Attach a photo or file', tooLarge: 'The file is larger than 10 MB', kb: 'KB', mb: 'MB', notify: 'Let me know when the answer comes', notifyHint: 'A notification will come even if the site is closed', pushOn: 'Notifications are on', pushDenied: 'Notifications are blocked in the browser settings', pushFailed: 'Could not turn notifications on', contactToggle: 'Email or Telegram for a reply', contactSave: 'Save', contactHide: 'Hide', contactSaved: 'Contact saved', contactRemoved: 'Contact removed', contactLater: 'The contact will go with your first message', contactFailed: 'Could not save the contact', pushOnHint: 'Notifications are on. They can be turned off in the browser settings', unread: 'New answers' },
-    ru: { title: 'somov', sub: 'задайте вопрос', contact: 'Почта или Telegram для ответа', placeholder: 'Сообщение', send: 'Отправить', close: 'Закрыть', today: 'Сегодня', yesterday: 'Вчера', failed: 'Не отправлено. Нажмите, чтобы повторить', limit: 'Слишком много сообщений. Попробуйте чуть позже.', attach: 'Прикрепить фото или файл', tooLarge: 'Файл больше 10 МБ', kb: 'КБ', mb: 'МБ', notify: 'Сообщить, когда придёт ответ', notifyHint: 'Уведомление придёт, даже если сайт будет закрыт', pushOn: 'Уведомления включены', pushDenied: 'Уведомления запрещены в настройках браузера', pushFailed: 'Не удалось включить уведомления', contactToggle: 'Почта или Telegram для ответа', contactSave: 'Сохранить', contactHide: 'Скрыть', contactSaved: 'Контакт сохранён', contactRemoved: 'Контакт удалён', contactLater: 'Контакт уйдёт вместе с первым сообщением', contactFailed: 'Не удалось сохранить контакт', pushOnHint: 'Уведомления включены. Выключить их можно в настройках браузера', unread: 'Новые ответы' },
+    en: { title: 'somov', sub: 'ask a question', contact: 'Email or Telegram for a reply', placeholder: 'Message', send: 'Send', close: 'Close', today: 'Today', yesterday: 'Yesterday', failed: 'Not sent. Tap to retry', limit: 'Too many messages. Try again a bit later.', attach: 'Attach a photo or file', tooLarge: 'The file is larger than 10 MB', kb: 'KB', mb: 'MB', notify: 'Let me know when the answer comes', notifyHint: 'A notification will come even if the site is closed', pushOn: 'Notifications are on', pushDenied: 'Notifications are blocked in the browser settings', pushFailed: 'Could not turn notifications on', contactToggle: 'Email or Telegram for a reply', contactSave: 'Save', contactHide: 'Hide', contactSaved: 'Contact saved', contactRemoved: 'Contact removed', contactLater: 'The contact will go with your first message', contactFailed: 'Could not save the contact', pushOnHint: 'Notifications are on. They can be turned off in the browser settings', unread: 'New answers', introHead: 'Ask a question and we will answer here.', introText: 'If you close the site, the answer is easy to miss. Leave your email or Telegram and we will send it there too.', introButton: 'Leave email or Telegram' },
+    ru: { title: 'somov', sub: 'задайте вопрос', contact: 'Почта или Telegram для ответа', placeholder: 'Сообщение', send: 'Отправить', close: 'Закрыть', today: 'Сегодня', yesterday: 'Вчера', failed: 'Не отправлено. Нажмите, чтобы повторить', limit: 'Слишком много сообщений. Попробуйте чуть позже.', attach: 'Прикрепить фото или файл', tooLarge: 'Файл больше 10 МБ', kb: 'КБ', mb: 'МБ', notify: 'Сообщить, когда придёт ответ', notifyHint: 'Уведомление придёт, даже если сайт будет закрыт', pushOn: 'Уведомления включены', pushDenied: 'Уведомления запрещены в настройках браузера', pushFailed: 'Не удалось включить уведомления', contactToggle: 'Почта или Telegram для ответа', contactSave: 'Сохранить', contactHide: 'Скрыть', contactSaved: 'Контакт сохранён', contactRemoved: 'Контакт удалён', contactLater: 'Контакт уйдёт вместе с первым сообщением', contactFailed: 'Не удалось сохранить контакт', pushOnHint: 'Уведомления включены. Выключить их можно в настройках браузера', unread: 'Новые ответы', introHead: 'Напишите вопрос — мы ответим здесь.', introText: 'Если закроете сайт, ответ легко пропустить. Оставьте почту или Telegram — продублируем ответ туда.', introButton: 'Оставить почту или Telegram' },
   };
   const openers = $$('[data-chat-open]');
   if (openers.length) {
@@ -984,6 +984,12 @@
       get: key => { try { return localStorage.getItem(key); } catch (e) { return null; } },
       set: (key, value) => { try { localStorage.setItem(key, value); } catch (e) {} },
     };
+    // ?chatreset: this browser forgets its conversation and chat settings, as a first-time visitor (for testing)
+    if (new URLSearchParams(location.search).has('chatreset')) {
+      ['chatVisitor', 'chatSeen', 'chatContact', 'chatContactBar', 'chatPush', 'chatPushOffer', 'chatLastSent']
+        .forEach(key => { try { localStorage.removeItem(key); } catch (e) {} });
+      history.replaceState(null, '', location.pathname + location.hash);
+    }
     const newId = () => Array.from(crypto.getRandomValues(new Uint8Array(16)), b => b.toString(16).padStart(2, '0')).join('');
     let visitor = store.get('chatVisitor');
     let lastId = 0;           // newest message id shown
@@ -1025,6 +1031,8 @@
       const nearBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 80;
       list.textContent = '';
       let day = '';
+      // What the visitor should know: the answer comes here, and a contact keeps it from being missed
+      if (!hasContact) list.append(introNode());
       // The notification offer stays right under the visitor's first message: new messages go below it
       const offerAfter = pushOffer() && store.get('chatPushOffer') !== 'done' ? messages.find(m => !m.owner && m.id) : null;
       messages.forEach(m => {
@@ -1066,6 +1074,22 @@
       const ownerIds = messages.filter(m => m.owner).map(m => m.id);
       if (ownerIds.length) store.set('chatSeen', String(Math.max(seenId(), ...ownerIds)));
       updateUnread();
+    }
+
+    function introNode() {
+      const intro = document.createElement('div');
+      intro.className = 'chat-intro';
+      const head = document.createElement('b');
+      head.textContent = ct('introHead');
+      const text = document.createElement('span');
+      text.textContent = ct('introText');
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = '✉️ ' + ct('introButton');
+      button.addEventListener('click', () => setContact(true, true));
+      intro.append(head, text);
+      if (!contactShown()) intro.append(button);   // the bar is folded: the button brings it back
+      return intro;
     }
 
     function offerNode() {
@@ -1175,7 +1199,7 @@
       contactOpen = open;
       clearTimeout(contactTimer);
       if (!open) store.set('chatContactBar', 'closed');
-      contactUi();
+      render();   // also shows or hides the button in the intro
       if (open && focus) $('.chat-contact', panel).focus();
     }
 
