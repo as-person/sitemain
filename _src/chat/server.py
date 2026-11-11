@@ -13,11 +13,17 @@ country as a flag: it is looked up in a local copy of the free DB-IP country dat
 only the country code is kept. A visitor who allows notifications gets a browser push (Web Push, encrypted
 for their browser only) when the owner answers, even with the site closed. A visitor who leaves an email gets one
 "we got your question" letter from me@somov.org (Gmail SMTP); it never carries what the visitor typed. Every answer
-of the owner is also sent to that email (with the photo or file attached).
+of the owner is also sent to that email (with the photo or file attached), and the owner's mailbox gets a copy of
+every visitor message with Reply-To set to the visitor, one Gmail conversation per chat. Letters to visitors carry
+an unsubscribe link (and List-Unsubscribe headers); after it, no more letters go to that conversation.
+Mail to me@somov.org is read from Gmail (IMAP, read-only) and brought to Telegram as a conversation; the owner's
+Telegram reply goes back as an email in the same thread. Mailing lists, auto-replies and no-reply senders are not
+brought to Telegram; they stay in Gmail.
 """
-import base64, csv, gzip, smtplib, hashlib, io, ipaddress, json, os, re, secrets, socket, sqlite3, sys, threading, time, urllib.error, urllib.request
+import base64, csv, email, gzip, html, imaplib, smtplib, hashlib, io, ipaddress, json, os, re, secrets, socket, sqlite3, sys, threading, time, urllib.error, urllib.request
 from email.message import EmailMessage
-from email.utils import formataddr, make_msgid
+from email.policy import default as email_policy
+from email.utils import formataddr, make_msgid, parseaddr
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, quote, urlsplit
 
@@ -73,10 +79,17 @@ CREATE TABLE IF NOT EXISTS state (k TEXT PRIMARY KEY, v TEXT NOT NULL);
 ''')
 if 'file' not in [row[1] for row in db.execute('PRAGMA table_info(messages)')]:
     db.execute("ALTER TABLE messages ADD COLUMN file TEXT NOT NULL DEFAULT ''")
+if 'src' not in [row[1] for row in db.execute('PRAGMA table_info(messages)')]:   # 'mail': came by email
+    db.execute("ALTER TABLE messages ADD COLUMN src TEXT NOT NULL DEFAULT ''")
 if 'cc' not in [row[1] for row in db.execute('PRAGMA table_info(messages)')]:
     db.execute("ALTER TABLE messages ADD COLUMN cc TEXT NOT NULL DEFAULT ''")
-if 'mailed' not in [row[1] for row in db.execute('PRAGMA table_info(threads)')]:
+thread_columns = [row[1] for row in db.execute('PRAGMA table_info(threads)')]
+if 'mailed' not in thread_columns:
     db.execute("ALTER TABLE threads ADD COLUMN mailed TEXT NOT NULL DEFAULT ''")
+if 'nomail' not in thread_columns:   # the visitor unsubscribed from letters
+    db.execute('ALTER TABLE threads ADD COLUMN nomail INTEGER NOT NULL DEFAULT 0')
+if 'unsub' not in thread_columns:    # random token of the unsubscribe link (the visitor id must stay secret)
+    db.execute("ALTER TABLE threads ADD COLUMN unsub TEXT NOT NULL DEFAULT ''")
 db.execute('CREATE TABLE IF NOT EXISTS push (endpoint TEXT PRIMARY KEY, thread TEXT NOT NULL, p256dh TEXT NOT NULL, '
            'auth TEXT NOT NULL, t INTEGER NOT NULL)')
 db.commit()
@@ -559,6 +572,89 @@ def mail_allowed(ip):
         return True
 
 
+UNSUB_URL = 'https://dl.somov.org/api/chat/unsubscribe?t='
+UNSUB_TEXT = {'ru': 'Не хотите получать письма? Отписаться: ', 'en': 'Do not want these emails? Unsubscribe: '}
+
+
+def unsub_link(thread):
+    token = (q('SELECT unsub FROM threads WHERE id = ?', thread) or [('',)])[0][0]
+    if not token:
+        token = secrets.token_urlsafe(18)
+        run('UPDATE threads SET unsub = ? WHERE id = ?', token, thread)
+    return UNSUB_URL + token
+
+
+def visitor_letter(thread, lang, contact, subject, body, unsub=True):
+    """A letter to the visitor, with the unsubscribe line and the headers mail apps show as their own button."""
+    letter = EmailMessage()
+    if not unsub:   # a plain answer to someone who wrote to me@somov.org
+        letter['From'] = formataddr(('somov', MAIL_FROM))
+        letter['To'] = contact
+        letter['Subject'] = subject
+        letter['Message-ID'] = make_msgid(domain='somov.org')
+        letter.set_content(f'{body}\n\n—\nsomov\nhttps://somov.org\n')
+        return letter
+    link = unsub_link(thread)
+    letter['From'] = formataddr(('somov', MAIL_FROM))
+    letter['To'] = contact
+    letter['Subject'] = subject
+    letter['Reply-To'] = MAIL_FROM
+    letter['Message-ID'] = make_msgid(domain='somov.org')
+    letter['List-Unsubscribe'] = f'<{link}>'
+    letter['List-Unsubscribe-Post'] = 'List-Unsubscribe=One-Click'
+    letter.set_content(f'{body}\n\n{UNSUB_TEXT["ru" if lang == "ru" else "en"]}{link}\n')
+    return letter
+
+
+def unsubscribe(token, really):
+    """(language, state) of an unsubscribe link: 'bad', 'ready' (GET) or 'done'."""
+    if not re.fullmatch(r'[A-Za-z0-9_-]{20,40}', token or ''):
+        return 'en', 'bad'
+    row = q('SELECT id, n, lang, nomail, contact FROM threads WHERE unsub = ?', token)
+    if not row:
+        return 'en', 'bad'
+    thread, n, lang, nomail, contact = row[0]
+    if not really:
+        return lang, 'done' if nomail else 'ready'
+    if not nomail:
+        run('UPDATE threads SET nomail = 1 WHERE id = ?', thread)
+
+        def tell():
+            try:
+                who = f' {contact}' if contact else ''
+                sent = say(f'📭 #{n}: посетитель{who} отписался от писем (чат на сайте работает)')
+                run('INSERT OR REPLACE INTO tg (msg, thread) VALUES (?, ?)', sent['message_id'], thread)
+            except RuntimeError as error:
+                log('unsubscribe note:', error)
+        threading.Thread(target=tell, daemon=True).start()
+    return lang, 'done'
+
+
+UNSUB_PAGE = {
+    'ru': {'title': 'Отписка от писем somov.org', 'ready': 'Больше не присылать письма об этой переписке?',
+           'button': 'Отписаться', 'done': 'Готово: писем больше не будет. Чат на сайте работает как прежде.',
+           'bad': 'Ссылка устарела или неверна.'},
+    'en': {'title': 'Unsubscribe from somov.org emails', 'ready': 'Stop emails about this conversation?',
+           'button': 'Unsubscribe', 'done': 'Done: no more emails. The chat on the site works as before.',
+           'bad': 'The link is old or wrong.'},
+}
+
+
+def unsub_page(lang, stage):
+    t = UNSUB_PAGE['ru' if lang == 'ru' else 'en']
+    action = ('<form method="post"><button type="submit">' + t['button'] + '</button></form>') if stage == 'ready' else ''
+    return f"""<!doctype html><html lang="{lang}"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex">
+<title>{t['title']}</title><style>
+body{{margin:0;min-height:100vh;display:grid;place-items:center;background:#0f1115;color:#f0f2f5;
+font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}}
+main{{max-width:360px;padding:28px 24px;margin:16px;border:1px solid rgb(255 255 255/.11);border-radius:16px;
+background:#171a21;text-align:center}}p{{margin:0 0 18px}}a{{color:#8fb4ff}}
+button{{padding:10px 22px;border:0;border-radius:999px;background:#2563eb;color:#fff;font:inherit;font-weight:600;cursor:pointer}}
+</style></head><body><main><p>{t[stage]}</p>{action}<p style="margin:18px 0 0;font-size:14px">
+<a href="https://somov.org/">somov.org</a></p></main></body></html>"""
+
+
 def send_letter(letter):
     try:
         with smtplib.SMTP('smtp.gmail.com', 587, timeout=60) as smtp:
@@ -583,18 +679,23 @@ def reply_letter(thread, text, fid):
     """The owner's answer, also by email when the visitor left one (the answer is the owner's, so no limits)."""
     if not (SMTP_USER and SMTP_PASSWORD):
         return
-    row = q('SELECT n, contact, lang FROM threads WHERE id = ?', thread)
+    row = q('SELECT n, contact, lang, nomail FROM threads WHERE id = ?', thread)
     if not row or not EMAIL_RE.match(row[0][1]):
         return
-    n, contact, lang = row[0]
+    n, contact, lang, nomail = row[0]
+    if nomail:   # the answer stays in the site chat only: say so, or the owner would think it went by email
+        say(f'📭 #{n}: {contact} отписался от писем — ответ на почту не отправлен')
+        return
     subject, footer = REPLY['ru' if lang == 'ru' else 'en']
-    letter = EmailMessage()
-    letter['From'] = formataddr(('somov', MAIL_FROM))
-    letter['To'] = contact
-    letter['Subject'] = subject
-    letter['Reply-To'] = MAIL_FROM
-    letter['Message-ID'] = make_msgid(domain='somov.org')
-    letter.set_content(f'{text}\n\n—\n{footer}\n' if text else f'{footer}\n')
+    origin = state(f'mailmsgid:{thread}')
+    if origin:   # they wrote by email: answer in that email thread, like a person does
+        theirs = state(f'mailsubj:{thread}') or ''
+        subject = theirs if re.match(r'(?i)(re|ответ)\s*:', theirs) else (f'Re: {theirs}' if theirs else 'Re: somov.org')
+        letter = visitor_letter(thread, lang, contact, subject, f'{text}\n\n—\nsomov\nhttps://somov.org')
+        letter['In-Reply-To'] = origin
+        letter['References'] = ((state(f'mailrefs:{thread}') or '') + ' ' + origin).strip()
+    else:
+        letter = visitor_letter(thread, lang, contact, subject, f'{text}\n\n—\n{footer}' if text else footer)
     stored = q('SELECT name, mime FROM files WHERE id = ?', fid) if fid else []
     if stored:
         name, mime = stored[0]
@@ -607,34 +708,88 @@ def reply_letter(thread, text, fid):
     if not send_letter(letter):
         say(f'⚠️ #{n}: не удалось отправить ответ на почту {contact}')
         return
-    if not state(f'mailnote:{thread}'):   # said once per conversation, then quietly
+    if not origin and not state(f'mailnote:{thread}'):   # said once per conversation, then quietly
         state(f'mailnote:{thread}', 1)
         sent = say(f'📧 #{n}: ваши ответы в этой переписке дублируются на почту {contact}')
         run('INSERT OR REPLACE INTO tg (msg, thread) VALUES (?, ?)', sent['message_id'], thread)
+
+
+copy_lock = threading.Lock()
+
+
+def copy_to_owner(thread):
+    """Visitor messages not yet copied, in one letter to the owner's mailbox (only for a visitor with an email).
+    Header To is me@somov.org, so Gmail answers from that address; the letter itself goes straight to the Gmail
+    account (a letter to oneself through the me@somov.org forwarding would be swallowed by Gmail)."""
+    if not (SMTP_USER and SMTP_PASSWORD):
+        return
+    with copy_lock:
+        row = q('SELECT n, contact, cc FROM threads t LEFT JOIN (SELECT thread, cc FROM messages WHERE thread = ? '
+                'AND owner = 0 ORDER BY id DESC LIMIT 1) m ON m.thread = t.id WHERE t.id = ?', thread, thread)
+        if not row or not EMAIL_RE.match(row[0][1]):
+            return
+        n, contact, cc = row[0]
+        done = int(state(f'copied:{thread}') or 0)
+        rows = q('SELECT m.id, m.text, m.page, m.t, f.id, f.name, f.mime FROM messages m LEFT JOIN files f ON f.id = m.file '
+                 'WHERE m.thread = ? AND m.owner = 0 AND m.src = \'\' AND m.id > ? ORDER BY m.id', thread, done)
+        if not rows:
+            return
+        parts, files = [], []
+        for mid, text, page, t, fid, name, mime in rows:
+            when = time.strftime('%d.%m %H:%M', time.gmtime(t + 7 * 3600))   # Vietnam time, like the logs
+            parts.append(f'[{when}] ' + (text or f'📎 {name}'))
+            if fid:
+                files.append((fid, name, mime))
+        root = state(f'mailroot:{thread}')
+        letter = EmailMessage()
+        letter['From'] = formataddr((f'{contact} (чат #{n})', MAIL_FROM))
+        letter['To'] = MAIL_FROM
+        letter['Reply-To'] = contact
+        letter['Subject'] = f'Чат somov.org #{n}'
+        letter['Message-ID'] = make_msgid(domain='somov.org')
+        if root:
+            letter['In-Reply-To'] = root
+            letter['References'] = root
+        footer = (f'Ответить: просто ответьте на это письмо, ответ уйдёт на {contact} (в чат на сайте он не попадёт).\n'
+                  f'Или ответьте в Telegram на сообщение #{n}: ответ придёт и в чат, и на почту.')
+        where = ' · '.join(x for x in (flag(cc), rows[-1][2] or '/') if x)
+        letter.set_content('\n\n'.join(parts) + f'\n\n—\n{where}\n{footer}\n')
+        for fid, name, mime in files:
+            try:
+                with open(os.path.join(FILES_DIR, fid), 'rb') as source:
+                    main, _, sub = mime.partition('/')
+                    letter.add_attachment(source.read(), maintype=main, subtype=sub or 'octet-stream', filename=name)
+            except OSError as error:
+                log('copy file:', error)
+        try:
+            with smtplib.SMTP('smtp.gmail.com', 587, timeout=60) as smtp:
+                smtp.starttls()
+                smtp.login(SMTP_USER, SMTP_PASSWORD)
+                smtp.send_message(letter, to_addrs=[SMTP_USER])
+        except (smtplib.SMTPException, OSError) as error:
+            log('copy:', type(error).__name__, str(error)[:160])
+            return
+        if not root:
+            state(f'mailroot:{thread}', letter['Message-ID'])
+        state(f'copied:{thread}', rows[-1][0])
 
 
 def confirm_letter(thread, ip):
     """Sends the letter once to an email the visitor left; tells the owner it went out."""
     if not (SMTP_USER and SMTP_PASSWORD):
         return
-    row = q('SELECT n, contact, lang, mailed FROM threads WHERE id = ?', thread)
+    row = q('SELECT n, contact, lang, mailed, nomail FROM threads WHERE id = ?', thread)
     if not row:
         return
-    n, contact, lang, mailed = row[0]
-    if not EMAIL_RE.match(contact) or contact.lower() == mailed.lower():
+    n, contact, lang, mailed, nomail = row[0]
+    if nomail or not EMAIL_RE.match(contact) or contact.lower() == mailed.lower():
         return
     if not mail_allowed(ip):
         log('mail: limit')
         return
     subject, body = LETTER['ru' if lang == 'ru' else 'en']
-    letter = EmailMessage()
-    letter['From'] = formataddr(('somov', MAIL_FROM))
-    letter['To'] = contact
-    letter['Subject'] = subject
-    letter['Reply-To'] = MAIL_FROM
-    letter['Message-ID'] = make_msgid(domain='somov.org')
+    letter = visitor_letter(thread, lang, contact, subject, body.rstrip('\n'))
     letter['Auto-Submitted'] = 'auto-replied'
-    letter.set_content(body)
     if not send_letter(letter):
         return
     run('UPDATE threads SET mailed = ? WHERE id = ?', contact, thread)
@@ -646,7 +801,154 @@ def confirm_letter(thread, ip):
 
 
 def letter_later(thread, ip):
-    threading.Thread(target=confirm_letter, args=(thread, ip), daemon=True).start()
+    def both():
+        confirm_letter(thread, ip)
+        copy_to_owner(thread)
+    threading.Thread(target=both, daemon=True).start()
+
+
+# -- Mail to me@somov.org -> Telegram (Gmail IMAP, read-only) ----------------
+
+NOT_PERSON = re.compile(r'^(no-?reply|do-?not-?reply|mailer-daemon|postmaster|bounces?|notifications?|notify|alerts?|'
+                        r'newsletters?|news|digest|marketing|promo)([+._-].*)?$', re.I)
+QUOTE_START = re.compile(r'^(On .{5,200} wrote:|.{0,80}\d{4}.{0,80}<[^>\s]+@[^>\s]+>.{0,20}:|'
+                         r'-{2,} ?(Original Message|Исходное сообщение|Пересылаемое сообщение|Forwarded message) ?-{2,})\s*$',
+                         re.I)
+
+
+def not_person(letter, sender):
+    """Why a letter is not from a person ('' when it is). Only sure signs: better to bring one ad than lose a person."""
+    if letter.get('List-Unsubscribe') or letter.get('List-Id') or letter.get('List-Post'):
+        return 'рассылка'
+    if (letter.get('Precedence') or '').strip().lower() in ('bulk', 'list', 'junk'):
+        return 'рассылка'
+    if (letter.get('Auto-Submitted') or 'no').strip().lower() != 'no':
+        return 'автоответ'
+    if NOT_PERSON.match(sender.split('@')[0]):
+        return 'служебный адрес'
+    return ''
+
+
+def letter_text(letter):
+    """Plain text of a letter, without the quoted earlier letters."""
+    part = letter.get_body(preferencelist=('plain', 'html'))
+    if part is None:
+        return ''
+    try:
+        text = part.get_content()
+    except (LookupError, ValueError):
+        text = part.get_payload(decode=True).decode('utf-8', 'replace')
+    if part.get_content_type() == 'text/html':
+        text = re.sub(r'(?is)<(script|style|head)\b.*?</\1>', '', text)
+        text = re.sub(r'(?is)<blockquote.*', '', text)   # the quoted earlier letters
+        text = re.sub(r'(?i)<br\s*/?>|</(p|div|li|tr|h\d)>', '\n', text)
+        text = html.unescape(re.sub(r'<[^>]+>', '', text)).replace('\xa0', ' ')
+    lines = []
+    for line in text.replace('\r\n', '\n').split('\n'):
+        if line.startswith('>') or QUOTE_START.match(line.strip()):
+            break
+        lines.append(line.rstrip())
+    return re.sub(r'\n{3,}', '\n\n', '\n'.join(lines)).strip()
+
+
+def mail_thread(sender, text):
+    """The conversation of this address: a chat visitor who left it, or a new one."""
+    row = q('SELECT id, n FROM threads WHERE lower(contact) = ? ORDER BY active DESC LIMIT 1', sender.lower())
+    if row:
+        return row[0][0], row[0][1], False
+    thread, now = secrets.token_hex(16), int(time.time())
+    lang = 'ru' if re.search('[а-яё]', text, re.I) else 'en'
+    with lock:
+        n = db.execute('SELECT COALESCE(MAX(n), 0) + 1 FROM threads').fetchone()[0]
+        db.execute('INSERT INTO threads (id, n, contact, lang, created, active) VALUES (?, ?, ?, ?, ?, ?)',
+                   (thread, n, sender, lang, now, now))
+        db.commit()
+    return thread, n, True
+
+
+def bring_letter(raw):
+    letter = email.message_from_bytes(raw, policy=email_policy)
+    name, sender = parseaddr(str(letter.get('From', '')))
+    sender = sender.strip()
+    if not sender or sender.lower() in (MAIL_FROM.lower(), SMTP_USER.lower()):
+        return   # our own letters: copies of the chat, answers
+    if not_person(letter, sender):
+        return   # stays in Gmail; the owner asked for no summaries in Telegram
+    subject = str(letter.get('Subject', '') or '').strip()
+    text = letter_text(letter)
+    thread, n, new = mail_thread(sender, f'{subject} {text}')
+    msgid = str(letter.get('Message-ID', '') or '').strip()
+    if msgid:
+        state(f'mailmsgid:{thread}', msgid)
+        state(f'mailrefs:{thread}', str(letter.get('References', '') or '').strip()[-900:])
+    state(f'mailsubj:{thread}', subject[:200])
+    now = int(time.time())
+    who = f'{name} <{sender}>' if name else sender
+    head = f'📨 #{n} · письмо' + (' · новый собеседник' if new else '')
+    body = '\n'.join(x for x in (head, f'От: {who}', f'Тема: {subject}' if subject else '', '', text) if x is not None)
+    ids = []
+    try:
+        ids.append(say(body.strip()[:4000])['message_id'])
+    except RuntimeError as error:
+        log('mail to telegram:', error)
+        return False
+    run('INSERT INTO messages (thread, owner, text, page, t, sent, src) VALUES (?, 0, ?, ?, ?, 1, ?)',
+        thread, (f'{subject}\n\n{text}' if subject else text)[:MAX_TEXT * 2], 'email', now, 'mail')
+    for part in letter.iter_attachments():
+        data = part.get_payload(decode=True) or b''
+        if not data or len(data) > OWNER_FILE or files_total() + len(data) > FILES_TOTAL:
+            continue
+        fname = part.get_filename() or 'file'
+        fid = store_file(thread, fname, data)
+        stored = q('SELECT name, mime, image FROM files WHERE id = ?', fid)[0]
+        run('INSERT INTO messages (thread, owner, text, page, t, sent, src, file) VALUES (?, 0, ?, ?, ?, 1, ?, ?)',
+            thread, '', 'email', now, 'mail', fid)
+        try:
+            if stored[2]:
+                sent = tg_upload('sendPhoto', 'photo', stored[0], data, stored[1], chat_id=OWNER, caption=f'📎 #{n}')
+            else:
+                sent = tg_upload('sendDocument', 'document', stored[0], data, stored[1], chat_id=OWNER, caption=f'📎 #{n}')
+            ids.append(sent['message_id'])
+        except RuntimeError as error:
+            log('mail file to telegram:', error)
+    for mid in ids:
+        run('INSERT OR REPLACE INTO tg (msg, thread) VALUES (?, ?)', mid, thread)
+    run('UPDATE threads SET active = ?, nomail = 0 WHERE id = ?', now, thread)
+    return True
+
+
+def mailbox():
+    """Every minute: new letters to me@somov.org in the Gmail inbox. Gmail marks nothing: the box is opened read-only
+    and bodies are read with PEEK. The first run only remembers where the inbox is, so old mail is not brought."""
+    while True:
+        time.sleep(60)
+        if not (SMTP_USER and SMTP_PASSWORD):
+            continue
+        try:
+            box = imaplib.IMAP4_SSL('imap.gmail.com', 993, timeout=60)
+            try:
+                box.login(SMTP_USER, SMTP_PASSWORD)
+                box.select('INBOX', readonly=True)
+                validity = box.response('UIDVALIDITY')[1][0].decode()
+                last = int(state('mailuid') or 0) if state('mailvalidity') == validity else 0
+                found = box.uid('SEARCH', None, 'X-GM-RAW', f'"to:{MAIL_FROM}"')[1][0].split()
+                uids = sorted(int(u) for u in found)
+                if not last:   # first look (or Gmail renumbered the box): start from now on
+                    state('mailvalidity', validity)
+                    state('mailuid', uids[-1] if uids else 1)
+                    continue
+                for uid in [u for u in uids if u > last][:20]:
+                    raw = box.uid('FETCH', str(uid), '(BODY.PEEK[])')[1][0][1]
+                    if bring_letter(raw) is False:
+                        break   # Telegram is unreachable: try this letter again next minute
+                    state('mailuid', uid)
+            finally:
+                try:
+                    box.logout()
+                except Exception:
+                    pass
+        except Exception as error:
+            log('mailbox:', type(error).__name__, str(error)[:160])
 
 
 # -- Rate limits (salted hashes of IPs, in memory only) -------------------------
@@ -725,7 +1027,7 @@ def set_contact(visitor, contact):
     n, old = row[0]
     if contact == old:
         return True
-    run('UPDATE threads SET contact = ? WHERE id = ?', contact, visitor)
+    run('UPDATE threads SET contact = ?, nomail = 0 WHERE id = ?', contact, visitor)
 
     def tell():
         try:
@@ -760,6 +1062,16 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def page(self, code, html):
+        body = html.encode()
+        self.send_response(code)
+        self.send_header('Content-Type', 'text/html; charset=utf-8')
+        self.send_header('Cache-Control', 'no-store')
+        self.send_header('Content-Security-Policy', "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'")
+        self.send_header('Content-Length', str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
     def do_OPTIONS(self):
         self.send_response(204)
         self.cors()
@@ -774,6 +1086,9 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         path = urlsplit(self.path).path
         params = self.params()
+        if path == '/api/chat/unsubscribe':
+            lang, stage = unsubscribe(params.get('t', ''), False)
+            return self.page(200 if stage != 'bad' else 404, unsub_page(lang, stage))
         if path == '/api/chat/push-key':
             return self.reply(200, {'key': VAPID_PUBLIC if push_ready() else ''})
         visitor = params.get('v', '')
@@ -818,6 +1133,10 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         path = urlsplit(self.path).path
         ip = self.headers.get('X-Real-IP') or self.client_address[0]
+        if path == '/api/chat/unsubscribe':
+            self.body(MAX_BODY)   # Gmail's one-click sends "List-Unsubscribe=One-Click"
+            lang, stage = unsubscribe(self.params().get('t', ''), True)
+            return self.page(200 if stage != 'bad' else 404, unsub_page(lang, stage))
         if path == '/api/chat/upload':
             params = self.params()
             visitor = params.get('v', '')
@@ -891,5 +1210,6 @@ if __name__ == '__main__':
     geo_open()
     threading.Thread(target=updates, daemon=True).start()
     threading.Thread(target=sender, daemon=True).start()
+    threading.Thread(target=mailbox, daemon=True).start()
     log(f'somov-chat on 127.0.0.1:{PORT}')
     ThreadingHTTPServer(('127.0.0.1', PORT), Handler).serve_forever()
