@@ -974,8 +974,8 @@
      owner, and his Telegram replies come back here. A visitor is a random id kept in this browser. */
   const CHAT = 'https://dl.somov.org/api/chat';
   const CHAT_TEXT = {
-    en: { title: 'somov', sub: 'ask a question', contact: 'Your email for a reply', placeholder: 'Message', send: 'Send', close: 'Close', today: 'Today', yesterday: 'Yesterday', failed: 'Not sent. Tap to retry', limit: 'Too many messages. Try again a bit later.', attach: 'Attach a photo or file', tooLarge: 'The file is larger than 10 MB', kb: 'KB', mb: 'MB', notify: 'Let me know when the answer comes', notifyHint: 'A notification will come even if the site is closed', pushOn: 'Notifications are on', pushDenied: 'Notifications are blocked in the browser settings', pushFailed: 'Could not turn notifications on', contactToggle: 'Email for a reply', contactSave: 'Save', contactHide: 'Hide', contactSaved: 'Contact saved', contactRemoved: 'Contact removed', contactLater: 'The contact will go with your first message', contactFailed: 'Could not save the contact', pushOnHint: 'Notifications are on. They can be turned off in the browser settings', unread: 'New answers', introHead: 'Ask a question and we will answer here.', introText: 'If you close the site, the answer is easy to miss. Leave your email and confirm it from the letter — we will send the answer there too.', introButton: 'Leave your email', contactBad: 'This does not look like an email', verifyHint: 'Confirm your email with the link in the letter — then the answer will come there too' },
-    ru: { title: 'somov', sub: 'задайте вопрос', contact: 'Ваша почта для ответа', placeholder: 'Сообщение', send: 'Отправить', close: 'Закрыть', today: 'Сегодня', yesterday: 'Вчера', failed: 'Не отправлено. Нажмите, чтобы повторить', limit: 'Слишком много сообщений. Попробуйте чуть позже.', attach: 'Прикрепить фото или файл', tooLarge: 'Файл больше 10 МБ', kb: 'КБ', mb: 'МБ', notify: 'Сообщить, когда придёт ответ', notifyHint: 'Уведомление придёт, даже если сайт будет закрыт', pushOn: 'Уведомления включены', pushDenied: 'Уведомления запрещены в настройках браузера', pushFailed: 'Не удалось включить уведомления', contactToggle: 'Почта для ответа', contactSave: 'Сохранить', contactHide: 'Скрыть', contactSaved: 'Контакт сохранён', contactRemoved: 'Контакт удалён', contactLater: 'Контакт уйдёт вместе с первым сообщением', contactFailed: 'Не удалось сохранить контакт', pushOnHint: 'Уведомления включены. Выключить их можно в настройках браузера', unread: 'Новые ответы', introHead: 'Напишите вопрос — мы ответим здесь.', introText: 'Если закроете сайт, ответ легко пропустить. Оставьте почту и подтвердите её по ссылке из письма — продублируем ответ туда.', introButton: 'Оставить почту', contactBad: 'Это не похоже на адрес почты', verifyHint: 'Подтвердите почту по ссылке из письма — тогда ответ придёт и туда' },
+    en: { title: 'somov', sub: 'ask a question', contact: 'Your email for a reply', placeholder: 'Message', send: 'Send', close: 'Close', today: 'Today', yesterday: 'Yesterday', failed: 'Not sent. Tap to retry', limit: 'Too many messages. Try again a bit later.', attach: 'Attach a photo or file', tooLarge: 'The file is larger than 10 MB', kb: 'KB', mb: 'MB', notify: 'Let me know when the answer comes', notifyHint: 'A notification will come even if the site is closed', pushOn: 'Notifications are on', pushDenied: 'Notifications are blocked in the browser settings', pushFailed: 'Could not turn notifications on', contactToggle: 'Email for a reply', contactSave: 'Save', contactHide: 'Hide', contactSaved: 'Contact saved', contactRemoved: 'Contact removed', contactLater: 'The contact will go with your first message', contactFailed: 'Could not save the contact', pushOnHint: 'Notifications are on. They can be turned off in the browser settings', unread: 'New answers', introHead: 'Ask a question and we will answer here.', introText: 'If you close the site, the answer is easy to miss. Leave your email and confirm it from the letter — we will send the answer there too.', introButton: 'Leave your email', contactBad: 'This does not look like an email', verifyTitle: 'Confirm your email', verifyWhere: 'The link is in the letter to {email}.', verifyElse: 'Until then the answer comes only here.' },
+    ru: { title: 'somov', sub: 'задайте вопрос', contact: 'Ваша почта для ответа', placeholder: 'Сообщение', send: 'Отправить', close: 'Закрыть', today: 'Сегодня', yesterday: 'Вчера', failed: 'Не отправлено. Нажмите, чтобы повторить', limit: 'Слишком много сообщений. Попробуйте чуть позже.', attach: 'Прикрепить фото или файл', tooLarge: 'Файл больше 10 МБ', kb: 'КБ', mb: 'МБ', notify: 'Сообщить, когда придёт ответ', notifyHint: 'Уведомление придёт, даже если сайт будет закрыт', pushOn: 'Уведомления включены', pushDenied: 'Уведомления запрещены в настройках браузера', pushFailed: 'Не удалось включить уведомления', contactToggle: 'Почта для ответа', contactSave: 'Сохранить', contactHide: 'Скрыть', contactSaved: 'Контакт сохранён', contactRemoved: 'Контакт удалён', contactLater: 'Контакт уйдёт вместе с первым сообщением', contactFailed: 'Не удалось сохранить контакт', pushOnHint: 'Уведомления включены. Выключить их можно в настройках браузера', unread: 'Новые ответы', introHead: 'Напишите вопрос — мы ответим здесь.', introText: 'Если закроете сайт, ответ легко пропустить. Оставьте почту и подтвердите её по ссылке из письма — продублируем ответ туда.', introButton: 'Оставить почту', contactBad: 'Это не похоже на адрес почты', verifyTitle: 'Подтвердите почту', verifyWhere: 'Ссылка — в письме на {email}.', verifyElse: 'Без подтверждения ответ придёт только сюда.' },
   };
   const openers = $$('[data-chat-open]');
   if (openers.length) {
@@ -1035,13 +1035,6 @@
       let day = '';
       // What the visitor should know: the answer comes here, and a contact keeps it from being missed
       if (!hasContact && !savedContact()) list.append(introNode());   // a contact saved before the first message counts too
-      // The email is on the server but not confirmed yet: a quiet reminder, until the visitor confirms it
-      else if (hasContact && !verified) {
-        const remind = document.createElement('div');
-        remind.className = 'chat-verify';
-        remind.textContent = '📩 ' + ct('verifyHint');
-        list.append(remind);
-      }
       // The notification offer stays right under the visitor's first message: new messages go below it
       const offerAfter = pushOffer() && store.get('chatPushOffer') !== 'done' ? messages.find(m => !m.owner && m.id) : null;
       messages.forEach(m => {
@@ -1078,6 +1071,7 @@
       });
       contactUi();
       bellUi();
+      verifyUi();
       if (nearBottom || !render.done) list.scrollTop = list.scrollHeight;
       render.done = true;
       const ownerIds = messages.filter(m => m.owner).map(m => m.id);
@@ -1099,6 +1093,19 @@
       intro.append(head, text);
       if (!contactShown()) intro.append(button);   // the bar is folded: the button brings it back
       return intro;
+    }
+
+    // The email waits for confirmation: a pinned amber bar under the header, the one coloured spot in the window
+    function verifyUi() {
+      const bar = $('.chat-verify-bar', panel);
+      const show = hasContact && !verified;
+      if (show) {
+        $('.chat-verify-title', bar).textContent = ct('verifyTitle');
+        const address = savedContact();
+        $('.chat-verify-sub', bar).textContent = (address ? ct('verifyWhere').replace('{email}', address) + ' ' : '') + ct('verifyElse');
+        if (bar.hidden) pulse(bar);
+      }
+      bar.hidden = !show;
     }
 
     function offerNode() {
@@ -1404,6 +1411,7 @@
           <button type="button" class="chat-contact-save"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17l9-10"/></svg></button>
           <button type="button" class="chat-contact-close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M17 7 7 17M7 7l10 10"/></svg></button>
         </div>
+        <div class="chat-verify-bar" role="status" hidden><span class="chat-verify-icon" aria-hidden="true">📩</span><span class="chat-verify-text"><b class="chat-verify-title"></b><span class="chat-verify-sub"></span></span></div>
         <div class="chat-list" aria-live="polite"></div>
         <form class="chat-form">
           <input class="chat-hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">

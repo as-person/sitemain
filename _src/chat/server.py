@@ -718,9 +718,15 @@ UNSUB_PAGE = {
 }
 
 
-def unsub_page(lang, stage, texts=None):
+def unsub_page(lang, stage, texts=None, nonce=''):
+    """nonce: the page sends its form by itself (one click in the letter is enough). Link scanners of mail services
+    open links but do not run scripts, so they cannot confirm anything; without scripts the button is shown."""
     t = (texts or UNSUB_PAGE)['ru' if lang == 'ru' else 'en']
     action = ('<form method="post"><button type="submit">' + t['button'] + '</button></form>') if stage == 'ready' else ''
+    if stage == 'ready' and nonce:
+        action = (f'<form id="go" method="post"><noscript><button type="submit">{t["button"]}</button></noscript></form>'
+                  f'<script nonce="{nonce}">document.getElementById("go").submit()</script>')
+        stage = 'auto'
     return f"""<!doctype html><html lang="{lang}"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex">
 <title>{t['title']}</title><style>
@@ -736,10 +742,12 @@ button{{padding:10px 22px;border:0;border-radius:999px;background:#2563eb;color:
 VERIFY_URL = 'https://dl.somov.org/api/chat/verify?t='
 VERIFY_PAGE = {
     'ru': {'title': 'Подтверждение почты — somov.org', 'ready': 'Подтвердить эту почту для ответов из чата на somov.org?',
-           'button': 'Подтвердить', 'done': 'Готово: почта подтверждена. Ответы будут приходить и сюда, и в чат на сайте.',
+           'button': 'Подтвердить', 'auto': 'Подтверждаем почту…',
+           'done': 'Готово: почта подтверждена. Ответы будут приходить и сюда, и в чат на сайте.',
            'bad': 'Ссылка устарела или неверна.'},
     'en': {'title': 'Email confirmation — somov.org', 'ready': 'Confirm this email for answers from the chat on somov.org?',
-           'button': 'Confirm', 'done': 'Done: the email is confirmed. Answers will come here and to the chat on the site.',
+           'button': 'Confirm', 'auto': 'Confirming your email…',
+           'done': 'Done: the email is confirmed. Answers will come here and to the chat on the site.',
            'bad': 'The link is old or wrong.'},
 }
 
@@ -1163,12 +1171,13 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
-    def page(self, code, html):
+    def page(self, code, html, nonce=''):
         body = html.encode()
         self.send_response(code)
         self.send_header('Content-Type', 'text/html; charset=utf-8')
         self.send_header('Cache-Control', 'no-store')
-        self.send_header('Content-Security-Policy', "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'")
+        script = f" script-src 'nonce-{nonce}';" if nonce else ''
+        self.send_header('Content-Security-Policy', f"default-src 'none'; style-src 'unsafe-inline';{script} form-action 'self'")
         self.send_header('Content-Length', str(len(body)))
         self.end_headers()
         self.wfile.write(body)
@@ -1192,7 +1201,8 @@ class Handler(BaseHTTPRequestHandler):
             return self.page(200 if stage != 'bad' else 404, unsub_page(lang, stage))
         if path == '/api/chat/verify':
             lang, stage = verify(params.get('t', ''), False)
-            return self.page(200 if stage != 'bad' else 404, unsub_page(lang, stage, VERIFY_PAGE))
+            nonce = secrets.token_urlsafe(12)
+            return self.page(200 if stage != 'bad' else 404, unsub_page(lang, stage, VERIFY_PAGE, nonce), nonce)
         if path == '/api/chat/push-key':
             return self.reply(200, {'key': VAPID_PUBLIC if push_ready() else ''})
         visitor = params.get('v', '')
