@@ -974,8 +974,8 @@
      owner, and his Telegram replies come back here. A visitor is a random id kept in this browser. */
   const CHAT = 'https://dl.somov.org/api/chat';
   const CHAT_TEXT = {
-    en: { title: 'somov', sub: 'ask a question', contact: 'Email or Telegram for a reply', placeholder: 'Message', send: 'Send', close: 'Close', today: 'Today', yesterday: 'Yesterday', failed: 'Not sent. Tap to retry', limit: 'Too many messages. Try again a bit later.', attach: 'Attach a photo or file', tooLarge: 'The file is larger than 10 MB', kb: 'KB', mb: 'MB', notify: 'Let me know when the answer comes', notifyHint: 'A notification will come even if the site is closed', pushOn: 'Notifications are on', pushDenied: 'Notifications are blocked in the browser settings', pushFailed: 'Could not turn notifications on', contactToggle: 'Email or Telegram for a reply', contactSave: 'Save', contactHide: 'Hide', contactSaved: 'Contact saved', contactRemoved: 'Contact removed', contactLater: 'The contact will go with your first message', contactFailed: 'Could not save the contact', pushOnHint: 'Notifications are on. They can be turned off in the browser settings', unread: 'New answers', introHead: 'Ask a question and we will answer here.', introText: 'If you close the site, the answer is easy to miss. Leave your email or Telegram and we will send it there too.', introButton: 'Leave email or Telegram' },
-    ru: { title: 'somov', sub: 'задайте вопрос', contact: 'Почта или Telegram для ответа', placeholder: 'Сообщение', send: 'Отправить', close: 'Закрыть', today: 'Сегодня', yesterday: 'Вчера', failed: 'Не отправлено. Нажмите, чтобы повторить', limit: 'Слишком много сообщений. Попробуйте чуть позже.', attach: 'Прикрепить фото или файл', tooLarge: 'Файл больше 10 МБ', kb: 'КБ', mb: 'МБ', notify: 'Сообщить, когда придёт ответ', notifyHint: 'Уведомление придёт, даже если сайт будет закрыт', pushOn: 'Уведомления включены', pushDenied: 'Уведомления запрещены в настройках браузера', pushFailed: 'Не удалось включить уведомления', contactToggle: 'Почта или Telegram для ответа', contactSave: 'Сохранить', contactHide: 'Скрыть', contactSaved: 'Контакт сохранён', contactRemoved: 'Контакт удалён', contactLater: 'Контакт уйдёт вместе с первым сообщением', contactFailed: 'Не удалось сохранить контакт', pushOnHint: 'Уведомления включены. Выключить их можно в настройках браузера', unread: 'Новые ответы', introHead: 'Напишите вопрос — мы ответим здесь.', introText: 'Если закроете сайт, ответ легко пропустить. Оставьте почту или Telegram — продублируем ответ туда.', introButton: 'Оставить почту или Telegram' },
+    en: { title: 'somov', sub: 'ask a question', contact: 'Your email for a reply', placeholder: 'Message', send: 'Send', close: 'Close', today: 'Today', yesterday: 'Yesterday', failed: 'Not sent. Tap to retry', limit: 'Too many messages. Try again a bit later.', attach: 'Attach a photo or file', tooLarge: 'The file is larger than 10 MB', kb: 'KB', mb: 'MB', notify: 'Let me know when the answer comes', notifyHint: 'A notification will come even if the site is closed', pushOn: 'Notifications are on', pushDenied: 'Notifications are blocked in the browser settings', pushFailed: 'Could not turn notifications on', contactToggle: 'Email for a reply', contactSave: 'Save', contactHide: 'Hide', contactSaved: 'Contact saved', contactRemoved: 'Contact removed', contactLater: 'The contact will go with your first message', contactFailed: 'Could not save the contact', pushOnHint: 'Notifications are on. They can be turned off in the browser settings', unread: 'New answers', introHead: 'Ask a question and we will answer here.', introText: 'If you close the site, the answer is easy to miss. Leave your email and we will send it there too.', introButton: 'Leave your email', contactBad: 'This does not look like an email' },
+    ru: { title: 'somov', sub: 'задайте вопрос', contact: 'Ваша почта для ответа', placeholder: 'Сообщение', send: 'Отправить', close: 'Закрыть', today: 'Сегодня', yesterday: 'Вчера', failed: 'Не отправлено. Нажмите, чтобы повторить', limit: 'Слишком много сообщений. Попробуйте чуть позже.', attach: 'Прикрепить фото или файл', tooLarge: 'Файл больше 10 МБ', kb: 'КБ', mb: 'МБ', notify: 'Сообщить, когда придёт ответ', notifyHint: 'Уведомление придёт, даже если сайт будет закрыт', pushOn: 'Уведомления включены', pushDenied: 'Уведомления запрещены в настройках браузера', pushFailed: 'Не удалось включить уведомления', contactToggle: 'Почта для ответа', contactSave: 'Сохранить', contactHide: 'Скрыть', contactSaved: 'Контакт сохранён', contactRemoved: 'Контакт удалён', contactLater: 'Контакт уйдёт вместе с первым сообщением', contactFailed: 'Не удалось сохранить контакт', pushOnHint: 'Уведомления включены. Выключить их можно в настройках браузера', unread: 'Новые ответы', introHead: 'Напишите вопрос — мы ответим здесь.', introText: 'Если закроете сайт, ответ легко пропустить. Оставьте почту — продублируем ответ туда.', introButton: 'Оставить почту', contactBad: 'Это не похоже на адрес почты' },
   };
   const openers = $$('[data-chat-open]');
   if (openers.length) {
@@ -1178,7 +1178,12 @@
     const savedContact = () => store.get('chatContact') || '';
     const hasThread = () => messages.some(m => !m.owner && m.id);
     // What goes with the next message: a contact typed or saved but not yet on the server
-    const pendingContact = () => (hasContact ? '' : ($('.chat-contact', panel).value.trim() || savedContact()));
+    const looksLikeEmail = text => /^[^@\s<>"]+@[^@\s<>"]+\.[A-Za-z]{2,}$/.test(text);
+    const pendingContact = () => {
+      if (hasContact) return '';
+      const typed = $('.chat-contact', panel).value.trim();
+      return looksLikeEmail(typed) ? typed : (looksLikeEmail(savedContact()) ? savedContact() : '');
+    };
 
     function contactShown() {
       if (contactOpen !== null) return contactOpen;
@@ -1216,6 +1221,12 @@
 
     function saveContact() {
       const value = $('.chat-contact', panel).value.trim().slice(0, 120);
+      // Only an email: answers are sent there (an empty field removes the contact)
+      if (value && !looksLikeEmail(value)) {
+        showToast(ct('contactBad'));
+        $('.chat-contact', panel).focus();
+        return;
+      }
       store.set('chatContact', value);
       if (!hasThread()) {   // no conversation yet: it goes with the first message
         setContact(false);
@@ -1380,7 +1391,7 @@
           <button type="button" class="chat-contact-toggle chat-head-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></button>
         </header>
         <div class="chat-contact-bar" hidden>
-          <input class="chat-contact" type="text" maxlength="120" autocomplete="email" enterkeyhint="done">
+          <input class="chat-contact" type="email" inputmode="email" maxlength="120" autocomplete="email" enterkeyhint="done">
           <button type="button" class="chat-contact-save"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17l9-10"/></svg></button>
           <button type="button" class="chat-contact-close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M17 7 7 17M7 7l10 10"/></svg></button>
         </div>
