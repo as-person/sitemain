@@ -969,4 +969,393 @@
     languageListeners.push(applyFilter);
     applyFilter();
   }
+
+  /* Chat with the author: messages go to dl.somov.org (_src/chat/server.py), a Telegram bot brings them to the
+     owner, and his Telegram replies come back here. A visitor is a random id kept in this browser. */
+  const CHAT = 'https://dl.somov.org/api/chat';
+  const CHAT_TEXT = {
+    en: { title: 'somov', sub: 'ask a question and I will answer', hello: 'Hi! Ask about the builds, the tweaks or the site. I will answer right here.', contact: 'Email or Telegram for a reply (optional)', placeholder: 'Message', send: 'Send', close: 'Close', today: 'Today', yesterday: 'Yesterday', failed: 'Not sent. Tap to retry', limit: 'Too many messages. Try again a bit later.', attach: 'Attach a photo or file', tooLarge: 'The file is larger than 10 MB', kb: 'KB', mb: 'MB' },
+    ru: { title: 'somov', sub: 'задайте вопрос — я отвечу', hello: 'Привет! Спросите о сборках, настройках или сайте. Отвечу прямо здесь.', contact: 'Почта или Telegram для ответа (необязательно)', placeholder: 'Сообщение', send: 'Отправить', close: 'Закрыть', today: 'Сегодня', yesterday: 'Вчера', failed: 'Не отправлено. Нажмите, чтобы повторить', limit: 'Слишком много сообщений. Попробуйте чуть позже.', attach: 'Прикрепить фото или файл', tooLarge: 'Файл больше 10 МБ', kb: 'КБ', mb: 'МБ' },
+  };
+  const openers = $$('[data-chat-open]');
+  if (openers.length) {
+    const ct = key => CHAT_TEXT[currentLang()][key];
+    const store = {
+      get: key => { try { return localStorage.getItem(key); } catch (e) { return null; } },
+      set: (key, value) => { try { localStorage.setItem(key, value); } catch (e) {} },
+    };
+    const newId = () => Array.from(crypto.getRandomValues(new Uint8Array(16)), b => b.toString(16).padStart(2, '0')).join('');
+    let visitor = store.get('chatVisitor');
+    let lastId = 0;           // newest message id shown
+    let hasContact = false;
+    let panel = null;
+    let pollTimer = null;
+    let lastOpener = null;
+    const messages = [];      // {id, owner, text, t, state}
+
+    const seenId = () => Number(store.get('chatSeen') || 0);
+    const setDot = on => openers.forEach(o => { const dot = $('.chat-dot', o); if (dot) dot.hidden = !on; });
+
+    function fetchNew() {
+      if (!visitor) return Promise.resolve([]);
+      return fetch(`${CHAT}/messages?v=${visitor}&after=${lastId}`, { cache: 'no-store' })
+        .then(r => r.json())
+        .then(data => {
+          hasContact = data.contact;
+          const fresh = data.messages.filter(m => m.id > lastId && !messages.some(x => x.id === m.id));
+          fresh.forEach(m => messages.push(m));
+          if (data.messages.length) lastId = Math.max(lastId, ...data.messages.map(m => m.id));
+          return fresh;
+        });
+    }
+
+    const pad = n => String(n).padStart(2, '0');
+    const timeOf = t => { const d = new Date(t * 1000); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+    function dayOf(t) {
+      const d = new Date(t * 1000);
+      const start = x => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+      const diff = Math.round((start(new Date()) - start(d)) / 86400000);
+      if (diff === 0) return ct('today');
+      if (diff === 1) return ct('yesterday');
+      return d.toLocaleDateString(currentLang() === 'ru' ? 'ru-RU' : 'en-GB', { day: 'numeric', month: 'long' });
+    }
+
+    function render() {
+      if (!panel) return;
+      const list = $('.chat-list', panel);
+      const nearBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 80;
+      list.textContent = '';
+      const hello = document.createElement('div');
+      hello.className = 'chat-hello';
+      hello.textContent = ct('hello');
+      list.append(hello);
+      let day = '';
+      messages.forEach(m => {
+        const label = dayOf(m.t);
+        if (label !== day) {
+          day = label;
+          const sep = document.createElement('div');
+          sep.className = 'chat-day';
+          sep.textContent = label;
+          list.append(sep);
+        }
+        const bubble = document.createElement('div');
+        bubble.className = 'chat-msg ' + (m.owner ? 'is-in' : 'is-out') + (m.state === 'failed' ? ' is-failed' : '')
+          + (m.file && m.file.image ? ' has-photo' : '');
+        if (m.file) bubble.append(fileNode(m, nearBottom || !render.done));
+        if (m.text) {
+          const text = document.createElement('span');
+          text.className = 'chat-text';
+          text.textContent = m.text;
+          bubble.append(text);
+        }
+        const meta = document.createElement('span');
+        meta.className = 'chat-meta';
+        meta.textContent = timeOf(m.t) + (m.owner ? '' : m.state === 'sending' ? ' 🕓' : m.state === 'failed' ? ' !' : ' ✓');
+        bubble.append(meta);
+        if (m.state === 'failed') {
+          bubble.title = ct('failed');
+          bubble.setAttribute('role', 'button');
+          bubble.tabIndex = 0;
+          bubble.addEventListener('click', () => (m.blob ? sendFile(m) : sendMessage(m)));
+        }
+        list.append(bubble);
+      });
+      $('.chat-contact', panel).hidden = hasContact;
+      if (nearBottom || !render.done) list.scrollTop = list.scrollHeight;
+      render.done = true;
+      const ownerIds = messages.filter(m => m.owner).map(m => m.id);
+      if (ownerIds.length) store.set('chatSeen', String(Math.max(seenId(), ...ownerIds)));
+      setDot(false);
+    }
+
+    function sendMessage(m) {
+      m.state = 'sending';
+      render();
+      const contact = $('.chat-contact', panel);
+      const body = JSON.stringify({
+        v: visitor, text: m.text, contact: hasContact ? '' : contact.value.trim(),
+        page: location.pathname, lang: currentLang(), website: $('.chat-hp', panel).value,
+      });
+      // text/plain keeps it a simple request: no CORS preflight
+      fetch(`${CHAT}/send`, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=UTF-8' }, body })
+        .then(r => r.json().then(data => ({ ok: r.ok, status: r.status, data })))
+        .then(({ ok, status, data }) => {
+          if (!ok) {
+            m.state = 'failed';
+            if (status === 429) showToast(ct('limit'));
+            return render();
+          }
+          m.state = '';
+          m.id = data.id;
+          m.t = data.t;
+          lastId = Math.max(lastId, data.id);
+          if (contact.value.trim()) hasContact = true;
+          store.set('chatVisitor', visitor);
+          store.set('chatLastSent', String(Date.now()));
+          render();
+        })
+        .catch(() => { m.state = 'failed'; render(); });
+    }
+
+    const fileUrl = file => `${CHAT}/file/${file.id}?v=${visitor}`;
+    const sizeText = size => (size >= 1048576 ? (size / 1048576).toFixed(1) + ' ' + ct('mb') : Math.max(1, Math.round(size / 1024)) + ' ' + ct('kb'));
+
+    // A picture is shown in the bubble (the local copy while it uploads); any other file is a download card
+    function fileNode(m, stick) {
+      const file = m.file;
+      const link = document.createElement('a');
+      if (file.id) {
+        link.href = fileUrl(file);
+        link.target = '_blank';
+        link.rel = 'noopener';
+      }
+      if (file.image) {
+        link.className = 'chat-photo';
+        const img = document.createElement('img');
+        img.alt = file.name;
+        img.src = file.local || fileUrl(file);
+        if (stick) img.addEventListener('load', () => { const list = $('.chat-list', panel); list.scrollTop = list.scrollHeight; });
+        link.append(img);
+      } else {
+        link.className = 'chat-file';
+        if (file.id) link.download = file.name;
+        const badge = document.createElement('span');
+        badge.className = 'chat-file-icon';
+        badge.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/></svg>';
+        const info = document.createElement('span');
+        info.className = 'chat-file-info';
+        const name = document.createElement('b');
+        name.textContent = file.name;
+        const size = document.createElement('span');
+        size.textContent = sizeText(file.size);
+        info.append(name, size);
+        link.append(badge, info);
+      }
+      return link;
+    }
+
+    function sendFile(m) {
+      m.state = 'sending';
+      render();
+      const contact = $('.chat-contact', panel);
+      const query = new URLSearchParams({
+        v: visitor, name: m.file.name, page: location.pathname, lang: currentLang(),
+        contact: hasContact ? '' : contact.value.trim(),
+      });
+      fetch(`${CHAT}/upload?${query}`, { method: 'POST', headers: { 'Content-Type': m.blob.type || 'application/octet-stream' }, body: m.blob })
+        .then(r => r.json().then(data => ({ ok: r.ok, status: r.status, data })))
+        .then(({ ok, status, data }) => {
+          if (!ok) {
+            m.state = 'failed';
+            if (status === 429) showToast(ct('limit'));
+            return render();
+          }
+          m.state = '';
+          m.id = data.id;
+          m.t = data.t;
+          m.file = Object.assign(data.file, { local: m.file.local });
+          m.blob = null;
+          lastId = Math.max(lastId, data.id);
+          if (contact.value.trim()) hasContact = true;
+          store.set('chatVisitor', visitor);
+          store.set('chatLastSent', String(Date.now()));
+          render();
+        })
+        .catch(() => { m.state = 'failed'; render(); });
+    }
+
+    function attach(files) {
+      Array.from(files || []).forEach(blob => {
+        if (blob.size > 10 * 1048576) return showToast(ct('tooLarge'));
+        if (!visitor) visitor = newId();
+        const image = /^image\/(png|jpeg|gif|webp)$/.test(blob.type);
+        const m = {
+          id: 0, owner: false, text: '', t: Math.floor(Date.now() / 1000), state: 'sending', blob,
+          file: { id: '', name: blob.name || 'screenshot.png', size: blob.size, image, local: image ? URL.createObjectURL(blob) : '' },
+        };
+        messages.push(m);
+        sendFile(m);
+      });
+    }
+
+    function submit() {
+      const input = $('.chat-input', panel);
+      const text = input.value.trim();
+      if (!text) return;
+      if (!visitor) visitor = newId();
+      const m = { id: 0, owner: false, text: text.slice(0, 2000), t: Math.floor(Date.now() / 1000), state: 'sending' };
+      messages.push(m);
+      input.value = '';
+      grow(input);
+      sendMessage(m);
+      input.focus();
+    }
+
+    function grow(input) {
+      input.style.height = 'auto';
+      input.style.height = Math.min(input.scrollHeight, 132) + 'px';
+    }
+
+    function build() {
+      panel = document.createElement('section');
+      panel.className = 'chat';
+      panel.hidden = true;
+      panel.setAttribute('role', 'dialog');
+      panel.innerHTML = `<header class="chat-head">
+          <button type="button" class="chat-close" data-chat-close><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+          <span class="chat-avatar" aria-hidden="true">S</span>
+          <span class="chat-who"><b class="chat-title"></b><span class="chat-sub"></span></span>
+        </header>
+        <div class="chat-list" aria-live="polite"></div>
+        <form class="chat-form">
+          <input class="chat-contact" type="text" maxlength="120" autocomplete="email">
+          <input class="chat-hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <div class="chat-row">
+            <button type="button" class="chat-attach"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.4 11.1-9.2 9.2a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5"/></svg></button>
+            <input class="chat-file-input" type="file" multiple hidden>
+            <textarea class="chat-input" rows="1" maxlength="2000"></textarea>
+            <button type="submit" class="chat-send"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.4 20.4 21 12 3.4 3.6 3.4 10.2 15 12 3.4 13.8Z"/></svg></button>
+          </div>
+        </form>`;
+      document.body.append(panel);
+      const input = $('.chat-input', panel);
+      $('.chat-close', panel).addEventListener('click', close);
+      $('.chat-form', panel).addEventListener('submit', event => { event.preventDefault(); submit(); });
+      input.addEventListener('input', () => grow(input));
+      input.addEventListener('keydown', event => {
+        // Enter sends on a keyboard; on phones Enter is a new line and the button sends
+        if (event.key === 'Enter' && !event.shiftKey && !event.isComposing && !matchMedia('(pointer: coarse)').matches) {
+          event.preventDefault();
+          submit();
+        }
+      });
+      panel.addEventListener('keydown', event => { if (event.key === 'Escape') close(); });
+      // Files: the paper clip, a screenshot pasted with Ctrl+V, or files dropped on the window
+      const picker = $('.chat-file-input', panel);
+      $('.chat-attach', panel).addEventListener('click', () => picker.click());
+      picker.addEventListener('change', () => { attach(picker.files); picker.value = ''; });
+      input.addEventListener('paste', event => {
+        const files = event.clipboardData && event.clipboardData.files;
+        if (files && files.length) { event.preventDefault(); attach(files); }
+      });
+      panel.addEventListener('dragover', event => { event.preventDefault(); panel.classList.add('is-drop'); });
+      panel.addEventListener('dragleave', event => { if (!panel.contains(event.relatedTarget)) panel.classList.remove('is-drop'); });
+      panel.addEventListener('drop', event => {
+        event.preventDefault();
+        panel.classList.remove('is-drop');
+        attach(event.dataTransfer && event.dataTransfer.files);
+      });
+      labels();
+      languageListeners.push(() => { labels(); render(); });
+    }
+
+    function labels() {
+      $('.chat-title', panel).textContent = ct('title');
+      $('.chat-sub', panel).textContent = ct('sub');
+      $('.chat-close', panel).setAttribute('aria-label', ct('close'));
+      $('.chat-send', panel).setAttribute('aria-label', ct('send'));
+      $('.chat-attach', panel).setAttribute('aria-label', ct('attach'));
+      $('.chat-attach', panel).title = ct('attach');
+      $('.chat-contact', panel).placeholder = ct('contact');
+      $('.chat-input', panel).placeholder = ct('placeholder');
+      panel.setAttribute('aria-label', ct('title'));
+    }
+
+    // A soft two-note chime made by the browser (no sound file). Browsers allow sound only after the visitor
+    // has clicked or typed on the page, so the audio is unlocked on the first such action.
+    let audio = null;
+    function unlockAudio() {
+      try {
+        if (!audio) audio = new (window.AudioContext || window.webkitAudioContext)();
+        if (audio.state === 'suspended') audio.resume();
+      } catch (e) {}
+    }
+    function chime() {
+      if (!audio || audio.state !== 'running') return;
+      const start = audio.currentTime + 0.02;
+      [[660, 0], [990, 0.13]].forEach(([freq, delay]) => {
+        const osc = audio.createOscillator();
+        const gain = audio.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.0001, start + delay);
+        gain.gain.exponentialRampToValueAtTime(0.18, start + delay + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + delay + 0.45);
+        osc.connect(gain).connect(audio.destination);
+        osc.start(start + delay);
+        osc.stop(start + delay + 0.5);
+      });
+    }
+
+    // "(1) " in the tab title while the visitor is on another tab
+    let titleMark = false;
+    function markTitle(on) {
+      if (on && !titleMark) document.title = '(1) ' + document.title;
+      if (!on && titleMark) document.title = document.title.replace(/^\(1\) /, '');
+      titleMark = on;
+    }
+
+    let notified = seenId();
+    function notify(fresh) {
+      const answers = fresh.filter(m => m.owner && m.id > notified);
+      if (!answers.length) return;
+      notified = Math.max(...answers.map(m => m.id));
+      chime();
+      if (!panel || panel.hidden) setDot(true);
+      if (document.hidden) markTitle(true);
+    }
+
+    // While the chat is open: every 5 s. Closed or on another tab: every 20 s, and only for a day after the
+    // visitor last wrote, so that answers are noticed without asking the server for nothing.
+    function poll() {
+      clearTimeout(pollTimer);
+      const isOpen = panel && !panel.hidden;
+      const waiting = visitor && Date.now() - Number(store.get('chatLastSent') || 0) < 86400000;
+      if (!isOpen && !waiting) return;
+      fetchNew().then(fresh => {
+        if (fresh.length && isOpen && !panel.hidden) render();
+        notify(fresh);
+      }).catch(() => {});
+      pollTimer = setTimeout(poll, isOpen && !document.hidden ? 5000 : 20000);
+    }
+
+    function open(event) {
+      if (event) event.preventDefault();
+      lastOpener = event && event.currentTarget;
+      if (!panel) build();
+      panel.hidden = false;
+      root.classList.add('chat-open');
+      render.done = false;
+      render();
+      fetchNew().then(render).catch(() => {});
+      poll();
+      setTimeout(() => $('.chat-input', panel).focus({ preventScroll: true }), 50);
+    }
+
+    function close() {
+      panel.hidden = true;
+      root.classList.remove('chat-open');
+      poll();   // keeps listening for an answer in the background (see poll)
+      if (location.hash === '#chat') history.replaceState(null, '', location.pathname + location.search);
+      if (lastOpener) lastOpener.focus({ preventScroll: true });
+    }
+
+    openers.forEach(o => o.addEventListener('click', open));
+    ['pointerdown', 'keydown'].forEach(type => document.addEventListener(type, () => { if (visitor) unlockAudio(); }, { passive: true }));
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) return;
+      markTitle(false);
+      poll();
+    });
+    if (location.hash === '#chat') open();
+    // A returning visitor: a dot on "Chat" when an answer came while they were away, then keep listening
+    else if (visitor) {
+      fetchNew().then(() => {
+        setDot(messages.some(m => m.owner && m.id > seenId()));
+        notified = Math.max(notified, ...messages.filter(m => m.owner).map(m => m.id));
+        pollTimer = setTimeout(poll, 20000);
+      }).catch(() => {});
+    }
+  }
 })();
