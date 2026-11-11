@@ -1392,24 +1392,24 @@ html:not([data-image]) .img-ru { display: none !important; }
   transition: background var(--ease);
 }
 .chat-intro button:hover { background: rgb(94 166 232 / .26); }
-.chat-accent { color: #fcd34d; font-weight: 600; }
+.chat-accent { color: #8fb4ff; font-weight: 600; }
 .chat-verify-bar {
   display: flex;
   align-items: flex-start;
   gap: 10px;
   padding: 10px 14px 10px 12px;
-  background: linear-gradient(90deg, rgb(245 158 11 / .18), rgb(245 158 11 / .08));
-  border-bottom: 1px solid rgb(245 158 11 / .25);
-  box-shadow: inset 3px 0 0 #f59e0b;
+  background: linear-gradient(90deg, rgb(37 99 235 / .22), rgb(37 99 235 / .08));
+  border-bottom: 1px solid rgb(59 130 246 / .28);
+  box-shadow: inset 3px 0 0 #3b82f6;
 }
 .chat-verify-bar[hidden] { display: none; }
 .chat-verify-icon { flex: none; font-size: 18px; line-height: 1.25; }
 .chat-verify-text { display: grid; gap: 1px; min-width: 0; }
-.chat-verify-title { color: #fcd34d; font-size: var(--fs-sm); font-weight: 600; }
+.chat-verify-title { color: #bfd4ff; font-size: var(--fs-sm); font-weight: 600; }
 .chat-verify-sub { overflow-wrap: anywhere; color: rgb(255 255 255 / .72); font-size: 12.5px; line-height: 1.4; }
 @media (prefers-reduced-motion: no-preference) {
   .chat-verify-bar.is-pulse { animation: chat-verify-flash 1.4s ease-out 1; }
-  @keyframes chat-verify-flash { 0%, 30% { background-color: rgb(245 158 11 / .35); } }
+  @keyframes chat-verify-flash { 0%, 30% { background-color: rgb(59 130 246 / .38); } }
 }
 .chat-day {
   align-self: center;

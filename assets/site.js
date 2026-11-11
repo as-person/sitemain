@@ -1081,7 +1081,7 @@
       updateUnread();
     }
 
-    // Text with *marked* words shown in the amber accent (what the visitor has to do: confirm the email).
+    // Text with *marked* words shown in the accent colour (what the visitor has to do: confirm the email).
     // Built from text nodes, never as HTML: the email in it is typed by the visitor.
     function accented(element, text) {
       element.textContent = '';
@@ -1114,7 +1114,7 @@
       return intro;
     }
 
-    // The email waits for confirmation: a pinned amber bar under the header, the one coloured spot in the window
+    // The email waits for confirmation: a pinned blue bar under the header, the one coloured spot in the window
     function verifyUi() {
       const bar = $('.chat-verify-bar', panel);
       const show = hasContact && !verified;
