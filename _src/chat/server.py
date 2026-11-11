@@ -553,6 +553,14 @@ LETTER = {
            'If you did not write anything on somov.org, please ignore this email.\n\n'
            '— somov\nhttps://somov.org\n'),
 }
+CONFIRM_BUBBLES = {
+    'ru': ('Здравствуйте! Спасибо, что написали в чат на somov.org.<br><br>'
+           'Мы получили ваш вопрос и ответим в ближайшее время — ответ придёт в чат на сайте и на эту почту.',
+           'Если вы ничего не писали на somov.org, просто не обращайте внимания на это письмо.'),
+    'en': ('Hello! Thank you for writing in the chat on somov.org.<br><br>'
+           'We got your question and will answer soon — the answer will come to the chat on the site and to this email.',
+           'If you did not write anything on somov.org, please ignore this email.'),
+}
 mail_hits = {}     # hash of IP -> [times]
 mail_all = []      # times of all letters
 
@@ -582,6 +590,63 @@ def unsub_link(thread):
         token = secrets.token_urlsafe(18)
         run('UPDATE threads SET unsub = ? WHERE id = ?', token, thread)
     return UNSUB_URL + token
+
+
+FONT = "-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif"
+HTML_TEXT = {
+    'ru': {'open': 'Открыть чат', 'reply': 'Ответить можно прямо на это письмо', 'unsub': 'Отписаться'},
+    'en': {'open': 'Open the chat', 'reply': 'You can reply right to this email', 'unsub': 'Unsubscribe'},
+}
+
+
+def html_text(text):
+    """Escaped text with line breaks and clickable links."""
+    out = html.escape(text).replace('\n', '<br>')
+    return re.sub(r'(https?://[^\s<]+[^\s<.,;:!?)])',
+                  r'<a href="\1" style="color:#8fc1f0;text-decoration:underline">\1</a>', out)
+
+
+def bubble(inner, note=False):
+    """One message from somov on the left, like in the chat window; note=True: a quiet line in the middle."""
+    if note:
+        return (f'<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" '
+                f'style="padding:6px 8px 2px"><span style="display:inline-block;padding:6px 12px;border-radius:12px;'
+                f'background:#121b26;color:#8a96a3;font:13px/1.45 {FONT}">{inner}</span></td></tr></table>')
+    return (f'<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 6px"><tr>'
+            f'<td bgcolor="#182533" style="background:#182533;border-radius:16px 16px 16px 5px;padding:9px 13px;'
+            f'color:#ffffff;font:15px/1.5 {FONT};max-width:380px">{inner}</td></tr></table>')
+
+
+def letter_html(lang, subject, bubbles, unsub, chat=True):
+    """The whole letter: the chat header, the bubbles, a button to the chat and a quiet unsubscribe line.
+    Tables and inline styles only: that is what all mail apps show the same."""
+    t = HTML_TEXT['ru' if lang == 'ru' else 'en']
+    button = (f'<a href="https://somov.org/#chat" style="display:inline-block;padding:11px 26px;border-radius:999px;'
+              f'background:#5ea6e8;color:#ffffff;font:600 14px/1 {FONT};text-decoration:none">{t["open"]}</a>'
+              f'<div style="padding-top:12px;color:#8a96a3;font:13px/1.4 {FONT}">{t["reply"]}</div>'
+              if chat else f'<div style="color:#8a96a3;font:13px/1.4 {FONT}">{t["reply"]}</div>')
+    unsub_line = (f' · <a href="{unsub}" style="color:#5d6773;text-decoration:underline">{t["unsub"]}</a>'
+                  if unsub else '')
+    return f"""<!doctype html>
+<html lang="{lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark"><meta name="supported-color-schemes" content="dark"><title>{html.escape(subject)}</title></head>
+<body style="margin:0;padding:0;background:#0b0e13" bgcolor="#0b0e13">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#0b0e13" style="background:#0b0e13"><tr>
+<td align="center" style="padding:28px 12px">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#0e1621"
+ style="max-width:480px;background:#0e1621;border:1px solid #1f2a36;border-radius:18px;border-collapse:separate;overflow:hidden">
+<tr><td bgcolor="#17212b" style="background:#17212b;padding:14px 18px;border-bottom:1px solid #0b1118">
+<table role="presentation" cellpadding="0" cellspacing="0"><tr>
+<td width="40" height="40" align="center" valign="middle" bgcolor="#6d6cf2"
+ style="width:40px;height:40px;border-radius:20px;background:#6d6cf2;background-image:linear-gradient(135deg,#3a8dff,#a855f7);color:#ffffff;font:700 17px/40px {FONT}">S</td>
+<td style="padding-left:12px"><div style="color:#f0f2f5;font:600 15px/1.3 {FONT}">somov</div>
+<div style="color:#8a96a3;font:13px/1.3 {FONT}">somov.org</div></td>
+</tr></table></td></tr>
+<tr><td style="padding:20px 16px 10px">{''.join(bubbles)}</td></tr>
+<tr><td align="center" style="padding:14px 18px 24px">{button}</td></tr>
+</table>
+<div style="padding-top:16px;color:#5d6773;font:12px/1.5 {FONT}"><a href="https://somov.org" style="color:#5d6773;text-decoration:none">somov.org</a>{unsub_line}</div>
+</td></tr></table></body></html>"""
 
 
 def visitor_letter(thread, lang, contact, subject, body, unsub=True):
@@ -683,8 +748,11 @@ def reply_letter(thread, text, fid):
     if not row or not EMAIL_RE.match(row[0][1]):
         return
     n, contact, lang, nomail = row[0]
-    if nomail:   # the answer stays in the site chat only: say so, or the owner would think it went by email
-        say(f'📭 #{n}: {contact} отписался от писем — ответ на почту не отправлен')
+    if nomail:   # say where the answer went, or the owner would think it went by email
+        on_site = q("SELECT 1 FROM messages WHERE thread = ? AND owner = 0 AND src = '' LIMIT 1", thread)
+        say(f'📭 #{n}: {contact} отписался от писем — ' + (
+            'ответ виден только в чате на сайте' if on_site else
+            'ответ никуда не ушёл (он писал только на почту). Ответить можно из Gmail'))
         return
     subject, footer = REPLY['ru' if lang == 'ru' else 'en']
     origin = state(f'mailmsgid:{thread}')
@@ -696,15 +764,34 @@ def reply_letter(thread, text, fid):
         letter['References'] = ((state(f'mailrefs:{thread}') or '') + ' ' + origin).strip()
     else:
         letter = visitor_letter(thread, lang, contact, subject, f'{text}\n\n—\n{footer}' if text else footer)
-    stored = q('SELECT name, mime FROM files WHERE id = ?', fid) if fid else []
+    stored = q('SELECT name, mime, size, image FROM files WHERE id = ?', fid) if fid else []
+    data = b''
     if stored:
-        name, mime = stored[0]
         try:
             with open(os.path.join(FILES_DIR, fid), 'rb') as source:
-                main, _, sub = mime.partition('/')
-                letter.add_attachment(source.read(), maintype=main, subtype=sub or 'octet-stream', filename=name)
+                data = source.read()
         except OSError as error:
             log('mail file:', error)
+            stored = []
+    bubbles, cid = [], ''
+    if stored:
+        name, mime, size, image = stored[0]
+        if image:
+            cid = make_msgid(domain='somov.org')
+            bubbles.append(bubble(f'<img src="cid:{cid[1:-1]}" alt="{html.escape(name)}" width="300" '
+                                  f'style="display:block;width:100%;max-width:300px;height:auto;border-radius:11px">'))
+        else:
+            bubbles.append(bubble(f'📎 <b>{html.escape(name)}</b> <span style="color:#8a96a3">· {size_text(size)}</span>'))
+    if text:
+        bubbles.append(bubble(html_text(text)))
+    letter.add_alternative(letter_html(lang, subject, bubbles, unsub_link(thread), chat=not origin), subtype='html')
+    if stored:
+        name, mime, size, image = stored[0]
+        main, _, sub = mime.partition('/')
+        if cid:   # the picture lives inside the HTML part
+            letter.get_body(('html',)).add_related(data, maintype=main, subtype=sub, cid=cid, filename=name)
+        else:
+            letter.add_attachment(data, maintype=main, subtype=sub or 'octet-stream', filename=name)
     if not send_letter(letter):
         say(f'⚠️ #{n}: не удалось отправить ответ на почту {contact}')
         return
@@ -734,26 +821,26 @@ def copy_to_owner(thread):
                  'WHERE m.thread = ? AND m.owner = 0 AND m.src = \'\' AND m.id > ? ORDER BY m.id', thread, done)
         if not rows:
             return
+        # Only the visitor's own words: when the owner answers from Gmail, Gmail quotes this letter to the visitor,
+        # so nothing meant for the owner (numbers, hints, country) may be in it. All of that is in Telegram.
         parts, files = [], []
         for mid, text, page, t, fid, name, mime in rows:
-            when = time.strftime('%d.%m %H:%M', time.gmtime(t + 7 * 3600))   # Vietnam time, like the logs
-            parts.append(f'[{when}] ' + (text or f'📎 {name}'))
+            if text:
+                parts.append(text)
             if fid:
                 files.append((fid, name, mime))
         root = state(f'mailroot:{thread}')
         letter = EmailMessage()
-        letter['From'] = formataddr((f'{contact} (чат #{n})', MAIL_FROM))
+        letter['From'] = formataddr((contact, MAIL_FROM))
         letter['To'] = MAIL_FROM
         letter['Reply-To'] = contact
-        letter['Subject'] = f'Чат somov.org #{n}'
+        letter['Subject'] = 'Сообщение с somov.org' if (q('SELECT lang FROM threads WHERE id = ?', thread)
+                                                         or [('ru',)])[0][0] == 'ru' else 'Message from somov.org'
         letter['Message-ID'] = make_msgid(domain='somov.org')
         if root:
             letter['In-Reply-To'] = root
             letter['References'] = root
-        footer = (f'Ответить: просто ответьте на это письмо, ответ уйдёт на {contact} (в чат на сайте он не попадёт).\n'
-                  f'Или ответьте в Telegram на сообщение #{n}: ответ придёт и в чат, и на почту.')
-        where = ' · '.join(x for x in (flag(cc), rows[-1][2] or '/') if x)
-        letter.set_content('\n\n'.join(parts) + f'\n\n—\n{where}\n{footer}\n')
+        letter.set_content('\n\n'.join(parts) + '\n' if parts else '\n')
         for fid, name, mime in files:
             try:
                 with open(os.path.join(FILES_DIR, fid), 'rb') as source:
@@ -789,6 +876,9 @@ def confirm_letter(thread, ip):
         return
     subject, body = LETTER['ru' if lang == 'ru' else 'en']
     letter = visitor_letter(thread, lang, contact, subject, body.rstrip('\n'))
+    hello, ignore = CONFIRM_BUBBLES['ru' if lang == 'ru' else 'en']
+    letter.add_alternative(letter_html(lang, subject, [bubble(hello), bubble(ignore, note=True)],
+                                       unsub_link(thread)), subtype='html')
     letter['Auto-Submitted'] = 'auto-replied'
     if not send_letter(letter):
         return
@@ -870,8 +960,9 @@ def bring_letter(raw):
     letter = email.message_from_bytes(raw, policy=email_policy)
     name, sender = parseaddr(str(letter.get('From', '')))
     sender = sender.strip()
-    if not sender or sender.lower() in (MAIL_FROM.lower(), SMTP_USER.lower()):
-        return   # our own letters: copies of the chat, answers
+    own = str(letter.get('Message-ID', '')).strip().endswith('@somov.org>') or MAIL_FROM.lower() in str(letter.get('From', '')).lower()
+    if not sender or own or sender.lower() in (MAIL_FROM.lower(), SMTP_USER.lower()):
+        return   # our own letters (all made here carry @somov.org Message-IDs): copies of the chat, answers
     if not_person(letter, sender):
         return   # stays in Gmail; the owner asked for no summaries in Telegram
     subject = str(letter.get('Subject', '') or '').strip()

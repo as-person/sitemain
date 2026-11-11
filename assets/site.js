@@ -1032,7 +1032,7 @@
       list.textContent = '';
       let day = '';
       // What the visitor should know: the answer comes here, and a contact keeps it from being missed
-      if (!hasContact) list.append(introNode());
+      if (!hasContact && !savedContact()) list.append(introNode());   // a contact saved before the first message counts too
       // The notification offer stays right under the visitor's first message: new messages go below it
       const offerAfter = pushOffer() && store.get('chatPushOffer') !== 'done' ? messages.find(m => !m.owner && m.id) : null;
       messages.forEach(m => {
