@@ -910,6 +910,8 @@ def letter_later(thread, ip):
 
 NOT_PERSON = re.compile(r'^(no-?reply|do-?not-?reply|mailer-daemon|postmaster|bounces?|notifications?|notify|alerts?|'
                         r'newsletters?|news|digest|marketing|promo)([+._-].*)?$', re.I)
+QUOTE_RULE = re.compile(r'^[-_=]{4,}$')
+QUOTE_HEADER = re.compile(r'^(from|to|subject|sent|date|от|кому|тема|отправлено|дата)\s*:', re.I)
 QUOTE_START = re.compile(r'^(On .{5,200} wrote:|.{0,80}\d{4}.{0,80}<[^>\s]+@[^>\s]+>.{0,20}:|'
                          r'-{2,} ?(Original Message|Исходное сообщение|Пересылаемое сообщение|Forwarded message) ?-{2,})\s*$',
                          re.I)
@@ -943,8 +945,15 @@ def letter_text(letter):
         text = re.sub(r'(?i)<br\s*/?>|</(p|div|li|tr|h\d)>', '\n', text)
         text = html.unescape(re.sub(r'<[^>]+>', '', text)).replace('\xa0', ' ')
     lines = []
-    for line in text.replace('\r\n', '\n').split('\n'):
-        if line.startswith('>') or QUOTE_START.match(line.strip()):
+    source = text.replace('\r\n', '\n').split('\n')
+    for i, line in enumerate(source):
+        bare = line.strip()
+        if line.startswith('>') or QUOTE_START.match(bare):
+            break
+        # Yandex, Mail.ru and others: a line of dashes, or a block of the old letter's headers (two such lines in a
+        # row: a single "Тема: ..." line can be the person's own words)
+        following = next((x.strip() for x in source[i + 1:] if x.strip()), '')
+        if lines and (QUOTE_RULE.match(bare) or (QUOTE_HEADER.match(bare) and QUOTE_HEADER.match(following))):
             break
         lines.append(line.rstrip())
     return re.sub(r'\n{3,}', '\n\n', '\n'.join(lines)).strip()
