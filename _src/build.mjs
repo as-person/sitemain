@@ -270,7 +270,7 @@ const footer = () => `<footer class="footer">
       <section>
         <h2>${L('Contact', 'Контакты')}</h2>
         <div class="footer-links">
-          <a href="#chat" data-chat-open>${L('Chat on the site', 'Чат на сайте')}<span class="chat-dot" hidden></span></a>
+          <a href="#chat" data-chat-open>${L('Website chat', 'Чат на сайте')}<span class="chat-dot" hidden></span></a>
           <a href="${TELEGRAM}" target="_blank" rel="noopener" data-tg-placement="footer">Telegram</a>
           <a href="mailto:me@somov.org">me@somov.org</a>
         </div>
