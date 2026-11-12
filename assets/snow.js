@@ -35,7 +35,7 @@
 
   const COL = 3;                                  // width of one column of a snow pile, px
   // Blocks snow settles on: every card-like block with its own background on the site's pages
-  const SURFACES = '.composer, .more-card, .tg-card, .panel, .tweak-card, .rows, .search input, .support-card, .shot';
+  const SURFACES = '.composer, .more-card, .tg-card, .panel, .tweak-card, .rows, .support-card, .shot';
   let W = 0, H = 0, dpr = 1, phone = false;
   let flakes = [], ground = null, surfaces = [];
   let running = true, last = 0, frame = 0, breeze = 0, target = 0;
@@ -56,6 +56,7 @@
     const page = document.body.getBoundingClientRect();
     for (const s of surfaces) {
       const r = s.rect = s.el.getBoundingClientRect();
+      if (s.sticky) continue;                     // drawn on the screen layer where it is (see draw)
       // the card's picture where the card is in the page (not on the screen): set only when it changed
       const x = Math.round(r.left - page.left + s.inset), y = Math.round(r.top - page.top - s.pile.max - 4 + 0.5);
       if (s.x !== x || s.y !== y) {
@@ -78,8 +79,16 @@
     sprites.clear();
     for (const f of flakes) f.px = 0;
     const first = !ground;
+    if (ground) ground.cache.remove();
     ground = pile(Math.ceil(W / COL) + 1, phone ? 34 : 52, false, ground);
     if (first) restore(ground, saved.ground);   // the drift from the previous page
+    // The drift is its own element held at the bottom of the screen by the browser (CSS bottom: 0): when a phone's
+    // address bar hides or shows while scrolling, it stays on the bottom edge instead of hanging in the air
+    ground.cache.className = 'snow-ground';
+    ground.cache.setAttribute('aria-hidden', 'true');
+    ground.cache.style.width = ground.cache.width / dpr + 'px';
+    ground.cache.style.height = ground.cache.height / dpr + 'px';
+    document.body.append(ground.cache);
     target = Math.round(Math.min(phone ? 100 : 240, W * H / (phone ? 6500 : 5600)));
     while (flakes.length < target) flakes.push(flake(true));
     flakes.length = target;
@@ -115,14 +124,20 @@
       const was = keep.get(el);
       const key = location.pathname + '#' + index;
       let p = was && was.pile.cols.length === count ? was.pile : null;
+      // a block that sticks on the screen while the page scrolls (the download panel on a computer): its snow is
+      // drawn on the screen layer, where the block is, not placed in the page
+      let sticky = false;
+      for (let n = el; n && n !== document.body; n = n.parentElement) {
+        if (getComputedStyle(n).position === 'sticky') { sticky = true; break; }
+      }
       if (!p) {
         p = pile(count, phone ? 9 : 14, true);
         restore(p, saved.cards[key]);
         p.cache.style.width = p.cache.width / dpr + 'px';
         p.cache.style.height = p.cache.height / dpr + 'px';
-        cardLayer.append(p.cache);
+        if (!sticky) cardLayer.append(p.cache);
       }
-      return { el, inset, rect: null, key, pile: p };
+      return { el, inset, rect: null, key, pile: p, sticky };
     });
     const now = new Set(surfaces.map(s => s.pile.cache));   // cards gone from the page take their snow along
     for (const c of [...cardLayer.children]) if (!now.has(c)) c.remove();
@@ -214,6 +229,7 @@
   function step(dt) {
     frame++;
     if (frame % 30 === 0) measure();             // cards that moved without a scroll (the page changed)
+    for (const s of surfaces) if (s.sticky) s.rect = s.el.getBoundingClientRect();
     breeze += ((Math.sin(frame / 700) * 0.45 + Math.sin(frame / 211) * 0.15) - breeze) * 0.01;
     // A puff of air from the moving pointer: how far it went since the last frame (a still pointer blows nothing)
     let gustX = 0, gustY = 0, gust = false;
@@ -351,14 +367,16 @@
       g.drawImage(sprite(px), Math.round((f.x - d / 2) * dpr) / dpr, Math.round((f.y - d / 2) * dpr) / dpr, d, d);
     }
     back.globalAlpha = 1;
-    ctx.globalAlpha = 0.92;
-    stamp(ground, 0, H);
-    ctx.globalAlpha = 1;
-    // the cards' pictures live in the page: only repaint the ones whose snow changed (at most 10 times a second)
-    for (const s of surfaces) {
-      const p = s.pile;
+    // the drift and the cards' pictures live in the page: only repaint the ones whose snow changed (10 times a second)
+    for (const p of [ground, ...surfaces.filter(s => !s.sticky).map(s => s.pile)]) {
       if (p.dirty && frame - p.painted >= 6) { paint(p); p.painted = frame; }
     }
+    ctx.globalAlpha = 0.92;
+    for (const s of surfaces) {
+      const r = s.rect;
+      if (s.sticky && r && r.bottom > 0 && r.top < H + 10) stamp(s.pile, r.left + s.inset, r.top + 0.5);
+    }
+    ctx.globalAlpha = 1;
   }
 
   function loop(t) {
@@ -391,6 +409,7 @@
       canvas.remove();
       backCanvas.remove();
       cardLayer.remove();
+      ground.cache.remove();
       delete window.somovSnow;
     },
   };

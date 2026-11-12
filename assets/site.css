@@ -1627,6 +1627,8 @@ html:not([data-image]) .img-ru { display: none !important; }
 /* The snow on the cards: pictures placed in the page, so they scroll with the cards (above them, under the header) */
 .snow-cards { position: absolute; z-index: 2; top: 0; left: 0; width: 0; height: 0; pointer-events: none; }
 .snow-cards canvas { position: absolute; top: 0; left: 0; opacity: .92; }
+/* The drift at the bottom of the screen: held there by the browser, whatever the phone's address bar does */
+.snow-ground { position: fixed; z-index: 45; left: 0; bottom: 0; opacity: .92; pointer-events: none; }
 main, .footer { position: relative; z-index: 1; }
 .snow-toggle { margin-right: 16px; color: var(--muted); transition: color var(--ease); }
 .snow-toggle:hover { color: var(--text); }
