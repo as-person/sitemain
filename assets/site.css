@@ -1630,5 +1630,34 @@ html:not([data-image]) .img-ru { display: none !important; }
 /* The drift at the bottom of the screen: held there by the browser, whatever the phone's address bar does */
 .snow-ground { position: fixed; z-index: 45; left: 0; bottom: 0; opacity: .92; pointer-events: none; }
 main, .footer { position: relative; z-index: 1; }
-.snow-toggle { margin-right: 16px; color: var(--muted); transition: color var(--ease); }
-.snow-toggle:hover { color: var(--text); }
+/* The switch in the header: a round button the height of the language switch, just before it */
+.snow-switch {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-right: -16px;
+  border: 1px solid var(--border);
+  border-radius: var(--pill);
+  color: var(--muted);
+  transition: color var(--ease), border-color var(--ease);
+}
+.snow-switch:hover { color: var(--text); border-color: var(--border-strong, var(--muted)); }
+.snow-switch svg { width: 18px; height: 18px; }
+.snow-switch .snow-slash { display: none; }
+/* Off: a dimmer snowflake struck through, the stroke cut out of it by a band of the header's colour */
+.snow-switch[aria-pressed="false"] { color: rgb(255 255 255 / .38); }
+.snow-switch[aria-pressed="false"]:hover { color: var(--muted); }
+.snow-switch[aria-pressed="false"] .snow-slash { display: inline; stroke: var(--text); }
+.snow-switch[aria-pressed="false"] .snow-slash-gap { stroke: var(--bg); stroke-width: 6; }
+/* Once a tab, after the snow came in: two soft breaths with a cold glow, to show where the snow is switched off */
+.snow-switch.is-breath { animation: snow-breath 1.5s ease-in-out 2; }
+@keyframes snow-breath {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgb(147 197 253 / 0); }
+  45% { transform: scale(1.16); box-shadow: 0 0 0 7px rgb(147 197 253 / .2); color: #dbeafe; border-color: rgb(147 197 253 / .6); }
+}
+@media (max-width: 720px) {
+  .topbar-inner:has(.snow-switch) { grid-template-columns: 1fr auto auto; }
+  .snow-switch { margin-right: -4px; }
+}

@@ -1762,7 +1762,7 @@
 
   /* Winter snow (assets/snow.js): every year in the season of _src/data/snow.json (15 Dec - 31 Jan), or always / never
      as the owner switched it (node _src/snow.mjs auto|on|off, then GitPush). In the season it falls for everyone,
-     unless the visitor turned it off with the footer link (remembered) or has animations off in the system;
+     unless the visitor turned it off with the snowflake switch in the header (remembered) or has animations off in the system;
      ?snow=0 / ?snow=1: off / on for this visit. Out of the season there is nothing at all. */
   if (root.dataset.snow) snowSeason();
   function snowSeason() {
@@ -1785,7 +1785,7 @@
     const store = (where, key, value) => { try { return value === undefined ? where.getItem(key) : where.setItem(key, value); } catch (e) { return null; } };
     const season = true;
     const visit = store(sessionStorage, 'snowVisit');
-    const choice = store(localStorage, 'snow');   // 'on' / 'off' from the footer link
+    const choice = store(localStorage, 'snow');   // 'on' / 'off' from the switch in the header
     const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const wanted = () => (visit ? visit === 'on' : choice ? choice === 'on' : season && !calm);
     const SNOW_TEXT = { en: ['Turn off the snow', 'Let it snow'], ru: ['Выключить снег', 'Включить снег'] };
@@ -1804,25 +1804,46 @@
       if (window.somovSnow) window.somovSnow.stop();
     };
 
-    // The footer link: in the season, or when the snow was turned on by hand
-    if (season || visit === 'on' || choice === 'on') {
-      const end = $('.footer-end');
-      if (end) {
-        const toggle = document.createElement('button');
-        toggle.type = 'button';
-        toggle.className = 'snow-toggle';
-        const label = () => { toggle.textContent = '❄ ' + SNOW_TEXT[currentLang()][on ? 0 : 1]; };
-        toggle.addEventListener('click', () => {
-          if (on) stop(); else start();
-          store(localStorage, 'snow', on ? 'on' : 'off');
-          store(sessionStorage, 'snowVisit', on ? 'on' : 'off');
-          label();
-        });
-        end.prepend(toggle);
-        languageListeners.push(label);
-        if (wanted()) start();
+    // The switch: a round snowflake button in the header, next to the language switch, where a visitor looks for
+    // such things (crossed out while the snow is off). Only while there is snow to switch: the rest of the year the
+    // header is as always.
+    const langSwitch = $('.topbar-inner .lang-switch');
+    if (langSwitch) {
+      const toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'snow-switch';
+      toggle.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" '
+        + 'stroke-linejoin="round" aria-hidden="true"><path d="M2 12h20M12 2v20m8-6-4-4 4-4M4 8l4 4-4 4M16 4l-4 4-4-4M8 20l4-4 4 4"/>'
+        + '<path class="snow-slash snow-slash-gap" d="m3 3 18 18"/><path class="snow-slash" d="m3 3 18 18"/></svg>';
+      const label = () => {
+        const text = SNOW_TEXT[currentLang()][on ? 0 : 1];
+        toggle.setAttribute('aria-label', text);
+        toggle.title = text;
+        toggle.setAttribute('aria-pressed', String(on));
+      };
+      toggle.addEventListener('click', () => {
+        if (on) stop(); else start();
+        store(localStorage, 'snow', on ? 'on' : 'off');
+        store(sessionStorage, 'snowVisit', on ? 'on' : 'off');
+        toggle.classList.remove('is-breath');
         label();
+      });
+      langSwitch.before(toggle);
+      languageListeners.push(label);
+      // Once a tab, a soft breath of the button shows where the snow is switched off: 2.5 s after the snow has
+      // finished coming in (snow.js says so), not over it
+      if (!store(sessionStorage, 'snowHint')) {
+        const breathe = () => setTimeout(() => {
+          if (!on || store(sessionStorage, 'snowHint')) return;
+          store(sessionStorage, 'snowHint', '1');
+          toggle.classList.add('is-breath');
+          toggle.addEventListener('animationend', () => toggle.classList.remove('is-breath'), { once: true });
+        }, 2500);
+        if (window.somovSnow && window.somovSnow.ready) breathe();
+        else window.addEventListener('somov-snow-ready', breathe, { once: true });
       }
+      if (wanted()) start();
+      label();
     } else if (wanted()) {
       start();
     }

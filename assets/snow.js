@@ -412,6 +412,11 @@
       }
     }
     stepBits(dt);
+    // all the snow has come in (on the tab's first page it drops in from the top): site.js may now point at the switch
+    if (!api.ready && !flakes.some(f => f.intro)) {
+      api.ready = true;
+      window.dispatchEvent(new Event('somov-snow-ready'));
+    }
     // snow holds a steep wall (only a nearly sheer side slides, slowly): a trench made by the pointer stays and
     // fills with what falls into it, not by the drift flowing back
     slump(ground, 5);
@@ -544,7 +549,8 @@
   resize();
   requestAnimationFrame(loop);
 
-  window.somovSnow = {
+  const api = window.somovSnow = {
+    ready: false,
     heights: () => Array.from(ground.cols),       // the drift's columns, for checks from the browser console
     stop() {
       running = false;
