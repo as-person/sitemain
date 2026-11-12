@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // The winter snow of the whole site, then a rebuild. Publish with GitPush afterwards.
-//   node _src/snow.mjs auto   every year by itself from 15 December to 31 January (dates in _src/data/snow.json)
+//   node _src/snow.mjs auto   every year by itself from 1 December to 31 January (dates in _src/data/snow.json)
 //   node _src/snow.mjs on     right now and always, whatever the date
 //   node _src/snow.mjs off    never: no snow, no footer link, the snow file is not even loaded
 //   node _src/snow.mjs preview on|off   the owner (his IP or device key) sees it out of the season too, to watch it

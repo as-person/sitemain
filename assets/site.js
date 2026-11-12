@@ -1760,7 +1760,7 @@
     }
   }
 
-  /* Winter snow (assets/snow.js): every year in the season of _src/data/snow.json (15 Dec - 31 Jan), or always / never
+  /* Winter snow (assets/snow.js): every year in the season of _src/data/snow.json (1 Dec - 31 Jan), or always / never
      as the owner switched it (node _src/snow.mjs auto|on|off, then GitPush). In the season it falls for everyone,
      unless the visitor turned it off with the snowflake switch in the header (remembered) or has animations off in the system;
      ?snow=0 / ?snow=1: off / on for this visit. Out of the season there is nothing at all. */
@@ -1770,7 +1770,7 @@
     const asked = new URLSearchParams(location.search).get('snow');
     if (asked === '1' || asked === '0') store(sessionStorage, 'snowVisit', asked === '1' ? 'on' : 'off');
     // The season: 'always' (switched on by hand) or 'MM-DD..MM-DD' by the visitor's date, every year (it may cross
-    // New Year: 12-15..01-31)
+    // New Year: 12-01..01-31)
     const range = root.dataset.snowSeason || '';
     const md = (() => { const d = new Date(); return String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); })();
     const [from, to] = range.split('..');

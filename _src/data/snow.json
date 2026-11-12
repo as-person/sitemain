@@ -1,7 +1,7 @@
 {
   "mode": "auto",
-  "from": "12-15",
+  "from": "12-01",
   "to": "01-31",
   "_note": "Winter snow. mode auto: falls by itself every year from `from` to `to` (month-day, the visitor's date); on: always; off: never. owner_preview: the owner sees it out of the season too. Switch with: node _src/snow.mjs auto|on|off, node _src/snow.mjs preview on|off, then GitPush.",
-  "owner_preview": false
+  "owner_preview": true
 }
