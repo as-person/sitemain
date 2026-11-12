@@ -1644,6 +1644,8 @@
       if (event) event.preventDefault();
       lastOpener = event && event.currentTarget;
       if (!panel) build();
+      clearTimeout(closeTimer);   // opened again while it was closing: stay open
+      panel.classList.remove('is-closing');
       panel.hidden = false;
       root.classList.add('chat-open');
       render.done = false;
@@ -1677,11 +1679,27 @@
       visualViewport.addEventListener('scroll', fitViewport);
     }
 
+    // Closing plays the way back (`is-closing` in site.css) and only then hides the window
+    let closeTimer = null;
     function close() {
-      panel.hidden = true;
-      fitViewport();
-      root.classList.remove('chat-open');
-      poll();   // keeps listening for an answer in the background (see poll)
+      if (panel.hidden || panel.classList.contains('is-closing')) return;
+      const finish = () => {
+        clearTimeout(closeTimer);
+        if (!panel.classList.contains('is-closing')) return;   // reopened meanwhile
+        panel.classList.remove('is-closing');
+        panel.hidden = true;
+        fitViewport();
+        root.classList.remove('chat-open');
+        poll();   // keeps listening for an answer in the background (see poll)
+      };
+      panel.classList.add('is-closing');
+      const animated = getComputedStyle(panel).animationName !== 'none';
+      if (animated) {
+        panel.addEventListener('animationend', finish, { once: true });
+        closeTimer = setTimeout(finish, 400);   // in case the animation event never comes
+      } else {
+        finish();
+      }
       if (location.hash === '#chat') history.replaceState(null, '', location.pathname + location.search);
       if (lastOpener) lastOpener.focus({ preventScroll: true });
     }

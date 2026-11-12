@@ -1314,9 +1314,19 @@ html:not([data-image]) .img-ru { display: none !important; }
   line-height: 1.4;
 }
 .chat[hidden] { display: none; }
+/* Opening and closing: on a computer the window grows softly out of its corner; on a phone (full screen) it
+   slides up from the bottom like a sheet in an app. `is-closing` plays the way back, then site.js hides it. */
 @media (prefers-reduced-motion: no-preference) {
-  .chat { animation: chat-in 180ms cubic-bezier(.2, 0, 0, 1); }
-  @keyframes chat-in { from { opacity: 0; transform: translateY(12px) scale(.98); } }
+  .chat { transform-origin: 100% 100%; animation: chat-open 300ms cubic-bezier(.16, 1, .3, 1); }
+  .chat.is-closing { animation: chat-close 180ms cubic-bezier(.4, 0, 1, 1) forwards; }
+  @keyframes chat-open { from { opacity: 0; transform: translateY(18px) scale(.95); } }
+  @keyframes chat-close { to { opacity: 0; transform: translateY(12px) scale(.97); } }
+}
+@media (max-width: 720px) and (prefers-reduced-motion: no-preference) {
+  .chat { animation: chat-sheet-open 380ms cubic-bezier(.16, 1, .3, 1); }
+  .chat.is-closing { animation: chat-sheet-close 260ms cubic-bezier(.4, 0, 1, 1) forwards; }
+  @keyframes chat-sheet-open { from { transform: translateY(100%); } }
+  @keyframes chat-sheet-close { to { transform: translateY(100%); } }
 }
 
 .chat-head {
@@ -1597,4 +1607,13 @@ html:not([data-image]) .img-ru { display: none !important; }
   .chat { inset: 0; width: auto; height: 100dvh; border: 0; border-radius: 0; }
   .chat-open, .chat-open body { overflow: hidden; }
   .chat-input { font-size: 16px; }   /* iPhone zooms into smaller inputs */
+}
+
+/* Animations off in the system: no movement, but the chat still fades in and out instead of jumping
+   (beats the global reset above by specificity) */
+@media (prefers-reduced-motion: reduce) {
+  .chat:not([hidden]) { animation: chat-fade-in 200ms ease-out !important; }
+  .chat.is-closing { animation: chat-fade-out 160ms ease-in forwards !important; }
+  @keyframes chat-fade-in { from { opacity: 0; } }
+  @keyframes chat-fade-out { to { opacity: 0; } }
 }
