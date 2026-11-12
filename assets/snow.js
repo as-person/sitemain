@@ -302,7 +302,7 @@
       }
       if (f.x < -10) f.x += W + 20; else if (f.x > W + 10) f.x -= W + 20;
       let landed = false;
-      const falling = !f.spray && f.vy > 0;
+      const falling = !f.spray && f.vy > 0 && !f.intro;   // dropping in on page load: passes by, lands later
       for (const s of surfaces) {
         const r = s.rect;
         if (f.x <= r.left || f.x >= r.right || f.y < r.top - s.pile.max - 2 || f.y >= r.bottom) continue;
