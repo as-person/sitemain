@@ -167,7 +167,8 @@
       const inset = word ? 0 : Math.ceil(parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0);
       const count = Math.max(1, Math.ceil((width - 2 * inset) / COL));
       const was = keep.get(el);
-      const key = location.pathname + (word ? '#w' + (index - blocks.length) : '#' + index);
+      // the footer's words are the same on every page: their snow goes along from page to page, like the drift
+      const key = word ? 'footer#' + (index - blocks.length) : location.pathname + '#' + index;
       let p = was && was.pile.cols.length === count ? was.pile : null;
       // a block that sticks on the screen while the page scrolls (the download panel on a computer): its snow is
       // drawn on the screen layer, where the block is, not placed in the page
