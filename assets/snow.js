@@ -67,16 +67,19 @@
     return p;
   }
 
-  // Where snow lies on a surface: the top edge of a block; on a word, the top of its tallest letters (the box of a line
-  // of text starts well above them), so the snow sits on the word without hiding the letters
+  // Where snow lies on a surface: the top edge of a block; on a word, on its letters (the box of a line of text
+  // starts well above them)
   function boxOf(s) {
     const r = s.el.getBoundingClientRect();
     if (!s.word) return r;
     const cs = getComputedStyle(s.el);
     measurer.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
-    const m = measurer.measureText(s.el.textContent);   // its tallest letters: the snow rests on them, not over the rest
+    const m = measurer.measureText(s.el.textContent), small = measurer.measureText('о').actualBoundingBoxAscent;
     const size = parseFloat(cs.fontSize) || 14;
-    const drop = m.fontBoundingBoxAscent ? m.fontBoundingBoxAscent - m.actualBoundingBoxAscent : size * 0.45;
+    // between the tops of the tall letters and of the small ones, nearer the small: the snow touches the word (no gap
+    // of air over the small letters) and only nips the tops of the capitals
+    const tall = m.actualBoundingBoxAscent, rest = tall - (tall - small) * 0.65;
+    const drop = m.fontBoundingBoxAscent ? m.fontBoundingBoxAscent - rest : size * 0.4;
     return { left: r.left, right: r.right, width: r.width, top: r.top + drop, bottom: r.bottom };
   }
 
