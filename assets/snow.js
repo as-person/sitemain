@@ -111,6 +111,7 @@
       alpha: 0.42 + z * 0.16,                   // about 50% opaque: soft, not bright
       spray: false,
       px: 0,
+      carry: 0,                                 // thrown snow: how much of the pile it took along (0: a new flake)
     };
   }
 
@@ -171,6 +172,9 @@
 
   // A pile slumps: where a column stands higher than its neighbour by more than the slope, some of it slides down.
   // Only for a while after the pile changed: a still pile costs nothing.
+  // How much snow may creep from one column to the next at a time: a trench made by the pointer fills in over
+  // minutes (mostly with what falls into it), not in a few seconds as if the drift were drawn again
+  const CREEP = 0.006;
   function slump(p, slope) {
     if (p.settling <= 0 || frame % 4) return;     // every 4th frame is plenty for snow sliding down
     p.settling--;
@@ -179,8 +183,8 @@
     for (let pass = 0; pass < 3; pass++) {
       for (let i = 0; i < cols.length - 1; i++) {
         const d = cols[i] - cols[i + 1];
-        if (d > slope) { const m = (d - slope) * 0.4; cols[i] -= m; cols[i + 1] += m; moved = true; }
-        else if (-d > slope) { const m = (-d - slope) * 0.4; cols[i + 1] -= m; cols[i] += m; moved = true; }
+        if (d > slope) { const m = Math.min(CREEP, (d - slope) * 0.15); cols[i] -= m; cols[i + 1] += m; moved = true; }
+        else if (-d > slope) { const m = Math.min(CREEP, (-d - slope) * 0.15); cols[i + 1] -= m; cols[i] += m; moved = true; }
       }
     }
     if (moved) p.dirty = true; else p.settling = 0;
@@ -221,6 +225,7 @@
         f.r = 0.6 + Math.random() * 1;
         f.px = 0;
         f.alpha = 0.55;
+        f.carry = 0.6;                            // what it took (most of it turns to powder on the way)
         flakes.push(f);
       }
     }
@@ -276,26 +281,28 @@
         if (f.x <= r.left || f.x >= r.right || f.y < r.top - s.pile.max - 2 || f.y >= r.bottom) continue;
         if (f.y > r.top) {                         // behind the card: hidden by it, falls on
           if (falling && oldY <= r.top && f.x > r.left + s.inset && f.x < r.right - s.inset
-              && settle(s.pile, Math.floor((f.x - r.left - s.inset) / COL), 4.4)) { landed = true; break; }
+              && settle(s.pile, Math.floor((f.x - r.left - s.inset) / COL), f.carry ? f.carry / 0.8 : 4.4)) { landed = true; break; }
           continue;
         }
         if (falling && f.x > r.left + s.inset && f.x < r.right - s.inset) {   // above the top: on the layer?
           const i = Math.floor((f.x - r.left - s.inset) / COL);
-          if (f.y >= r.top - (s.pile.cols[i] || 0) && settle(s.pile, i, 4.4)) { landed = true; break; }
+          if (f.y >= r.top - (s.pile.cols[i] || 0) && settle(s.pile, i, f.carry ? f.carry / 0.8 : 4.4)) { landed = true; break; }
         }
       }
       // the bottom of the screen
       if (!landed && falling) {
         const i = Math.floor(f.x / COL);
-        if (f.y >= H - (ground.cols[i] || 0)) { settle(ground, i, 5.2); landed = true; }
+        if (f.y >= H - (ground.cols[i] || 0)) { settle(ground, i, f.carry ? f.carry / 0.8 : 5.2); landed = true; }
       }
       if (landed || f.y > H + 20) {
         if (flakes.length > target) flakes.splice(n, 1);   // thrown snow beyond the usual number: gone
         else Object.assign(f, flake(false));
       }
     }
-    slump(ground, 1.6);
-    for (const s of surfaces) slump(s.pile, 1.2);
+    // snow holds a steep wall (only a nearly sheer side slides, slowly): a trench made by the pointer stays and
+    // fills with what falls into it, not by the drift flowing back
+    slump(ground, 5);
+    for (const s of surfaces) slump(s.pile, 3.5);
     // the pointer through the snow
     if (pointer.active) {
       const gi = Math.floor(pointer.x / COL);
@@ -404,6 +411,7 @@
   requestAnimationFrame(loop);
 
   window.somovSnow = {
+    heights: () => Array.from(ground.cols),       // the drift's columns, for checks from the browser console
     stop() {
       running = false;
       canvas.remove();
