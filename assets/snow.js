@@ -3,8 +3,10 @@
    - small soft flakes of different size and speed (near ones bigger and faster), slowly swaying in a breeze;
    - snow piles up along the bottom of the screen and slumps into a natural slope;
    - a thin layer settles on the tops of the large cards and moves with them when the page scrolls;
-   - the pointer ploughs through the snow and throws it up.
-   One canvas over the page that lets every click through; paused while the tab is hidden.
+   - the pointer ploughs through the snow and throws it up, and its movement blows the falling flakes near it
+     like a light puff of air.
+   Falling snow is a background layer (behind every block), the piles and thrown snow a layer in front; both
+   let every click through; paused while the tab is hidden.
    Kept cheap: a pile is drawn into its own small picture only when it changes (most frames just stamp it),
    the slope is worked out only after snow fell or was ploughed, the cards are measured on scroll and resize
    (and twice a second), and the canvas is drawn at no more than 1.5x the screen's pixels. */
@@ -12,19 +14,24 @@
   'use strict';
   if (window.somovSnow) return;
 
-  const canvas = document.createElement('canvas');
-  canvas.className = 'snow';
-  canvas.setAttribute('aria-hidden', 'true');
-  document.body.append(canvas);
-  const ctx = canvas.getContext('2d');
+  // Two layers: falling snow is the page's background (behind every block: cards, lists, the footer cover it),
+  // the piles and the snow thrown by the pointer are in front, so they are seen
+  const layer = name => {
+    const c = document.createElement('canvas');
+    c.className = 'snow ' + name;
+    c.setAttribute('aria-hidden', 'true');
+    document.body.append(c);
+    return c;
+  };
+  const backCanvas = layer('snow-back'), canvas = layer('snow-front');
+  const back = backCanvas.getContext('2d'), ctx = canvas.getContext('2d');
 
   const COL = 3;                                  // width of one column of a snow pile, px
   const SURFACES = '.composer, .more-card, .tg-card, .build-panel, .tweak-card';
   let W = 0, H = 0, dpr = 1, phone = false;
   let flakes = [], ground = null, surfaces = [];
-  let running = true, last = 0, frame = 0, breeze = 0, target = 0, headerBottom = 0;
+  let running = true, last = 0, frame = 0, breeze = 0, target = 0;
   const pointer = { x: -1, y: -1, px: -1, active: false };
-  const header = document.querySelector('.topbar');
 
   /* A pile: heights of its columns, and its own small picture redrawn only when they change */
   function pile(count, max, taper, old) {
@@ -39,7 +46,6 @@
 
   function measure() {
     for (const s of surfaces) s.rect = s.el.getBoundingClientRect();
-    headerBottom = header ? header.getBoundingClientRect().bottom : 0;
   }
 
   function resize() {
@@ -47,9 +53,11 @@
     W = window.innerWidth;
     H = window.innerHeight;
     phone = W < 720;
-    canvas.width = Math.round(W * dpr);
-    canvas.height = Math.round(H * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    for (const [c, g] of [[canvas, ctx], [backCanvas, back]]) {
+      c.width = Math.round(W * dpr);
+      c.height = Math.round(H * dpr);
+      g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
     sprites.clear();
     for (const f of flakes) f.px = 0;
     ground = pile(Math.ceil(W / COL) + 1, phone ? 34 : 52, false, ground);
@@ -67,7 +75,8 @@
       z,
       r: 0.35 + z * z * 0.95,                   // small: the near ones about 1.3 px
       vy: 0.18 + z * 0.42 + Math.random() * 0.1,  // slow, like a windless night
-      vx: 0,
+      vx: 0,                                    // a puff from the pointer, sideways and down/up (calms down)
+      gy: 0,
       sway: Math.random() * Math.PI * 2,
       swaySpeed: 0.004 + Math.random() * 0.007,
       swayWide: 0.15 + Math.random() * 0.35,
@@ -151,6 +160,16 @@
     frame++;
     if (frame % 30 === 0) measure();             // cards that moved without a scroll (the page changed)
     breeze += ((Math.sin(frame / 700) * 0.45 + Math.sin(frame / 211) * 0.15) - breeze) * 0.01;
+    // A puff of air from the moving pointer: how far it went since the last frame (a still pointer blows nothing)
+    let gustX = 0, gustY = 0, gust = false;
+    if (pointer.active && pointer.gx !== undefined) {
+      gustX = Math.max(-40, Math.min(40, pointer.x - pointer.gx));
+      gustY = Math.max(-40, Math.min(40, pointer.y - pointer.gy));
+      gust = Math.abs(gustX) + Math.abs(gustY) > 0.5;
+    }
+    pointer.gx = pointer.x;
+    pointer.gy = pointer.y;
+    const reach = phone ? 80 : 110, reach2 = reach * reach;
     for (let n = flakes.length - 1; n >= 0; n--) {
       const f = flakes[n];
       const oldY = f.y;
@@ -159,11 +178,24 @@
         f.vx *= 0.98;
         f.x += f.vx * dt;
         f.y += f.vy * dt;
-        if (f.vy > 0.6) f.spray = false;
+        if (f.vy > 0.6) { f.spray = false; f.vx = 0; f.gy = 0; }
       } else {
+        // the puff: along the pointer's way and a little away from it, stronger close by, then it calms down
+        if (gust) {
+          const dx = f.x - pointer.x, dy = f.y - pointer.y, d2 = dx * dx + dy * dy;
+          if (d2 < reach2) {
+            const d = Math.sqrt(d2) || 1, k = (1 - d / reach) * (1 - d / reach);
+            const speed = Math.abs(gustX) + Math.abs(gustY);
+            f.vx += (gustX * 0.05 + dx / d * speed * 0.012) * k;
+            f.gy += (gustY * 0.035 + dy / d * speed * 0.008) * k;
+          }
+        }
+        const calm = Math.pow(0.94, dt);
+        f.vx *= calm;
+        f.gy *= calm;
         f.sway += f.swaySpeed * dt;
-        f.x += (Math.sin(f.sway) * f.swayWide + breeze * (0.4 + f.z)) * dt;
-        f.y += f.vy * dt;
+        f.x += (Math.sin(f.sway) * f.swayWide + breeze * (0.4 + f.z) + f.vx) * dt;
+        f.y += (f.vy + f.gy) * dt;
       }
       if (f.x < -10) f.x += W + 20; else if (f.x > W + 10) f.x -= W + 20;
       let landed = false;
@@ -171,12 +203,10 @@
       for (const s of surfaces) {
         const r = s.rect;
         if (f.x <= r.left || f.x >= r.right || f.y < r.top - s.pile.max - 2 || f.y >= r.bottom) continue;
-        if (f.y > r.top) {                         // inside a card (blown in from the side, scrolled onto it): melts
-          if (falling && oldY <= r.top && f.x > r.left + s.inset && f.x < r.right - s.inset) {
-            settle(s.pile, Math.floor((f.x - r.left - s.inset) / COL), 4.4);   // or lands on its top first
-          }
-          landed = true;
-          break;
+        if (f.y > r.top) {                         // behind the card: hidden by it, falls on
+          if (falling && oldY <= r.top && f.x > r.left + s.inset && f.x < r.right - s.inset
+              && settle(s.pile, Math.floor((f.x - r.left - s.inset) / COL), 4.4)) { landed = true; break; }
+          continue;
         }
         if (falling && f.x > r.left + s.inset && f.x < r.right - s.inset) {   // above the top: on the layer?
           const i = Math.floor((f.x - r.left - s.inset) / COL);
@@ -256,15 +286,16 @@
   }
 
   function draw() {
+    back.clearRect(0, 0, W, H);
     ctx.clearRect(0, 0, W, H);
-    // the header stays in front of the snow: flakes are not drawn over it, they seem to come from under its edge
     for (const f of flakes) {
-      if (f.y < headerBottom) continue;
-      ctx.globalAlpha = f.alpha;
+      const g = f.spray ? ctx : back;             // falling snow behind the content, thrown snow in front
+      g.globalAlpha = f.alpha;
       const px = f.px || (f.px = Math.max(2, Math.round(f.r * 4 * dpr)));   // a soft glowing dot, not a hard disc
       const d = px / dpr;
-      ctx.drawImage(sprite(px), Math.round((f.x - d / 2) * dpr) / dpr, Math.round((f.y - d / 2) * dpr) / dpr, d, d);
+      g.drawImage(sprite(px), Math.round((f.x - d / 2) * dpr) / dpr, Math.round((f.y - d / 2) * dpr) / dpr, d, d);
     }
+    back.globalAlpha = 1;
     ctx.globalAlpha = 0.92;
     stamp(ground, 0, H);
     for (const s of surfaces) {
@@ -301,6 +332,7 @@
     stop() {
       running = false;
       canvas.remove();
+      backCanvas.remove();
       delete window.somovSnow;
     },
   };
