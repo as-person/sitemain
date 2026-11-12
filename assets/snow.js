@@ -51,7 +51,7 @@
     for (let i = 0; i < count; i++) {
       const x = i * COL;
       p.caps[i] = taper   // on a card: shorter, more noticeable bumps; the bottom drift: low gentle swells
-        ? max * (0.72 + 0.16 * Math.sin(x / 45 + a) + 0.12 * Math.sin(x / 17 + b))
+        ? max * (0.6 + 0.22 * Math.sin(x / 38 + a) + 0.18 * Math.sin(x / 14 + b))
         : max * (0.87 + 0.08 * Math.sin(x / 90 + a) + 0.05 * Math.sin(x / 34 + b));
     }
     if (old) for (let i = 0; i < count; i++) p.cols[i] = Math.min(p.caps[i], old.cols[Math.min(i, old.cols.length - 1)] || 0);
@@ -89,7 +89,7 @@
     for (const f of flakes) f.px = 0;
     const first = !ground;
     if (ground) ground.cache.remove();
-    ground = pile(Math.ceil(W / COL) + 1, phone ? 17 : 26, false, ground);
+    ground = pile(Math.ceil(W / COL) + 1, phone ? 12 : 18, false, ground);
     if (first) restore(ground, saved.ground);   // the drift from the previous page
     // The drift is its own element held at the bottom of the screen by the browser (CSS bottom: 0): when a phone's
     // address bar hides or shows while scrolling, it stays on the bottom edge instead of hanging in the air
@@ -199,13 +199,18 @@
     if (moved) p.dirty = true; else p.settling = 0;
   }
 
-  const SPREAD = [0.05, 0.1, 0.15, 0.2, 0.15, 0.1, 0.05];   // a flake spreads softly over seven columns (sums to 0.8)
+  // A flake spreads softly over seven columns (sums to 0.8); on the bottom drift over seventeen, so that it grows
+  // as a smooth bank, not in sharp spikes
+  const bell = n => { const w = Array.from({ length: n }, (_, k) => Math.exp(-(((k - (n - 1) / 2) / (n / 4)) ** 2))), t = w.reduce((a, b) => a + b);
+    return w.map(v => v * 0.8 / t); };
+  const SPREAD = [0.05, 0.1, 0.15, 0.2, 0.15, 0.1, 0.05], WIDE = bell(17);
   function settle(p, i, amount) {
     const cols = p.cols;
     if (i < 0 || i >= cols.length || cols[i] >= p.caps[i]) return false;
-    for (let k = 0; k < SPREAD.length; k++) {
-      const j = i + k - 3;
-      if (j >= 0 && j < cols.length) cols[j] = Math.min(p.caps[j], cols[j] + amount * SPREAD[k]);
+    const spread = p.taper ? SPREAD : WIDE, half = (spread.length - 1) / 2;
+    for (let k = 0; k < spread.length; k++) {
+      const j = i + k - half;
+      if (j >= 0 && j < cols.length) cols[j] = Math.min(p.caps[j], cols[j] + amount * spread[k]);
     }
     p.dirty = true;
     p.settling = 12;
