@@ -80,7 +80,8 @@
     // between the tops of the tall letters and of the small ones, nearer the small: the snow touches the word (no gap
     // of air over the small letters) and only nips the tops of the capitals
     const tall = m.actualBoundingBoxAscent, rest = tall - (tall - small) * 0.65;
-    const drop = m.fontBoundingBoxAscent ? m.fontBoundingBoxAscent - rest : size * 0.4;
+    // (phones draw the letters a hair lower than the canvas measures them: a pixel more, or a thin gap of air shows)
+    const drop = (m.fontBoundingBoxAscent ? m.fontBoundingBoxAscent - rest : size * 0.4) + (phone ? 1 : 0);
     return { left: r.left, right: r.right, width: r.width, top: r.top + drop, bottom: r.bottom };
   }
 
