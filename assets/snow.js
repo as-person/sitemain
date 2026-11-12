@@ -3,8 +3,8 @@
    - small soft flakes of different size and speed (near ones bigger and faster), slowly swaying in a breeze;
    - snow piles up along the bottom of the screen and slumps into a natural slope;
    - a thin layer settles on the tops of the large cards and moves with them when the page scrolls;
-   - the pointer ploughs through the snow and throws it up, and its movement blows the falling flakes near it
-     like a light puff of air.
+   - the pointer ploughs through the snow: it pushes it aside into little banks, throws up clumps that fly in an
+     arc and drop back onto the snow, with a puff of powder; its movement blows the falling flakes near it.
    Falling snow is a background layer (behind every block), the piles and thrown snow a layer in front; both
    let every click through; paused while the tab is hidden.
    Kept cheap: a pile is drawn into its own small picture only when it changes (most frames just stamp it),
@@ -37,7 +37,7 @@
   // Blocks snow settles on: every card-like block with its own background on the site's pages
   const SURFACES = '.composer, .more-card, .tg-card, .panel, .tweak-card, .rows, .support-card, .shot';
   let W = 0, H = 0, dpr = 1, phone = false;
-  let flakes = [], ground = null, surfaces = [];
+  let flakes = [], bits = [], ground = null, surfaces = [];
   let running = true, last = 0, frame = 0, breeze = 0, target = 0;
   const pointer = { x: -1, y: -1, px: -1, active: false };
 
@@ -132,9 +132,7 @@
       swaySpeed: 0.004 + Math.random() * 0.007,
       swayWide: 0.15 + Math.random() * 0.35,
       alpha: 0.42 + z * 0.16,                   // about 50% opaque: soft, not bright
-      spray: false,
       px: 0,
-      carry: 0,                                 // thrown snow: how much of the pile it took along (0: a new flake)
       intro: 0,                                 // on page load: how far it still drops faster than usual
     };
   }
@@ -232,30 +230,117 @@
     return true;
   }
 
-  // The pointer ploughs: snow under it is taken away and thrown up as spray that falls again
+  /* The pointer ploughs. What it takes from under itself is not lost:
+     - most is pushed aside: ahead of the pointer when it moves along, to both sides when it pokes in, so a trench
+       gets soft banks and the snow heaps up where the pointer stops;
+     - some is thrown up as clumps that fly in an arc and drop back onto the snow as little heaps (see bits);
+     - with them, a puff of powder that melts away. */
+  const BANK = [0.1, 0.22, 0.3, 0.22, 0.16];      // how pushed snow lies beside the trench (sums to 1)
   function plough(p, i0, depth, baseY, x0) {
     const cols = p.cols;
     const reach = phone ? 5 : 7;
+    const move = pointer.x - pointer.px;
+    const dir = Math.abs(move) > 0.5 ? Math.sign(move) : 0;
+    let taken = 0;
     for (let k = -reach; k <= reach; k++) {
       const i = i0 + k;
       if (i < 0 || i >= cols.length) continue;
       const take = Math.min(cols[i], depth * (1 - Math.abs(k) / (reach + 1)));
       if (take <= 0.2) continue;
       cols[i] -= take;
-      p.dirty = true;
-      p.settling = 12;
-      if (Math.random() < take / 3) {
-        const f = flake(false);
-        f.x = x0 + k * COL;
-        f.y = baseY - cols[i] - 2;
-        f.vy = -1.2 - Math.random() * 1.6;
-        f.vx = (pointer.x - pointer.px) * 0.15 + (Math.random() - 0.5) * 1.6;
-        f.spray = true;
-        f.r = 0.6 + Math.random() * 1;
-        f.px = 0;
-        f.alpha = 0.55;
-        f.carry = 0.6;                            // what it took (most of it turns to powder on the way)
-        flakes.push(f);
+      taken += take;
+    }
+    if (!taken) return;
+    p.dirty = true;
+    p.settling = 12;
+    const fast = Math.min(1, Math.abs(move) / 12);   // a quick swipe throws more, a slow push mostly shoves
+    const pushed = taken * (0.75 - 0.35 * fast), thrown = taken * (0.2 + 0.3 * fast);
+    // the banks: in front when moving along, on both sides when pressing in
+    const sides = dir ? [[dir, 1]] : [[-1, 0.5], [1, 0.5]];
+    for (const [side, share] of sides) {
+      for (let k = 0; k < BANK.length; k++) {
+        const i = i0 + side * (reach + 1 + k);
+        if (i >= 0 && i < cols.length) cols[i] = Math.min(p.max, cols[i] + pushed * share * BANK[k]);
+      }
+    }
+    // the clumps: each holds about 2.4 of snow; what does not make a whole clump waits for the next frame
+    p.toss = Math.min(6, (p.toss || 0) + thrown);
+    while (p.toss >= 2.4 && bits.length < (phone ? 70 : 140)) {
+      p.toss -= 2.4;
+      const k = Math.round((Math.random() * 2 - 1) * reach * 0.7);
+      const i = Math.max(0, Math.min(cols.length - 1, i0 + k));
+      bits.push({
+        clump: true, x: x0 + k * COL, y: baseY - cols[i] - 1,
+        vx: move * (0.25 + Math.random() * 0.25) + (Math.random() - 0.5) * 1.4,
+        vy: -(1.6 + Math.random() * 2.2) - Math.min(2, Math.abs(move) * 0.08),
+        r: 1.3 + Math.random() * 1.2, amount: 2.4,
+        // a lump, not a perfect ball: a second smaller blob stuck to it
+        ox: (Math.random() - 0.5) * 1.6, oy: (Math.random() - 0.5) * 1.6, or: 0.5 + Math.random() * 0.4,
+      });
+      if (Math.random() < 0.5) puff(x0 + k * COL, baseY - cols[i] - 2, move * 0.15, 1);
+    }
+  }
+
+  // Powder: a few faint specks that drift up a little, spread and melt away in about half a second
+  function puff(x, y, vx, count) {
+    for (let n = 0; n < count && bits.length < (phone ? 110 : 220); n++) {
+      bits.push({ clump: false, x: x + (Math.random() - 0.5) * 6, y: y + (Math.random() - 0.5) * 3,
+        vx: vx + (Math.random() - 0.5) * 0.9, vy: -0.2 - Math.random() * 0.6, life: 1, r: 0.8 + Math.random() * 0.9, px: 0 });
+    }
+  }
+
+  // A clump falls back onto the snow: a small heap where it hits (it may stand a bit above the usual top: it slumps)
+  const HEAP = [0.12, 0.22, 0.32, 0.22, 0.12];
+  function drop(p, i, amount) {
+    const cols = p.cols;
+    for (let k = 0; k < HEAP.length; k++) {
+      const j = i + k - 2;
+      if (j >= 0 && j < cols.length) cols[j] = Math.min(p.max, cols[j] + amount * HEAP[k]);
+    }
+    p.dirty = true;
+    p.settling = 12;
+  }
+
+  // Clumps fly with real weight (much faster than a flake falls); powder floats and fades
+  function stepBits(dt) {
+    for (let n = bits.length - 1; n >= 0; n--) {
+      const b = bits[n];
+      if (!b.clump) {
+        const drag = Math.pow(0.93, dt);
+        b.vx *= drag;
+        b.vy = b.vy * drag + 0.006 * dt;
+        b.x += b.vx * dt;
+        b.y += b.vy * dt;
+        b.life -= dt / 32;
+        if (b.life <= 0) bits.splice(n, 1);
+        continue;
+      }
+      const oldY = b.y;
+      b.vy += 0.2 * dt;
+      b.vx *= Math.pow(0.99, dt);
+      b.x += b.vx * dt;
+      b.y += b.vy * dt;
+      let hit = null, at = 0, top = 0;
+      if (b.vy > 0) {
+        for (const s of surfaces) {
+          const r = s.rect;
+          if (!r || b.x <= r.left + s.inset || b.x >= r.right - s.inset) continue;
+          const i = Math.floor((b.x - r.left - s.inset) / COL);
+          const surface = r.top - (s.pile.cols[i] || 0);
+          if (oldY <= surface + 1 && b.y >= surface) { hit = s.pile; at = i; top = surface; break; }
+        }
+        if (!hit) {
+          const i = Math.floor(b.x / COL);
+          const surface = H - (ground.cols[i] || 0);
+          if (b.y >= surface) { hit = ground; at = i; top = surface; }
+        }
+      }
+      if (hit) {
+        drop(hit, at, b.amount);
+        puff(b.x, top - 1, b.vx * 0.2, 2);
+        bits.splice(n, 1);
+      } else if (b.y > H + 20 || b.x < -20 || b.x > W + 20) {
+        bits.splice(n, 1);
       }
     }
   }
@@ -278,13 +363,7 @@
     for (let n = flakes.length - 1; n >= 0; n--) {
       const f = flakes[n];
       const oldY = f.y;
-      if (f.spray) {                              // thrown snow: flies up, then falls like any flake
-        f.vy += 0.09 * dt;
-        f.vx *= 0.98;
-        f.x += f.vx * dt;
-        f.y += f.vy * dt;
-        if (f.vy > 0.6) { f.spray = false; f.vx = 0; f.gy = 0; }
-      } else {
+      {
         // the puff: along the pointer's way and a little away from it, stronger close by, then it calms down
         if (gust) {
           const dx = f.x - pointer.x, dy = f.y - pointer.y, d2 = dx * dx + dy * dy;
@@ -309,30 +388,30 @@
       }
       if (f.x < -10) f.x += W + 20; else if (f.x > W + 10) f.x -= W + 20;
       let landed = false;
-      const falling = !f.spray && f.vy > 0 && !f.intro;   // dropping in on page load: passes by, lands later
+      const falling = f.vy > 0 && !f.intro;   // dropping in on page load: passes by, lands later
       for (const s of surfaces) {
         const r = s.rect;
         if (f.x <= r.left || f.x >= r.right || f.y < r.top - s.pile.max - 2 || f.y >= r.bottom) continue;
         if (f.y > r.top) {                         // behind the card: hidden by it, falls on
           if (falling && oldY <= r.top && f.x > r.left + s.inset && f.x < r.right - s.inset
-              && settle(s.pile, Math.floor((f.x - r.left - s.inset) / COL), f.carry ? f.carry / 0.8 : 4.4)) { landed = true; break; }
+              && settle(s.pile, Math.floor((f.x - r.left - s.inset) / COL), 4.4)) { landed = true; break; }
           continue;
         }
         if (falling && f.x > r.left + s.inset && f.x < r.right - s.inset) {   // above the top: on the layer?
           const i = Math.floor((f.x - r.left - s.inset) / COL);
-          if (f.y >= r.top - (s.pile.cols[i] || 0) && settle(s.pile, i, f.carry ? f.carry / 0.8 : 4.4)) { landed = true; break; }
+          if (f.y >= r.top - (s.pile.cols[i] || 0) && settle(s.pile, i, 4.4)) { landed = true; break; }
         }
       }
       // the bottom of the screen
       if (!landed && falling) {
         const i = Math.floor(f.x / COL);
-        if (f.y >= H - (ground.cols[i] || 0)) { settle(ground, i, f.carry ? f.carry / 0.8 : 5.2); landed = true; }
+        if (f.y >= H - (ground.cols[i] || 0)) { settle(ground, i, 5.2); landed = true; }
       }
       if (landed || f.y > H + 20) {
-        if (flakes.length > target) flakes.splice(n, 1);   // thrown snow beyond the usual number: gone
-        else Object.assign(f, flake(false));
+        Object.assign(f, flake(false));
       }
     }
+    stepBits(dt);
     // snow holds a steep wall (only a nearly sheer side slides, slowly): a trench made by the pointer stays and
     // fills with what falls into it, not by the drift flowing back
     slump(ground, 5);
@@ -400,14 +479,35 @@
   function draw() {
     back.clearRect(0, 0, W, H);
     ctx.clearRect(0, 0, W, H);
-    for (const f of flakes) {
-      const g = f.spray ? ctx : back;             // falling snow behind the content, thrown snow in front
-      g.globalAlpha = f.alpha;
+    for (const f of flakes) {                     // falling snow behind the content
+      back.globalAlpha = f.alpha;
       const px = f.px || (f.px = Math.max(2, Math.round(f.r * 4 * dpr)));   // a soft glowing dot, not a hard disc
       const d = px / dpr;
-      g.drawImage(sprite(px), Math.round((f.x - d / 2) * dpr) / dpr, Math.round((f.y - d / 2) * dpr) / dpr, d, d);
+      back.drawImage(sprite(px), Math.round((f.x - d / 2) * dpr) / dpr, Math.round((f.y - d / 2) * dpr) / dpr, d, d);
     }
     back.globalAlpha = 1;
+    // what the pointer threw, in front: powder as soft specks, clumps as solid bits of the same snow as the piles
+    if (bits.length) {
+      for (const b of bits) {
+        if (b.clump) continue;
+        ctx.globalAlpha = 0.45 * b.life * b.life;
+        const px = b.px || (b.px = Math.max(2, Math.round(b.r * 4 * dpr)));
+        const d = px / dpr;
+        ctx.drawImage(sprite(px), b.x - d / 2, b.y - d / 2, d, d);
+      }
+      ctx.globalAlpha = 0.95;
+      ctx.fillStyle = '#eef3fa';
+      ctx.beginPath();
+      for (const b of bits) {
+        if (!b.clump) continue;
+        ctx.moveTo(b.x + b.r, b.y);
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.moveTo(b.x + b.ox + b.r * b.or, b.y + b.oy);
+        ctx.arc(b.x + b.ox, b.y + b.oy, b.r * b.or, 0, Math.PI * 2);
+      }
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
     // the drift and the cards' pictures live in the page: only repaint the ones whose snow changed (10 times a second)
     for (const p of [ground, ...surfaces.filter(s => !s.sticky).map(s => s.pile)]) {
       if (p.dirty && frame - p.painted >= 6) { paint(p); p.painted = frame; }
