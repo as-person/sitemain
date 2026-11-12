@@ -43,9 +43,16 @@
 
   /* A pile: heights of its columns, and its own small picture redrawn only when they change */
   function pile(count, max, taper, old) {
-    const p = { cols: new Float32Array(count), max, taper, settling: 0, dirty: true, painted: -99,
-      cache: document.createElement('canvas') };
-    if (old) for (let i = 0; i < count; i++) p.cols[i] = Math.min(max, old.cols[Math.min(i, old.cols.length - 1)] || 0);
+    const p = { cols: new Float32Array(count), caps: new Float32Array(count), max, taper, settling: 0, dirty: true,
+      painted: -99, cache: document.createElement('canvas') };
+    // A full pile is not a ruler-straight line: each column has its own ceiling, gentle waves of two lengths
+    // (fixed for a pile of this width, so that the snow brought back from the last page fits the same waves)
+    const a = count * 0.37, b = count * 1.91;
+    for (let i = 0; i < count; i++) {
+      const x = i * COL;
+      p.caps[i] = max * (0.78 + 0.13 * Math.sin(x / 70 + a) + 0.09 * Math.sin(x / 26 + b));
+    }
+    if (old) for (let i = 0; i < count; i++) p.cols[i] = Math.min(p.caps[i], old.cols[Math.min(i, old.cols.length - 1)] || 0);
     p.cache.width = Math.ceil((count * COL + COL) * dpr);
     p.cache.height = Math.ceil((max + 4) * dpr);
     p.cctx = p.cache.getContext('2d');
@@ -158,7 +165,7 @@
     const values = text.split(',').map(Number);
     if (!values.length) return;
     for (let i = 0; i < p.cols.length; i++) {   // the window may be of another width now: stretch to fit
-      p.cols[i] = Math.min(p.max, (values[Math.floor(i * values.length / p.cols.length)] || 0) / 2);
+      p.cols[i] = Math.min(p.caps[i], (values[Math.floor(i * values.length / p.cols.length)] || 0) / 2);
     }
     p.dirty = true;
   }
@@ -193,10 +200,10 @@
   const SPREAD = [0.05, 0.1, 0.15, 0.2, 0.15, 0.1, 0.05];   // a flake spreads softly over seven columns (sums to 0.8)
   function settle(p, i, amount) {
     const cols = p.cols;
-    if (i < 0 || i >= cols.length || cols[i] >= p.max) return false;
+    if (i < 0 || i >= cols.length || cols[i] >= p.caps[i]) return false;
     for (let k = 0; k < SPREAD.length; k++) {
       const j = i + k - 3;
-      if (j >= 0 && j < cols.length) cols[j] = Math.min(p.max, cols[j] + amount * SPREAD[k]);
+      if (j >= 0 && j < cols.length) cols[j] = Math.min(p.caps[j], cols[j] + amount * SPREAD[k]);
     }
     p.dirty = true;
     p.settling = 12;
