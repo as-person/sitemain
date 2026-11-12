@@ -104,22 +104,22 @@ h1 { font-size: 24px; font-weight: 700; letter-spacing: -.01em; }
   </section>
 
   <div class="grid2">
-    <section class="card"><h2>Страны <small>посещения</small></h2><div class="list" id="countries"></div></section>
-    <section class="card"><h2>Откуда приходят <small>посещения</small></h2><div class="list" id="sources"></div><p class="hint">Источник — первое, откуда человек пришёл за день. «Прямые ссылки на файлы» — скачали, не заходя на сайт (ссылки из Telegram и т. п.).</p></section>
+    <section class="card"><h2>Страны <small data-sum="countries">посещения</small></h2><div class="list" id="countries"></div></section>
+    <section class="card"><h2>Откуда приходят <small data-sum="sources">посещения</small></h2><div class="list" id="sources"></div><p class="hint">Источник — первое, откуда человек пришёл за день. «Прямые ссылки на файлы» — скачали, не заходя на сайт (ссылки из Telegram и т. п.).</p></section>
   </div>
 
   <div class="grid2">
-    <section class="card"><h2>Сборки <small>людей · ISO / торрент / magnet</small></h2><div class="list" id="builds"></div><p class="hint" id="dlvia"></p></section>
-    <section class="card"><h2>Страницы <small>просмотры</small></h2><div class="list" id="pages"></div></section>
+    <section class="card"><h2>Сборки <small data-sum="builds">скачивания</small></h2><div class="list" id="builds"></div><p class="hint" id="dlvia"></p></section>
+    <section class="card"><h2>Страницы <small data-sum="pages">просмотры</small></h2><div class="list" id="pages"></div></section>
   </div>
 
-  <section class="card" style="margin-bottom:14px"><h2>Устройства <small>посещения</small></h2>
+  <section class="card" style="margin-bottom:14px"><h2>Устройства <small data-sum="devices">посещения</small></h2>
     <div class="split"><div><h3>Тип</h3><div class="list" id="devices"></div><h3 style="margin-top:12px">Язык сайта</h3><div class="list" id="langs"></div></div><div><h3>Система</h3><div class="list" id="os"></div></div><div><h3>Браузер</h3><div class="list" id="browsers"></div></div></div>
   </section>
 
   <div class="grid2">
-    <section class="card"><h2>Настройки и файлы <small>людей</small></h2><div class="list" id="tweaks"></div></section>
-    <section class="card"><h2>Telegram и чат <small>нажатия, людей</small></h2><div class="list" id="clicks"></div></section>
+    <section class="card"><h2>Настройки и файлы <small data-sum="tweaks">действия</small></h2><div class="list" id="tweaks"></div></section>
+    <section class="card"><h2>Telegram и чат <small data-sum="clicks">нажатия</small></h2><div class="list" id="clicks"></div></section>
   </div>
 
   <section class="card"><h2>Последние действия <small>время Вьетнама</small></h2><div class="feed" id="feed"></div></section>
@@ -238,12 +238,21 @@ h1 { font-size: 24px; font-weight: 700; letter-spacing: -.01em; }
     $('chart-note').textContent = data.period === 'today' ? 'последние 14 дней' : 'по дням';
   }
 
+  /* The sum of a card in its header: "посещения · всего 375" (the label stays, the sum follows it) */
+  function sum(id, total) {
+    const small = document.querySelector(`[data-sum="${id}"]`);
+    if (!small) return;
+    small.dataset.label = small.dataset.label || small.textContent;
+    small.textContent = small.dataset.label + ' · всего ' + nf.format(total);
+  }
+
   /* A list of names with a number and a soft bar behind (share of the largest) */
   function list(id, rows, nameOf, opts = {}) {
     const box = $(id);
     box.textContent = '';
-    if (!rows.length) { box.append(el('div', 'empty', 'Пока ничего')); return; }
+    if (!rows.length) { sum(id, 0); box.append(el('div', 'empty', 'Пока ничего')); return; }
     const total = rows.reduce((s, r) => s + r.uniq, 0);
+    sum(id, total);
     const max = Math.max(...rows.map(r => r.uniq));
     rows.slice(0, opts.limit || 12).forEach(r => {
       const row = el('div', 'row');
