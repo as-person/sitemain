@@ -14,6 +14,7 @@ const readJson = name => JSON.parse(readFileSync(join(SRC, 'data', name), 'utf8'
 const builds = readJson('builds.json');
 const ghost = readJson('ghost-spectre.json');
 const settings = readJson('settings.json');
+const snow = readJson('snow.json'); // winter snow: node _src/snow.mjs auto|on|off
 const featured = readJson('featured.json'); // the card at the top of /settings-for-windows
 const archive = readJson('archive.json'); // old builds; "publish": false builds the page into _preview/ only
 
@@ -72,6 +73,8 @@ const TRACKERS = [
 const assetHash = file => createHash('sha1')
   .update(readFileSync(join(ROOT, file), 'utf8').replace(/\r\n/g, '\n')).digest('hex').slice(0, 8);
 const CSS_URL = `/assets/site.css?v=${assetHash('assets/site.css')}`;
+// Winter snow: on the page unless snow.json says off; the season dates go with it (node _src/snow.mjs auto|on|off)
+const SNOW_URL = `/assets/snow.js?v=${assetHash('assets/snow.js')}`;
 const JS_URL = `/assets/site.js?v=${assetHash('assets/site.js')}`;
 
 /* -- Helpers ------------------------------------------------------------- */
@@ -190,7 +193,7 @@ function head({ path, title, description, imageDefault }) {
   const canonical = `${SITE}${langPath(lang, path)}`;
   const staticImage = imageDefault === undefined ? '' : (imageDefault || (lang === 'ru' ? 'ru' : ''));
   return `<!DOCTYPE html>
-<html lang="${lang}"${lang === 'ru' ? ' class="lang-ru-active"' : ''}${staticImage ? ` data-image="${staticImage}"` : ''} data-title-en="${esc(title.en)}" data-title-ru="${esc(title.ru)}">
+<html lang="${lang}"${lang === 'ru' ? ' class="lang-ru-active"' : ''}${staticImage ? ` data-image="${staticImage}"` : ''} data-title-en="${esc(title.en)}" data-title-ru="${esc(title.ru)}"${snow.mode === 'off' ? '' : ` data-snow="${SNOW_URL}" data-snow-season="${snow.mode === 'on' ? 'always' : `${snow.from}..${snow.to}`}"`}>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">

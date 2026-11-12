@@ -1,0 +1,6 @@
+{
+  "mode": "auto",
+  "from": "12-15",
+  "to": "01-31",
+  "_note": "Winter snow. auto: falls by itself every year from `from` to `to` (month-day, the visitor's date); on: always; off: never. Switch with: node _src/snow.mjs auto|on|off, then GitPush."
+}

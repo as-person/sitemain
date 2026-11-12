@@ -1753,4 +1753,64 @@
       }).catch(() => {});
     }
   }
+
+  /* Winter snow (assets/snow.js): every year in the season of _src/data/snow.json (15 Dec - 31 Jan), or always / never
+     as the owner switched it (node _src/snow.mjs auto|on|off, then GitPush). In the season it falls for everyone,
+     unless the visitor turned it off with the footer link (remembered) or has animations off in the system;
+     ?snow=0 / ?snow=1: off / on for this visit. Out of the season there is nothing at all. */
+  if (root.dataset.snow) snowSeason();
+  function snowSeason() {
+    const store = (where, key, value) => { try { return value === undefined ? where.getItem(key) : where.setItem(key, value); } catch (e) { return null; } };
+    const asked = new URLSearchParams(location.search).get('snow');
+    if (asked === '1' || asked === '0') store(sessionStorage, 'snowVisit', asked === '1' ? 'on' : 'off');
+    // The season: 'always' (switched on by hand) or 'MM-DD..MM-DD' by the visitor's date, every year (it may cross
+    // New Year: 12-15..01-31)
+    const range = root.dataset.snowSeason || '';
+    const md = (() => { const d = new Date(); return String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); })();
+    const [from, to] = range.split('..');
+    const season = range === 'always' || (from && to && (from <= to ? md >= from && md <= to : md >= from || md <= to));
+    if (!season) return;   // out of the season nothing at all: no snow, no link, ?snow is not looked at
+    const visit = store(sessionStorage, 'snowVisit');
+    const choice = store(localStorage, 'snow');   // 'on' / 'off' from the footer link
+    const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const wanted = () => (visit ? visit === 'on' : choice ? choice === 'on' : season && !calm);
+    const SNOW_TEXT = { en: ['Turn off the snow', 'Let it snow'], ru: ['Выключить снег', 'Включить снег'] };
+    let on = false;
+
+    const start = () => {
+      on = true;
+      if (window.somovSnow) return;
+      const script = document.createElement('script');
+      script.src = root.dataset.snow;
+      script.defer = true;
+      document.head.append(script);
+    };
+    const stop = () => {
+      on = false;
+      if (window.somovSnow) window.somovSnow.stop();
+    };
+
+    // The footer link: in the season, or when the snow was turned on by hand
+    if (season || visit === 'on' || choice === 'on') {
+      const end = $('.footer-end');
+      if (end) {
+        const toggle = document.createElement('button');
+        toggle.type = 'button';
+        toggle.className = 'snow-toggle';
+        const label = () => { toggle.textContent = '❄ ' + SNOW_TEXT[currentLang()][on ? 0 : 1]; };
+        toggle.addEventListener('click', () => {
+          if (on) stop(); else start();
+          store(localStorage, 'snow', on ? 'on' : 'off');
+          store(sessionStorage, 'snowVisit', on ? 'on' : 'off');
+          label();
+        });
+        end.prepend(toggle);
+        languageListeners.push(label);
+        if (wanted()) start();
+        label();
+      }
+    } else if (wanted()) {
+      start();
+    }
+  }
 })();
