@@ -50,7 +50,9 @@
     const a = count * 0.37, b = count * 1.91;
     for (let i = 0; i < count; i++) {
       const x = i * COL;
-      p.caps[i] = max * (0.78 + 0.13 * Math.sin(x / 70 + a) + 0.09 * Math.sin(x / 26 + b));
+      p.caps[i] = taper   // on a card: shorter, more noticeable bumps; the bottom drift: low gentle swells
+        ? max * (0.72 + 0.16 * Math.sin(x / 45 + a) + 0.12 * Math.sin(x / 17 + b))
+        : max * (0.87 + 0.08 * Math.sin(x / 90 + a) + 0.05 * Math.sin(x / 34 + b));
     }
     if (old) for (let i = 0; i < count; i++) p.cols[i] = Math.min(p.caps[i], old.cols[Math.min(i, old.cols.length - 1)] || 0);
     p.cache.width = Math.ceil((count * COL + COL) * dpr);
@@ -87,7 +89,7 @@
     for (const f of flakes) f.px = 0;
     const first = !ground;
     if (ground) ground.cache.remove();
-    ground = pile(Math.ceil(W / COL) + 1, phone ? 22 : 34, false, ground);
+    ground = pile(Math.ceil(W / COL) + 1, phone ? 17 : 26, false, ground);
     if (first) restore(ground, saved.ground);   // the drift from the previous page
     // The drift is its own element held at the bottom of the screen by the browser (CSS bottom: 0): when a phone's
     // address bar hides or shows while scrolling, it stays on the bottom edge instead of hanging in the air
