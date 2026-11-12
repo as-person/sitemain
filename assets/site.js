@@ -1672,6 +1672,9 @@
       fetchNew().then(render).catch(() => {});
       poll();
       fitViewport();
+      // The open chat is a step in the browser history (same address): "Back" (a swipe, the phone's button,
+      // the browser's arrow) closes the chat instead of leaving the page
+      if (!(history.state && history.state.chat)) history.pushState({ chat: true }, '', location.href.replace(/#chat$/, ''));
       // On a phone the keyboard would cover half the chat at once: it opens when the visitor taps the field
       if (!matchMedia('(pointer: coarse)').matches) setTimeout(() => $('.chat-input', panel).focus({ preventScroll: true }), 50);
     }
@@ -1698,9 +1701,19 @@
       visualViewport.addEventListener('scroll', fitViewport);
     }
 
+    // The cross and Esc go "back" too, so the chat's history step does not stay behind; "Back" itself lands in
+    // the popstate listener below. Both end in closeNow().
+    function close() {
+      if (history.state && history.state.chat) history.back();
+      else closeNow();
+    }
+    window.addEventListener('popstate', () => {
+      if (panel && !panel.hidden && !(history.state && history.state.chat)) closeNow();
+    });
+
     // Closing plays the way back (`is-closing` in site.css) and only then hides the window
     let closeTimer = null;
-    function close() {
+    function closeNow() {
       if (panel.hidden || panel.classList.contains('is-closing')) return;
       const finish = () => {
         clearTimeout(closeTimer);
