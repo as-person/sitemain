@@ -287,7 +287,7 @@
   const BANK = [0.1, 0.22, 0.3, 0.22, 0.16];      // how pushed snow lies beside the trench (sums to 1)
   function plough(p, i0, depth, baseY, x0) {
     const cols = p.cols;
-    const reach = phone ? 5 : 7;
+    const reach = phone ? 9 : 7;                  // a finger is wider than a mouse pointer
     const move = pointer.x - pointer.px;
     const dir = Math.abs(move) > 0.5 ? Math.sign(move) : 0;
     let taken = 0;
@@ -473,12 +473,12 @@
     // the pointer through the snow
     if (pointer.active) {
       const gi = Math.floor(pointer.x / COL);
-      if (pointer.y > H - (ground.cols[gi] || 0) - 10) plough(ground, gi, 4, H, pointer.x);
+      if (pointer.y > H - (ground.cols[gi] || 0) - (phone ? 26 : 10)) plough(ground, gi, phone ? 6 : 4, H, pointer.x);
       for (const s of surfaces) {
         const r = s.rect;
         if (pointer.x < r.left + s.inset || pointer.x > r.right - s.inset) continue;
         const i = Math.floor((pointer.x - r.left - s.inset) / COL);
-        if (Math.abs(pointer.y - (r.top - (s.pile.cols[i] || 0) / 2)) < 12) plough(s.pile, i, 3, r.top, pointer.x);
+        if (Math.abs(pointer.y - (r.top - (s.pile.cols[i] || 0) / 2)) < (phone ? 20 : 12)) plough(s.pile, i, phone ? 5 : 3, r.top, pointer.x);
       }
       pointer.px = pointer.x;
     }
@@ -591,6 +591,18 @@
     pointer.x = e.clientX; pointer.y = e.clientY; pointer.active = true;
   }, { passive: true });
   document.addEventListener('pointerleave', () => { pointer.active = false; });
+  // A finger: once the page starts scrolling under it the browser stops sending pointer moves, so the touch itself is
+  // followed (it keeps coming while scrolling); lifted, it ploughs no more
+  const touch = (e, start) => {
+    const t = e.touches[0];
+    if (!t) return;
+    if (start || !pointer.active) pointer.px = t.clientX;
+    pointer.x = t.clientX; pointer.y = t.clientY; pointer.active = true;
+  };
+  window.addEventListener('touchstart', e => touch(e, true), { passive: true });
+  window.addEventListener('touchmove', e => touch(e, false), { passive: true });
+  window.addEventListener('touchend', e => { if (!e.touches.length) pointer.active = false; }, { passive: true });
+  window.addEventListener('touchcancel', () => { pointer.active = false; }, { passive: true });
   document.addEventListener('visibilitychange', () => { last = 0; });
   const refind = () => { clearTimeout(findSurfaces.t); findSurfaces.t = setTimeout(findSurfaces, 300); };
   new MutationObserver(refind).observe(document.body, { childList: true, subtree: true });
