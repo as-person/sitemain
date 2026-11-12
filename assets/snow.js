@@ -100,7 +100,13 @@
     ground.cache.style.height = ground.cache.height / dpr + 'px';
     document.body.append(ground.cache);
     target = Math.round(Math.min(phone ? 100 : 240, W * H / (phone ? 6500 : 5600)));
-    while (flakes.length < target) flakes.push(flake(true));
+    while (flakes.length < target) {
+      const f = flake(true);
+      // On page load the snow does not pop up all over the screen: each flake starts above its place and drops
+      // into it quickly, slowing down to the usual pace, so the snowfall comes in from the top
+      if (first) { f.intro = H * (0.6 + Math.random() * 0.7); f.y -= f.intro; }
+      flakes.push(f);
+    }
     flakes.length = target;
     findSurfaces();
   }
@@ -122,6 +128,7 @@
       spray: false,
       px: 0,
       carry: 0,                                 // thrown snow: how much of the pile it took along (0: a new flake)
+      intro: 0,                                 // on page load: how far it still drops faster than usual
     };
   }
 
@@ -287,6 +294,11 @@
         f.sway += f.swaySpeed * dt;
         f.x += (Math.sin(f.sway) * f.swayWide + breeze * (0.4 + f.z) + f.vx) * dt;
         f.y += (f.vy + f.gy) * dt;
+        if (f.intro) {
+          const d = Math.min(f.intro, Math.max(0.5, f.intro * 0.03) * dt);
+          f.y += d;
+          f.intro = f.intro - d < 0.5 ? 0 : f.intro - d;
+        }
       }
       if (f.x < -10) f.x += W + 20; else if (f.x > W + 10) f.x -= W + 20;
       let landed = false;
