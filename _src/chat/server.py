@@ -570,6 +570,33 @@ CONFIRM_BUBBLES = {
            'If you did not write anything on somov.org, please ignore this email — no more emails will come.',
            'Confirm email', ''),
 }
+# The same letter when the email was left before any question
+LETTER_EARLY = {
+    'ru': ('Подтвердите почту — somov.org',
+           'Здравствуйте!\n\n'
+           'Вы оставили эту почту в чате на somov.org. Подтвердите её, чтобы ответы на ваши вопросы приходили и сюда:\n'
+           '{link}\n\n'
+           'Чат на сайте (в том же браузере): https://somov.org/#chat\n\n'
+           'Если вы ничего не делали на somov.org, просто не обращайте внимания на это письмо — больше писем не будет.\n\n'
+           '— somov\nhttps://somov.org\n'),
+    'en': ('Confirm your email — somov.org',
+           'Hello!\n\n'
+           'You left this email in the chat on somov.org. Confirm it for the answers to your questions to come here too:\n'
+           '{link}\n\n'
+           'The chat on the site (in the same browser): https://somov.org/#chat\n\n'
+           'If you did nothing on somov.org, please ignore this email — no more emails will come.\n\n'
+           '— somov\nhttps://somov.org\n'),
+}
+CONFIRM_EARLY = {
+    'ru': ('Здравствуйте! Вы оставили эту почту в чате на somov.org.<br><br>'
+           'Подтвердите её — и ответы на ваши вопросы будут приходить и сюда, а не только в чат на сайте.',
+           'Если вы ничего не делали на somov.org, просто не обращайте внимания на это письмо — больше писем не будет.',
+           'Подтвердить почту', ''),
+    'en': ('Hello! You left this email in the chat on somov.org.<br><br>'
+           'Confirm it, and the answers to your questions will come here too, not only to the chat on the site.',
+           'If you did nothing on somov.org, please ignore this email — no more emails will come.',
+           'Confirm email', ''),
+}
 mail_hits = {}     # hash of IP -> [times]
 mail_all = []      # times of all letters
 
@@ -886,15 +913,19 @@ def confirm_letter(thread, ip):
         return
     token = secrets.token_urlsafe(18)
     link = VERIFY_URL + token
-    subject, body = LETTER['ru' if lang == 'ru' else 'en']
+    asked = bool(q('SELECT 1 FROM messages WHERE thread = ? AND owner = 0 LIMIT 1', thread))
+    texts, bubbles = (LETTER, CONFIRM_BUBBLES) if asked else (LETTER_EARLY, CONFIRM_EARLY)
+    subject, body = texts['ru' if lang == 'ru' else 'en']
     letter = visitor_letter(thread, lang, contact, subject, body.format(link=link).rstrip('\n'))
-    hello, ignore, label, hint = CONFIRM_BUBBLES['ru' if lang == 'ru' else 'en']
+    hello, ignore, label, hint = bubbles['ru' if lang == 'ru' else 'en']
     letter.add_alternative(letter_html(lang, subject, [bubble(hello), bubble(ignore, note=True)],
                                        unsub_link(thread), action=(link, label, hint)), subtype='html')
     letter['Auto-Submitted'] = 'auto-replied'
     if not send_letter(letter):
         return
     run('UPDATE threads SET mailed = ?, vtoken = ? WHERE id = ?', contact, token, thread)
+    if not asked:
+        return   # the owner hears of this conversation with its first message
     try:
         sent = say(f'📧 #{n}: на {contact} отправлено письмо для подтверждения почты')
         run('INSERT OR REPLACE INTO tg (msg, thread) VALUES (?, ?)', sent['message_id'], thread)
@@ -1144,15 +1175,26 @@ def add_message(visitor, text, page, contact, lang, fid='', cc=''):
     return cur.lastrowid, now
 
 
-def set_contact(visitor, contact):
-    """A visitor left (or changed, or removed) a contact after the conversation started: tell the owner."""
+def set_contact(visitor, contact, lang='ru'):
+    """A visitor left (or changed, or removed) a contact. Before the first message it only starts the conversation
+    (the confirmation letter goes at once; the owner hears of it with the first message). After it, the owner is told."""
     row = q('SELECT n, contact FROM threads WHERE id = ?', visitor)
     if not row:
-        return False
+        if not contact:
+            return True
+        now = int(time.time())
+        with lock:
+            n = db.execute('SELECT COALESCE(MAX(n), 0) + 1 FROM threads').fetchone()[0]
+            db.execute('INSERT INTO threads (id, n, contact, lang, created, active) VALUES (?, ?, ?, ?, ?, ?)',
+                       (visitor, n, contact, lang, now, now))
+            db.commit()
+        return True
     n, old = row[0]
     if contact == old:
         return True
     run('UPDATE threads SET contact = ?, nomail = 0 WHERE id = ?', contact, visitor)
+    if not q('SELECT 1 FROM messages WHERE thread = ? AND owner = 0 LIMIT 1', visitor):
+        return True   # nothing written yet: the owner will see the contact with the first message
 
     def tell():
         try:
@@ -1313,7 +1355,8 @@ class Handler(BaseHTTPRequestHandler):
                 return self.reply(400, {'error': 'body'})
             if not allowed(ip):
                 return self.reply(429, {'error': 'limit'})
-            if not set_contact(visitor, clean(data.get('contact'), MAX_CONTACT).replace('\n', ' ')):
+            if not set_contact(visitor, clean(data.get('contact'), MAX_CONTACT).replace('\n', ' '),
+                               'ru' if data.get('lang') == 'ru' else 'en'):
                 return self.reply(404, {})
             letter_later(visitor, ip)
             return self.reply(200, {})
