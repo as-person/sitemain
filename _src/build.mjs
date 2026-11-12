@@ -951,7 +951,7 @@ function settingsPage() {
         <summary>${L('Popularity (visible only to you)', 'Популярность (видно только вам)')}</summary>
         <ol></ol>
       </details>
-      <p class="empty" id="empty" hidden>${L('Nothing found. Try another word or category.', 'Ничего не найдено. Попробуйте другое слово или категорию.')}</p>
+      <p class="empty" id="empty" hidden>${L('Nothing found. Try another word or category, or', 'Ничего не найдено. Попробуйте другое слово или категорию — или')} <a class="link" href="#chat" data-chat-open>${L('ask in the chat', 'спросите в чате')}</a>.</p>
 
       ${featuredHtml()}
 
@@ -961,6 +961,7 @@ function settingsPage() {
         ${settings.items.filter(i => i.category === c.id).map(itemHtml).join('\n        ')}
         </div>
       </section>`).join('\n      ')}
+      ${chatHelp(L('Did not find the setting you need?', 'Не нашли нужную настройку?'), L('Ask in the chat', 'Спросите в чате'))}
     </div>
   </main>`;
 

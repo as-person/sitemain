@@ -957,6 +957,8 @@
         group.hidden = !$$('.item', group).some(item => !item.hidden);
       });
       empty.hidden = visible > 0;
+      // "Nothing found" has its own link to the chat: the line under the list would repeat it
+      $$('.page .help-line').forEach(line => { line.hidden = visible === 0; });
       count.textContent = t('found') + ': ' + visible;
     }
 
