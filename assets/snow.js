@@ -36,8 +36,8 @@
   const COL = 3;                                  // width of one column of a snow pile, px
   // Blocks snow settles on: every card-like block with its own background on the site's pages
   const SURFACES = '.composer, .more-card, .tg-card, .panel, .tweak-card, .rows, .support-card, .shot';
-  // Words snow lies on: the footer's headings (the shown language's text), a thinner layer right on the letters
-  const WORDS = '.footer h2 > span';
+  // Words snow lies on: the "© somov.org" standing on its own in the footer's corner, a thinner layer right on the letters
+  const WORDS = '.footer-copy';
   const measurer = document.createElement('canvas').getContext('2d');
   let W = 0, H = 0, dpr = 1, phone = false;
   let flakes = [], bits = [], ground = null, surfaces = [];

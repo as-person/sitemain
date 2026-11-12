@@ -279,7 +279,7 @@ const footer = () => `<footer class="footer">
         </div>
         ${chatStats('footer')}
       </section>
-      <div class="footer-end">&copy; somov.org</div>
+      <div class="footer-end"><span class="footer-copy">&copy; somov.org</span></div>
     </div>
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
