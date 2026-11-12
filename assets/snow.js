@@ -27,7 +27,8 @@
   const back = backCanvas.getContext('2d'), ctx = canvas.getContext('2d');
 
   const COL = 3;                                  // width of one column of a snow pile, px
-  const SURFACES = '.composer, .more-card, .tg-card, .build-panel, .tweak-card';
+  // Blocks snow settles on: every card-like block with its own background on the site's pages
+  const SURFACES = '.composer, .more-card, .tg-card, .panel, .tweak-card, .rows, .search input, .support-card, .shot';
   let W = 0, H = 0, dpr = 1, phone = false;
   let flakes = [], ground = null, surfaces = [];
   let running = true, last = 0, frame = 0, breeze = 0, target = 0;
