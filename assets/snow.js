@@ -42,6 +42,8 @@
   const pointer = { x: -1, y: -1, px: -1, active: false };
 
   /* A pile: heights of its columns, and its own small picture redrawn only when they change */
+  // |v| with the sharp point at 0 rounded off: humps that meet in smooth dips (0 .. 1)
+  const hump = v => (Math.sqrt(v * v + 0.09) - 0.3) / (Math.sqrt(1.09) - 0.3);
   function pile(count, max, taper, old) {
     const p = { cols: new Float32Array(count), caps: new Float32Array(count), max, taper, settling: 0, dirty: true,
       painted: -99, cache: document.createElement('canvas') };
@@ -53,7 +55,7 @@
       p.caps[i] = taper   // on a card: shorter, more noticeable bumps
         ? max * (0.6 + 0.22 * Math.sin(x / 38 + a) + 0.18 * Math.sin(x / 14 + b))
         // the bottom drift: a row of rounded humps of uneven width that meet in soft dips, on a slow swell
-        : max * (0.5 + 0.08 * Math.sin(x / 200 + a) + 0.42 * Math.abs(Math.sin(x / 36 + 0.8 * Math.sin(x / 90 + b) + a)) ** 0.9);
+        : max * (0.5 + 0.08 * Math.sin(x / 200 + a) + 0.42 * hump(Math.sin(x / 36 + 0.8 * Math.sin(x / 90 + b) + a)));
     }
     if (old) for (let i = 0; i < count; i++) p.cols[i] = Math.min(p.caps[i], old.cols[Math.min(i, old.cols.length - 1)] || 0);
     p.cache.width = Math.ceil((count * COL + COL) * dpr);
