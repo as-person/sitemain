@@ -75,7 +75,9 @@
     if (!s.word) return r;
     const cs = getComputedStyle(s.el);
     measurer.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
-    const m = measurer.measureText(s.el.textContent), small = measurer.measureText('о').actualBoundingBoxAscent;
+    // the letters only: a sign like © has no snow on it (it stands apart) and must not lift the layer over the rest
+    const letters = s.el.textContent.replace(/[^\p{L}\p{N}]/gu, '') || 'о';
+    const m = measurer.measureText(letters), small = measurer.measureText('о').actualBoundingBoxAscent;
     const size = parseFloat(cs.fontSize) || 14;
     // between the tops of the tall letters and of the small ones, nearer the small: the snow touches the word (no gap
     // of air over the small letters) and only nips the tops of the capitals
