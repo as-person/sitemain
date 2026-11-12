@@ -104,7 +104,7 @@
       const f = flake(true);
       // On page load the snow does not pop up all over the screen: each flake starts above its place and drops
       // into it quickly, slowing down to the usual pace, so the snowfall comes in from the top
-      if (first) { f.intro = H * (0.6 + Math.random() * 0.7); f.y -= f.intro; }
+      if (first) { f.intro = H * (0.3 + Math.random() * 0.5); f.y -= f.intro; }
       flakes.push(f);
     }
     flakes.length = target;
@@ -295,7 +295,7 @@
         f.x += (Math.sin(f.sway) * f.swayWide + breeze * (0.4 + f.z) + f.vx) * dt;
         f.y += (f.vy + f.gy) * dt;
         if (f.intro) {
-          const d = Math.min(f.intro, Math.max(0.5, f.intro * 0.03) * dt);
+          const d = Math.min(f.intro, Math.min(2 + f.z, Math.max(0.3, f.intro * 0.012)) * dt);   // never faster than a soft flurry
           f.y += d;
           f.intro = f.intro - d < 0.5 ? 0 : f.intro - d;
         }
