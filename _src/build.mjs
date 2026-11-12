@@ -275,9 +275,9 @@ const footer = () => `<footer class="footer">
         <div class="footer-links">
           ${chatLink('footer', L('Website chat', 'Чат на сайте'))}<span class="chat-dot" hidden></span></a>
           <a href="${TELEGRAM}" target="_blank" rel="noopener" data-tg-placement="footer">Telegram</a>
-          ${chatStats('footer')}
           <a href="mailto:me@somov.org">me@somov.org</a>
         </div>
+        ${chatStats('footer')}
       </section>
       <div class="footer-end">&copy; somov.org</div>
     </div>
