@@ -36,6 +36,9 @@
   const COL = 3;                                  // width of one column of a snow pile, px
   // Blocks snow settles on: every card-like block with its own background on the site's pages
   const SURFACES = '.composer, .more-card, .tg-card, .panel, .tweak-card, .rows, .support-card, .shot';
+  // Words snow lies on: the footer's headings (the shown language's text), a thinner layer right on the letters
+  const WORDS = '.footer h2 > span';
+  const measurer = document.createElement('canvas').getContext('2d');
   let W = 0, H = 0, dpr = 1, phone = false;
   let flakes = [], bits = [], ground = null, surfaces = [];
   let running = true, last = 0, frame = 0, breeze = 0, target = 0;
@@ -64,10 +67,23 @@
     return p;
   }
 
+  // Where snow lies on a surface: the top edge of a block; on a word, the top of its tallest letters (the box of a line
+  // of text starts well above them), so the snow sits on the word without hiding the letters
+  function boxOf(s) {
+    const r = s.el.getBoundingClientRect();
+    if (!s.word) return r;
+    const cs = getComputedStyle(s.el);
+    measurer.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    const m = measurer.measureText(s.el.textContent);   // its tallest letters: the snow rests on them, not over the rest
+    const size = parseFloat(cs.fontSize) || 14;
+    const drop = m.fontBoundingBoxAscent ? m.fontBoundingBoxAscent - m.actualBoundingBoxAscent : size * 0.45;
+    return { left: r.left, right: r.right, width: r.width, top: r.top + drop, bottom: r.bottom };
+  }
+
   function measure() {
     const page = document.body.getBoundingClientRect();
     for (const s of surfaces) {
-      const r = s.rect = s.el.getBoundingClientRect();
+      const r = s.rect = boxOf(s);
       if (s.sticky) continue;                     // drawn on the screen layer where it is (see draw)
       // the card's picture where the card is in the page (not on the screen): set only when it changed
       const x = Math.round(r.left - page.left + s.inset), y = Math.round(r.top - page.top - s.pile.max - 4 + 0.5);
@@ -139,13 +155,16 @@
 
   function findSurfaces() {
     const keep = new Map(surfaces.map(s => [s.el, s]));
-    surfaces = [...document.querySelectorAll(SURFACES)].filter(el => el.getBoundingClientRect().width > 120).map((el, index) => {
+    const blocks = [...document.querySelectorAll(SURFACES)].filter(el => el.getBoundingClientRect().width > 120);
+    const words = [...document.querySelectorAll(WORDS)].filter(el => el.getBoundingClientRect().width > 20);   // the shown language
+    surfaces = [...blocks, ...words].map((el, index) => {
+      const word = index >= blocks.length;
       const width = el.getBoundingClientRect().width;
       // only the straight part of the top edge: on a rounded corner snow would hang in the air
-      const inset = Math.ceil(parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0);
+      const inset = word ? 0 : Math.ceil(parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0);
       const count = Math.max(1, Math.ceil((width - 2 * inset) / COL));
       const was = keep.get(el);
-      const key = location.pathname + '#' + index;
+      const key = location.pathname + (word ? '#w' + (index - blocks.length) : '#' + index);
       let p = was && was.pile.cols.length === count ? was.pile : null;
       // a block that sticks on the screen while the page scrolls (the download panel on a computer): its snow is
       // drawn on the screen layer, where the block is, not placed in the page
@@ -154,13 +173,13 @@
         if (getComputedStyle(n).position === 'sticky') { sticky = true; break; }
       }
       if (!p) {
-        p = pile(count, phone ? 7 : 10, true);
+        p = pile(count, word ? (phone ? 5 : 6) : (phone ? 7 : 10), true);
         restore(p, saved.cards[key]);
         p.cache.style.width = p.cache.width / dpr + 'px';
         p.cache.style.height = p.cache.height / dpr + 'px';
         if (!sticky) cardLayer.append(p.cache);
       }
-      return { el, inset, rect: null, key, pile: p, sticky };
+      return { el, inset, rect: null, key, pile: p, sticky, word };
     });
     const now = new Set(surfaces.map(s => s.pile.cache));   // cards gone from the page take their snow along
     for (const c of [...cardLayer.children]) if (!now.has(c)) c.remove();
@@ -348,7 +367,7 @@
   function step(dt) {
     frame++;
     if (frame % 30 === 0) measure();             // cards that moved without a scroll (the page changed)
-    for (const s of surfaces) if (s.sticky) s.rect = s.el.getBoundingClientRect();
+    for (const s of surfaces) if (s.sticky) s.rect = boxOf(s);
     breeze += ((Math.sin(frame / 700) * 0.45 + Math.sin(frame / 211) * 0.15) - breeze) * 0.01;
     // A puff of air from the moving pointer: how far it went since the last frame (a still pointer blows nothing)
     let gustX = 0, gustY = 0, gust = false;
@@ -543,8 +562,11 @@
   }, { passive: true });
   document.addEventListener('pointerleave', () => { pointer.active = false; });
   document.addEventListener('visibilitychange', () => { last = 0; });
-  new MutationObserver(() => { clearTimeout(findSurfaces.t); findSurfaces.t = setTimeout(findSurfaces, 300); })
-    .observe(document.body, { childList: true, subtree: true });
+  const refind = () => { clearTimeout(findSurfaces.t); findSurfaces.t = setTimeout(findSurfaces, 300); };
+  new MutationObserver(refind).observe(document.body, { childList: true, subtree: true });
+  // the language switched: the footer's words are others (and of another width)
+  new MutationObserver(refind).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+  if (document.fonts) document.fonts.ready.then(measure);   // the letters' height is known for sure once the font is in
 
   resize();
   requestAnimationFrame(loop);
