@@ -1769,7 +1769,15 @@
     const md = (() => { const d = new Date(); return String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); })();
     const [from, to] = range.split('..');
     const season = range === 'always' || (from && to && (from <= to ? md >= from && md <= to : md >= from || md <= to));
-    if (!season) return;   // out of the season nothing at all: no snow, no link, ?snow is not looked at
+    if (season) { runSnow(); return; }
+    // Out of the season nothing at all (no snow, no link, ?snow is not looked at), except the owner's preview:
+    // with data-snow-owner (node _src/snow.mjs preview on) the owner (his IP or device key) gets it to watch beforehand
+    if (root.dataset.snowOwner && window.siteOwner) window.siteOwner.then(d => { if (d && d.owner) runSnow(); });
+  }
+
+  function runSnow() {
+    const store = (where, key, value) => { try { return value === undefined ? where.getItem(key) : where.setItem(key, value); } catch (e) { return null; } };
+    const season = true;
     const visit = store(sessionStorage, 'snowVisit');
     const choice = store(localStorage, 'snow');   // 'on' / 'off' from the footer link
     const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;

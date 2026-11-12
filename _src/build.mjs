@@ -193,7 +193,7 @@ function head({ path, title, description, imageDefault }) {
   const canonical = `${SITE}${langPath(lang, path)}`;
   const staticImage = imageDefault === undefined ? '' : (imageDefault || (lang === 'ru' ? 'ru' : ''));
   return `<!DOCTYPE html>
-<html lang="${lang}"${lang === 'ru' ? ' class="lang-ru-active"' : ''}${staticImage ? ` data-image="${staticImage}"` : ''} data-title-en="${esc(title.en)}" data-title-ru="${esc(title.ru)}"${snow.mode === 'off' ? '' : ` data-snow="${SNOW_URL}" data-snow-season="${snow.mode === 'on' ? 'always' : `${snow.from}..${snow.to}`}"`}>
+<html lang="${lang}"${lang === 'ru' ? ' class="lang-ru-active"' : ''}${staticImage ? ` data-image="${staticImage}"` : ''} data-title-en="${esc(title.en)}" data-title-ru="${esc(title.ru)}"${snow.mode === 'off' ? '' : ` data-snow="${SNOW_URL}" data-snow-season="${snow.mode === 'on' ? 'always' : `${snow.from}..${snow.to}`}"${snow.owner_preview ? ' data-snow-owner="1"' : ''}`}>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
