@@ -52,7 +52,7 @@
       const x = i * COL;
       p.caps[i] = taper   // on a card: shorter, more noticeable bumps; the bottom drift: low gentle swells
         ? max * (0.6 + 0.22 * Math.sin(x / 38 + a) + 0.18 * Math.sin(x / 14 + b))
-        : max * (0.87 + 0.08 * Math.sin(x / 90 + a) + 0.05 * Math.sin(x / 34 + b));
+        : max * (0.7 + 0.18 * Math.sin(x / 80 + a) + 0.12 * Math.sin(x / 30 + b));
     }
     if (old) for (let i = 0; i < count; i++) p.cols[i] = Math.min(p.caps[i], old.cols[Math.min(i, old.cols.length - 1)] || 0);
     p.cache.width = Math.ceil((count * COL + COL) * dpr);
