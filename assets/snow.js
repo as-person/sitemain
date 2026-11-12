@@ -87,7 +87,7 @@
     for (const f of flakes) f.px = 0;
     const first = !ground;
     if (ground) ground.cache.remove();
-    ground = pile(Math.ceil(W / COL) + 1, phone ? 34 : 52, false, ground);
+    ground = pile(Math.ceil(W / COL) + 1, phone ? 22 : 34, false, ground);
     if (first) restore(ground, saved.ground);   // the drift from the previous page
     // The drift is its own element held at the bottom of the screen by the browser (CSS bottom: 0): when a phone's
     // address bar hides or shows while scrolling, it stays on the bottom edge instead of hanging in the air
@@ -139,7 +139,7 @@
         if (getComputedStyle(n).position === 'sticky') { sticky = true; break; }
       }
       if (!p) {
-        p = pile(count, phone ? 9 : 14, true);
+        p = pile(count, phone ? 7 : 10, true);
         restore(p, saved.cards[key]);
         p.cache.style.width = p.cache.width / dpr + 'px';
         p.cache.style.height = p.cache.height / dpr + 'px';
