@@ -188,8 +188,13 @@
       const word = index >= blocks.length;
       const width = el.getBoundingClientRect().width;
       // only the straight part of the top edge: on a rounded corner snow would hang in the air
-      const inset = word ? 0 : Math.ceil(parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0);
-      const count = Math.max(1, Math.ceil((width - 2 * inset) / COL));
+      // (and 2 px more, whatever the screen's scaling rounds), the layer a whole number of columns, in the middle
+      let inset = 0, count = Math.max(1, Math.ceil(width / COL));
+      if (!word) {
+        const edge = Math.ceil(parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0) + 2;
+        count = Math.max(1, Math.floor((width - 2 * edge) / COL));
+        inset = edge + (width - 2 * edge - count * COL) / 2;
+      }
       const was = keep.get(el);
       // the footer's words are the same on every page: their snow goes along from page to page, like the drift
       const key = word ? 'footer#' + (index - blocks.length) : location.pathname + '#' + index;
