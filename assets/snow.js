@@ -24,6 +24,13 @@
     return c;
   };
   const backCanvas = layer('snow-back'), canvas = layer('snow-front');
+  // The snow on the cards is not drawn on a screen layer: each card gets its own little picture placed in the page,
+  // so when the page scrolls (on phones the browser moves it without asking any script) the snow moves with the
+  // card in the same frame and never comes off it
+  const cardLayer = document.createElement('div');
+  cardLayer.className = 'snow-cards';
+  cardLayer.setAttribute('aria-hidden', 'true');
+  document.body.append(cardLayer);
   const back = backCanvas.getContext('2d'), ctx = canvas.getContext('2d');
 
   const COL = 3;                                  // width of one column of a snow pile, px
@@ -46,7 +53,16 @@
   }
 
   function measure() {
-    for (const s of surfaces) s.rect = s.el.getBoundingClientRect();
+    const page = document.body.getBoundingClientRect();
+    for (const s of surfaces) {
+      const r = s.rect = s.el.getBoundingClientRect();
+      // the card's picture where the card is in the page (not on the screen): set only when it changed
+      const x = Math.round(r.left - page.left + s.inset), y = Math.round(r.top - page.top - s.pile.max - 4 + 0.5);
+      if (s.x !== x || s.y !== y) {
+        s.x = x; s.y = y;
+        s.pile.cache.style.transform = `translate(${x}px, ${y}px)`;
+      }
+    }
   }
 
   function resize() {
@@ -61,7 +77,9 @@
     }
     sprites.clear();
     for (const f of flakes) f.px = 0;
+    const first = !ground;
     ground = pile(Math.ceil(W / COL) + 1, phone ? 34 : 52, false, ground);
+    if (first) restore(ground, saved.ground);   // the drift from the previous page
     target = Math.round(Math.min(phone ? 100 : 240, W * H / (phone ? 6500 : 5600)));
     while (flakes.length < target) flakes.push(flake(true));
     flakes.length = target;
@@ -89,15 +107,51 @@
 
   function findSurfaces() {
     const keep = new Map(surfaces.map(s => [s.el, s]));
-    surfaces = [...document.querySelectorAll(SURFACES)].filter(el => el.getBoundingClientRect().width > 120).map(el => {
+    surfaces = [...document.querySelectorAll(SURFACES)].filter(el => el.getBoundingClientRect().width > 120).map((el, index) => {
       const width = el.getBoundingClientRect().width;
       // only the straight part of the top edge: on a rounded corner snow would hang in the air
       const inset = Math.ceil(parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0);
       const count = Math.max(1, Math.ceil((width - 2 * inset) / COL));
       const was = keep.get(el);
-      return { el, inset, rect: null, pile: was && was.pile.cols.length === count ? was.pile : pile(count, phone ? 9 : 14, true) };
+      const key = location.pathname + '#' + index;
+      let p = was && was.pile.cols.length === count ? was.pile : null;
+      if (!p) {
+        p = pile(count, phone ? 9 : 14, true);
+        restore(p, saved.cards[key]);
+        p.cache.style.width = p.cache.width / dpr + 'px';
+        p.cache.style.height = p.cache.height / dpr + 'px';
+        cardLayer.append(p.cache);
+      }
+      return { el, inset, rect: null, key, pile: p };
     });
+    const now = new Set(surfaces.map(s => s.pile.cache));   // cards gone from the page take their snow along
+    for (const c of [...cardLayer.children]) if (!now.has(c)) c.remove();
     measure();
+  }
+
+  /* The snow is remembered while the tab is open (sessionStorage): the bottom drift goes with the visitor from page
+     to page, the snow on the cards stays on each page for when they come back. Heights are kept in halves of px. */
+  const saved = (() => {
+    try { return JSON.parse(sessionStorage.getItem('snowPiles')) || { ground: null, cards: {} }; }
+    catch (e) { return { ground: null, cards: {} }; }
+  })();
+  saved.cards = saved.cards || {};
+  const pack = p => Array.from(p.cols, h => Math.round(h * 2)).join(',');
+  function restore(p, text) {
+    if (!text) return;
+    const values = text.split(',').map(Number);
+    if (!values.length) return;
+    for (let i = 0; i < p.cols.length; i++) {   // the window may be of another width now: stretch to fit
+      p.cols[i] = Math.min(p.max, (values[Math.floor(i * values.length / p.cols.length)] || 0) / 2);
+    }
+    p.dirty = true;
+  }
+  function save() {
+    try {
+      saved.ground = pack(ground);
+      for (const s of surfaces) saved.cards[s.key] = pack(s.pile);
+      sessionStorage.setItem('snowPiles', JSON.stringify(saved));
+    } catch (e) {}
   }
 
   // A pile slumps: where a column stands higher than its neighbour by more than the slope, some of it slides down.
@@ -299,12 +353,12 @@
     back.globalAlpha = 1;
     ctx.globalAlpha = 0.92;
     stamp(ground, 0, H);
-    for (const s of surfaces) {
-      const r = s.rect;
-      if (!r || r.bottom < 0 || r.top > H + 10) continue;
-      stamp(s.pile, r.left + s.inset, r.top + 0.5);
-    }
     ctx.globalAlpha = 1;
+    // the cards' pictures live in the page: only repaint the ones whose snow changed (at most 10 times a second)
+    for (const s of surfaces) {
+      const p = s.pile;
+      if (p.dirty && frame - p.painted >= 6) { paint(p); p.painted = frame; }
+    }
   }
 
   function loop(t) {
@@ -316,6 +370,8 @@
   }
 
   window.addEventListener('resize', () => { clearTimeout(resize.t); resize.t = setTimeout(resize, 150); });
+  window.addEventListener('pagehide', save);      // leaving the page: take the snow along
+  setInterval(save, 5000);
   window.addEventListener('scroll', measure, { passive: true });
   window.addEventListener('pointermove', e => {
     if (!pointer.active) pointer.px = e.clientX;
@@ -334,6 +390,7 @@
       running = false;
       canvas.remove();
       backCanvas.remove();
+      cardLayer.remove();
       delete window.somovSnow;
     },
   };

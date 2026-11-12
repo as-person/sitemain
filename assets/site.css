@@ -1624,6 +1624,9 @@ html:not([data-image]) .img-ru { display: none !important; }
 /* Falling snow is the background: above the page colour, under the content (main and the footer are lifted over it;
    the header is sticky with its own z-index, the fixed bars and the chat stay above as before) */
 .snow-back { z-index: 0; }
+/* The snow on the cards: pictures placed in the page, so they scroll with the cards (above them, under the header) */
+.snow-cards { position: absolute; z-index: 2; top: 0; left: 0; width: 0; height: 0; pointer-events: none; }
+.snow-cards canvas { position: absolute; top: 0; left: 0; opacity: .92; }
 main, .footer { position: relative; z-index: 1; }
 .snow-toggle { margin-right: 16px; color: var(--muted); transition: color var(--ease); }
 .snow-toggle:hover { color: var(--text); }
