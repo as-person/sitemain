@@ -1602,6 +1602,8 @@
       const waiting = visitor && Date.now() - Number(store.get('chatLastSent') || 0) < 86400000;
       if (!isOpen && !waiting) return;
       fetchNew().then(fresh => {
+        // The confirmation is not a message: refresh the bar on every check, not only when messages come
+        if (isOpen && !panel.hidden) verifyUi();
         if (fresh.length && isOpen && !panel.hidden) {
           render();
           // An answer is what the visitor waits for: show it even if the list was scrolled up (or squeezed by the keyboard)

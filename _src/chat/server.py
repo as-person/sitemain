@@ -727,6 +727,11 @@ def unsub_page(lang, stage, texts=None, nonce=''):
         action = (f'<form id="go" method="post"><noscript><button type="submit">{t["button"]}</button></noscript></form>'
                   f'<script nonce="{nonce}">document.getElementById("go").submit()</script>')
         stage = 'auto'
+    if stage == 'done' and nonce and 'close' in t:
+        action = (f'<button type="button" id="close">{t["close"]}</button>'
+                  f'<script nonce="{nonce}">var b=document.getElementById("close");b.addEventListener("click",function(){{'
+                  f'window.close();setTimeout(function(){{b.textContent={json.dumps(t["closed"])};b.disabled=true;'
+                  f'b.style.opacity=".6";b.style.cursor="default"}},300)}})</script>')
     return f"""<!doctype html><html lang="{lang}"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex">
 <title>{t['title']}</title><style>
@@ -743,11 +748,13 @@ VERIFY_URL = 'https://dl.somov.org/api/chat/verify?t='
 VERIFY_PAGE = {
     'ru': {'title': 'Подтверждение почты — somov.org', 'ready': 'Подтвердить эту почту для ответов из чата на somov.org?',
            'button': 'Подтвердить', 'auto': 'Подтверждаем почту…',
-           'done': 'Готово: почта подтверждена. Ответы будут приходить и сюда, и в чат на сайте.',
+           'done': 'Готово: почта подтверждена. Ответы будут приходить на эту почту и в чат на сайте. Эту вкладку можно закрыть.',
+           'close': 'Закрыть вкладку', 'closed': 'Закройте вкладку вручную',
            'bad': 'Ссылка устарела или неверна.'},
     'en': {'title': 'Email confirmation — somov.org', 'ready': 'Confirm this email for answers from the chat on somov.org?',
            'button': 'Confirm', 'auto': 'Confirming your email…',
-           'done': 'Done: the email is confirmed. Answers will come here and to the chat on the site.',
+           'done': 'Done: the email is confirmed. Answers will come to this email and to the chat on the site. You can close this tab.',
+           'close': 'Close the tab', 'closed': 'Please close the tab yourself',
            'bad': 'The link is old or wrong.'},
 }
 
@@ -1250,7 +1257,8 @@ class Handler(BaseHTTPRequestHandler):
         if path == '/api/chat/verify':
             self.body(MAX_BODY)
             lang, stage = verify(self.params().get('t', ''), True)
-            return self.page(200 if stage != 'bad' else 404, unsub_page(lang, stage, VERIFY_PAGE))
+            nonce = secrets.token_urlsafe(12)
+            return self.page(200 if stage != 'bad' else 404, unsub_page(lang, stage, VERIFY_PAGE, nonce), nonce)
         if path == '/api/chat/unsubscribe':
             self.body(MAX_BODY)   # Gmail's one-click sends "List-Unsubscribe=One-Click"
             lang, stage = unsubscribe(self.params().get('t', ''), True)
