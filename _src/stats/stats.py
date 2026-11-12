@@ -43,7 +43,7 @@ SESSION_GAP, BURST_FILES, BURST_WINDOW = 1800, 10, 10
 # The statistics start when the site counter started (6 Nov 2026, 22:44 Moscow = 7 Nov, 02:44 Vietnam): earlier log
 # lines are not counted, so the page and the counter tell the same numbers
 COUNT_FROM = datetime(2026, 11, 6, 22, 44, 23, tzinfo=timezone(timedelta(hours=3))).timestamp()
-REFRESH = 300
+REFRESH = 60   # the site's owner lines take their numbers from here (see /internal/counts)
 
 
 def log(*parts):
@@ -82,6 +82,17 @@ def state(key, value=None):
 
 SALT = state('salt') or secrets.token_hex(16)   # for the robot-name cache only: no IP is written anywhere
 state('salt', SALT)
+
+
+def cloud_rule():
+    """(cloud address names, how many make a pack, within how many seconds), as in the counter."""
+    try:
+        source = open(COUNTER_CODE, encoding='utf-8').read()
+        hosts = tuple(re.findall(r"'([^']+)'", re.search(r'CLOUD_HOSTS = \((.*?)\)', source, re.S).group(1)))
+        pack, window = map(int, re.search(r'CLOUD_PACK, CLOUD_WINDOW = (\d+), (\d+)', source).groups())
+        return hosts, pack, window
+    except (OSError, AttributeError, ValueError):
+        return ('.amazonaws.com', '.googleusercontent.com', '.cloudapp.azure.com', '.cloudapp.net'), 3, 60
 
 
 def robot_hosts():
@@ -297,7 +308,9 @@ def events_of(lines, days, excluded, robots):
         names = dict(zip(ips, pool.map(lambda ip: host_of(ip, cache), ips)))
     for day in out:
         out[day] = [e for e in out[day] if not names.get(e[1], '').endswith(hosts) and e[1] not in robots]
-    return out
+    cloud_hosts = cloud_rule()[0]
+    clouds = {ip for ip, name in names.items() if name.endswith(cloud_hosts)}
+    return out, clouds
 
 
 def burst_robots(events):
@@ -317,13 +330,35 @@ def burst_robots(events):
     return robots
 
 
-def aggregate(day, events, tweak_files):
+def cloud_packs(events, clouds):
+    """The counter's rule: CLOUD_PACK different cloud addresses with the same browser opening the same page within
+    CLOUD_WINDOW seconds are robots; from that moment they are not counted for the rest of the day.
+    Returns {address: time from which it is a robot}."""
+    _, pack, window = cloud_rule()
+    views = defaultdict(list)
+    for t, ip, kind, key, sub, extra, ua in events:
+        if kind == 'view' and ip in clouds:
+            views[(key, ua)].append((t, ip))
+    robots = {}
+    for items in views.values():
+        items.sort()
+        for i, (t, _) in enumerate(items):
+            group = [(tt, who) for tt, who in items[i:] if tt - t < window]
+            if len({who for _, who in group}) >= pack:
+                for _, who in group:
+                    robots[who] = min(robots.get(who, t), t)
+    return robots
+
+
+def aggregate(day, events, tweak_files, clouds=frozenset()):
     """Daily numbers of one day: unique (one person once) and total (every action)."""
     rows = defaultdict(lambda: [set(), 0])   # (metric, key) -> [ips, total]
     robots = burst_robots(events)
-    events = sorted(e for e in events if e[1] not in robots)
+    packs = cloud_packs(events, clouds)
+    events = sorted(e for e in events if e[1] not in robots and not (e[1] in packs and e[0] >= packs[e[1]]))
     first_source, person_ua, person_lang = {}, {}, {}
     no_source = set()   # views sent before the site reported sources (12 Nov 2026)
+    first_way = {}      # (person, image) -> how they took it first today
     last_get = {}
     feed = []
     for t, ip, kind, key, sub, extra, ua in events:
@@ -357,6 +392,9 @@ def aggregate(day, events, tweak_files):
                 rows[(metric + 'kind', f'{name}|{sub}')][1] += 1
                 feed.append((t, ip, 'dl' if image else 'file', f'{name}|{sub}'))
             if image:
+                if (ip, key) not in first_way:
+                    first_way[(ip, key)] = sub
+                    rows[('dlfirst', f'{key}|{sub}')][0].add(ip)
                 rows[('downloads', '')][0].add((ip, key))
                 if start:
                     rows[('downloads', '')][1] += 1
@@ -372,6 +410,8 @@ def aggregate(day, events, tweak_files):
         elif kind == 'share':
             rows[('share', key)][0].add(ip)
             rows[('share', key)][1] += 1
+            rows[('sharepage', f'{sub}|{key}')][0].add(ip)
+            rows[('sharepage', f'{sub}|{key}')][1] += 1
         elif kind == 'tweak':
             rows[('tweak', f'tweak:{key}|{sub}')][0].add(ip)
             rows[('tweak', f'tweak:{key}|{sub}')][1] += 1
@@ -422,9 +462,9 @@ def refresh(full=False):
                     pass
                 cached.append(line)
         lines = cached
-    by_day = events_of(lines, days, excluded, set())
+    by_day, clouds = events_of(lines, days, excluded, set())
     for day in sorted(days):
-        rows, feed_rows = aggregate(day, by_day.get(day, []), tweak_files)
+        rows, feed_rows = aggregate(day, by_day.get(day, []), tweak_files, clouds)
         with lock:
             db.execute('DELETE FROM agg WHERE day = ?', (day,))
             db.executemany('INSERT INTO agg (day, metric, key, uniq, total) VALUES (?, ?, ?, ?, ?)', rows)
@@ -503,6 +543,47 @@ def summary(period):
     }
 
 
+def counter_counts():
+    """Everything the site shows to the owner, in the form the counter's /api/stats always had, so the site lines
+    and this page are the same numbers (the counter asks for them instead of using its own sums)."""
+    counts = defaultdict(dict)
+
+    def put(name, kind, n):
+        counts[name][kind] = counts[name].get(kind, 0) + n
+
+    for metric, key, u, t in q('SELECT metric, key, SUM(uniq), SUM(total) FROM agg WHERE metric IN '
+                               "('dlfirst', 'dlkind', 'filekind', 'tweak', 'sharepage', 'tg', 'chat', 'tgall', 'chatall', 'page') "
+                               'GROUP BY metric, key'):
+        if metric == 'dlfirst':
+            name, kind = key.rsplit('|', 1)
+            put(name, kind, u)
+        elif metric in ('dlkind', 'filekind', 'tweak'):
+            name, kind = key.rsplit('|', 1)
+            if metric != 'dlkind':
+                put(name, kind, u)
+            put(name, 'all:' + kind, t)
+        elif metric == 'sharepage':
+            page, action = key.split('|', 1)
+            put('share:' + page, action, u)
+            put('share:' + page, 'all:' + action, t)
+        elif metric in ('tg', 'chat'):
+            put(f'{metric}:{key}', 'click', u)
+            put(f'{metric}:{key}', 'all:click', t)
+        elif metric in ('tgall', 'chatall'):
+            put(metric[:-3], 'click', u)
+            put(metric[:-3], 'all:click', t)
+        elif metric == 'page':
+            put('page:' + key, 'view', u)
+            put('page:' + key, 'hits', t)
+    today = datetime.now(TZ).date()
+    for name, since in (('today', 0), ('week', 6), ('month', 29)):
+        start = (today - timedelta(days=since)).isoformat()
+        for key, u, t in q("SELECT key, SUM(uniq), SUM(total) FROM agg WHERE metric = 'page' AND day >= ? GROUP BY key", start):
+            put('page:' + key, name, u)
+            put('page:' + key, 'hits_' + name, t)
+    return counts
+
+
 # -- HTTP: the page, its data, the owner check -----------------------------------------
 
 COOKIE = 'somov_stats'
@@ -541,9 +622,18 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         url = urlsplit(self.path)
         params = {k: v[0] for k, v in parse_qs(url.query).items()}
-        if url.path == '/stats/flags.woff2':   # the flags font (Windows cannot draw flag emoji)
+        # For the counter on this server only (nginx passes nothing but /stats here, and always adds X-Real-IP)
+        if url.path == '/internal/counts':
+            if self.client_address[0] != '127.0.0.1' or self.headers.get('X-Real-IP'):
+                return self.send(404, '')
+            return self.send(200, json.dumps(counter_counts(), ensure_ascii=False), 'application/json; charset=utf-8')
+        static = {'/stats/flags.woff2': ('flags.woff2', 'font/woff2'),   # the flags font (Windows cannot draw flag emoji)
+                  '/stats/favicon.ico': ('favicon.ico', 'image/x-icon'),   # the same icons as somov.org
+                  '/stats/apple-touch-icon.png': ('apple-touch-icon.png', 'image/png')}
+        if url.path in static:
+            name, kind = static[url.path]
             try:
-                return self.send(200, open(os.path.join(HERE, 'flags.woff2'), 'rb').read(), 'font/woff2')
+                return self.send(200, open(os.path.join(HERE, name), 'rb').read(), kind)
             except OSError:
                 return self.send(404, '')
         key = params.get('key', '')

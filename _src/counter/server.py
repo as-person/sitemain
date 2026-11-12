@@ -15,12 +15,12 @@ GET  /api/stats      returns the counts to the owner (IP in OWNER_IPS or ?owner=
                      and {"owner": false} to everyone else; the owner's own visits and clicks are never counted
 
 Two counts are kept for everything. The unique one (the plain kind: download, view, click...) counts each IP
-once per 24 hours per thing; it is what may become public. The total one (kind 'all:<kind>', and for pages
+once per calendar day (Vietnam) per thing; it is what may become public. The total one (kind 'all:<kind>', and for pages
 'hits' with daily 'hday:' rows) counts every action, for the owner's fuller picture: a reload is another view.
 For files only the start of a download is a total action (no Range header, or a range from byte 0), so a
 download made of many partial requests is one, and a resumed download adds nothing; one IP adds at most
 TOTAL_CAP total actions per thing per day, so a reload loop cannot inflate it.
-Each IP is counted once per 24 hours per thing: per Windows image (its ISO, .torrent and magnet together,
+Each IP is counted once per calendar day (Vietnam) per thing: per Windows image (its ISO, .torrent and magnet together,
 whichever way it was taken), per tweak file, command or link. Someone taking the English and the Russian
 image, or three tweaks, counts for each of them.
 Runs behind nginx, which sets X-Real-IP. Visitor IPs are never stored: the counter remembers who was
@@ -47,6 +47,11 @@ import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, unquote, urlsplit
 
+# Days are calendar days of Vietnam (the owner's time), the same as on the statistics page (_src/stats):
+# one person is counted once from midnight to midnight, and the daily rows use the same dates
+os.environ['TZ'] = os.environ.get('COUNT_TZ', 'Asia/Ho_Chi_Minh')
+time.tzset()
+
 FILES_DIR = os.environ.get('FILES_DIR', '/var/www/html')
 DB_PATH = os.environ.get('DB_PATH', '/var/lib/somov-counter/counts.db')
 PORT = int(os.environ.get('PORT', '8095'))
@@ -68,7 +73,8 @@ TWEAK_KINDS = {'copy', 'link'}
 SHARE_ACTIONS = {'open', 'copy', 'native', 'telegram', 'whatsapp', 'vk', 'x', 'facebook', 'reddit', 'email'}
 PAGE_RE = re.compile(r'^/[a-z0-9/-]{0,100}$')
 PLACE_RE = re.compile(r'^[a-z0-9-]{1,30}$')
-CLICK_WINDOW = int(os.environ.get('CLICK_WINDOW', '86400'))  # seconds between counted actions from one IP
+def today_str(t=None):
+    return time.strftime('%Y-%m-%d', time.localtime(t))
 MAX_TRACKED = 300000
 # Search and SEO robots (Barkrowler, SemrushBot, DotBot, link previews...) are not people: never counted.
 # Download tools people use (curl, wget, aria2, download managers) are counted.
@@ -86,7 +92,7 @@ db = sqlite3.connect(DB_PATH, check_same_thread=False)
 db.execute('CREATE TABLE IF NOT EXISTS counts (file TEXT, kind TEXT, n INTEGER NOT NULL, PRIMARY KEY (file, kind))')
 db.commit()
 lock = threading.Lock()
-last_counted = {}  # hash of (ip, action) -> unix time it was counted
+last_counted = {}  # hash of (ip, action) -> the day (Vietnam) it was counted
 totals_today = {}  # hash of (ip, action) -> [day, total actions counted that day]
 salt = secrets.token_hex(16)
 
@@ -168,8 +174,10 @@ def load_seen():
         with open(SEEN_PATH) as f:
             data = json.load(f)
         salt = data['salt']
-        now = time.time()
-        last_counted.update({k: t for k, t in data['seen'].items() if now - t < CLICK_WINDOW})
+        today = today_str()
+        # values are the day an action was counted (older files kept the time: turned into its day)
+        seen = {k: (v if isinstance(v, str) else today_str(v)) for k, v in data['seen'].items()}
+        last_counted.update({k: d for k, d in seen.items() if d == today})
     except (OSError, ValueError, KeyError, TypeError, AttributeError):
         pass
     try:
@@ -190,18 +198,18 @@ def save_seen(*_):
 
 
 def first_today(key):
+    """True the first time this person does this thing today (calendar day of Vietnam)."""
     key = hashlib.sha256((salt + repr(key)).encode()).hexdigest()[:24]
-    now = time.time()
+    today = today_str()
     with lock:
-        last = last_counted.get(key)
-        if last is not None and now - last < CLICK_WINDOW:
+        if last_counted.get(key) == today:
             return False
         if len(last_counted) >= MAX_TRACKED:
-            for old in [k for k, t in last_counted.items() if now - t >= CLICK_WINDOW]:
+            for old in [k for k, d in last_counted.items() if d != today]:
                 del last_counted[old]
             if len(last_counted) >= MAX_TRACKED:
                 last_counted.clear()
-        last_counted[key] = now
+        last_counted[key] = today
         return True
 
 
@@ -360,7 +368,29 @@ def add_hit(key):
         db.commit()
 
 
+STATS_COUNTS_URL = os.environ.get('STATS_COUNTS_URL', 'http://127.0.0.1:8096/internal/counts')
+stats_cache = [0.0, None]
+
+
 def read_counts():
+    """The numbers for the owner lines on the site. They come from the statistics page (somov-stats, the same
+    server), which counts everything from the nginx logs: the site and the page always show the same numbers.
+    If it does not answer, the counter's own sums are used."""
+    now = time.time()
+    if stats_cache[1] is not None and now - stats_cache[0] < 30:
+        return stats_cache[1]
+    try:
+        with urllib.request.urlopen(STATS_COUNTS_URL, timeout=3) as response:
+            counts = json.loads(response.read(5_000_000))
+        if isinstance(counts, dict) and counts:
+            stats_cache[0], stats_cache[1] = now, counts
+            return counts
+    except Exception:
+        pass
+    return own_counts()
+
+
+def own_counts():
     """Totals per file; pages also get today, week (last 7 days) and month (last 30 days), unique and hits_*."""
     counts = {}
     today, week, month = day_key(), day_key(6), day_key(29)
