@@ -100,11 +100,16 @@
     ground.cache.style.height = ground.cache.height / dpr + 'px';
     document.body.append(ground.cache);
     target = Math.round(Math.min(phone ? 100 : 240, W * H / (phone ? 6500 : 5600)));
+    // only the first page of the tab: on the next ones the snow is already falling, like the drift already lying
+    let dropIn = false;
+    if (first) {
+      try { dropIn = !sessionStorage.getItem('snowFell'); sessionStorage.setItem('snowFell', '1'); } catch (e) {}
+    }
     while (flakes.length < target) {
       const f = flake(true);
-      // On page load the snow does not pop up all over the screen: each flake starts above its place and drops
+      // On the tab's first page the snow does not pop up all over the screen: each flake starts above its place and drops
       // into it quickly, slowing down to the usual pace, so the snowfall comes in from the top
-      if (first) { f.intro = H * (0.3 + Math.random() * 0.5); f.y -= f.intro; }
+      if (dropIn) { f.intro = H * (0.3 + Math.random() * 0.5); f.y -= f.intro; }
       flakes.push(f);
     }
     flakes.length = target;
