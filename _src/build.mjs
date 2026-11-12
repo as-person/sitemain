@@ -270,8 +270,9 @@ const footer = () => `<footer class="footer">
       <section>
         <h2>${L('Contact', 'Контакты')}</h2>
         <div class="footer-links">
-          <a href="#chat" data-chat-open>${L('Website chat', 'Чат на сайте')}<span class="chat-dot" hidden></span></a>
+          ${chatLink('footer', L('Website chat', 'Чат на сайте'))}<span class="chat-dot" hidden></span></a>
           <a href="${TELEGRAM}" target="_blank" rel="noopener" data-tg-placement="footer">Telegram</a>
+          ${chatStats('footer')}
           <a href="mailto:me@somov.org">me@somov.org</a>
         </div>
       </section>
@@ -552,7 +553,7 @@ function buildPage(build, preset) {
             <li><span>${L('Write the ISO to a USB drive of 8 GB or more, for example with', 'Запишите ISO на флешку от 8 ГБ, например с помощью')} <a class="link" href="https://rufus.ie/" target="_blank" rel="noopener">Rufus</a>.</span></li>
             <li><span>${L('Boot from the USB drive and follow the installer.', 'Загрузитесь с флешки и следуйте шагам установщика.')}</span></li>
           </ol>
-          ${chatHelp(L('Something does not work?', 'Что-то не получается?'), L('Ask in the chat', 'Спросите в чате'), L('we will help.', 'поможем.'))}
+          ${chatHelp('build', L('Something does not work?', 'Что-то не получается?'), L('Ask in the chat', 'Спросите в чате'), L('we will help.', 'поможем.'))}
         </section>
 
         <section class="section">
@@ -731,7 +732,7 @@ function archivePage() {
       <div class="section">
         ${archive.releases.map(releaseHtml).join('\n      ')}
       </div>
-      ${chatHelp(L('Questions about old versions?', 'Есть вопрос по старым версиям?'), L('Ask in the chat', 'Спросите в чате'))}
+      ${chatHelp('archive', L('Questions about old versions?', 'Есть вопрос по старым версиям?'), L('Ask in the chat', 'Спросите в чате'))}
     </div>
   </main>`;
 
@@ -768,8 +769,13 @@ const shareRow = () => `<div class="share">
         </div>`;
 
 // A quiet line under instructions: the moment a question comes up, the chat is one click away (opens it, see site.js)
-const chatHelp = (question, link, tail = '') =>
-  `<p class="help-line">${question} <a class="link" href="#chat" data-chat-open>${link}</a>${tail ? ` — ${tail}` : ''}</p>`;
+// place: where the link is, counted per place by the counter (CHAT_PLACES); the owner sees the clicks under it
+const CHAT_PLACES = ['footer', 'build', 'tweak', 'archive', 'settings', 'settings-empty'];
+const chatLink = (place, text, cls = '') =>
+  `<a${cls ? ` class="${cls}"` : ''} href="#chat" data-chat-open data-chat-placement="${place}">${text}`;
+const chatStats = place => `<div class="stats-line chat-stats" data-chat-stats="${place}" hidden></div>`;
+const chatHelp = (place, question, link, tail = '') =>
+  `<p class="help-line">${question} ${chatLink(place, link, 'link')}</a>${tail ? ` — ${tail}` : ''}</p>${chatStats(place)}`;
 
 const tgCard = placement => `<a class="tg-card" href="${TELEGRAM}" target="_blank" rel="noopener" data-tg-placement="${placement}">
           <span class="tg-icon">${icon('send')}</span>
@@ -951,7 +957,7 @@ function settingsPage() {
         <summary>${L('Popularity (visible only to you)', 'Популярность (видно только вам)')}</summary>
         <ol></ol>
       </details>
-      <p class="empty" id="empty" hidden>${L('Nothing found. Try another word or category, or', 'Ничего не найдено. Попробуйте другое слово или категорию — или')} <a class="link" href="#chat" data-chat-open>${L('ask in the chat', 'спросите в чате')}</a>.</p>
+      <p class="empty" id="empty" hidden>${L('Nothing found. Try another word or category, or', 'Ничего не найдено. Попробуйте другое слово или категорию — или')} ${chatLink('settings-empty', L('ask in the chat', 'спросите в чате'), 'link')}</a>.</p>
 
       ${featuredHtml()}
 
@@ -961,7 +967,7 @@ function settingsPage() {
         ${settings.items.filter(i => i.category === c.id).map(itemHtml).join('\n        ')}
         </div>
       </section>`).join('\n      ')}
-      ${chatHelp(L('Did not find the setting you need?', 'Не нашли нужную настройку?'), L('Ask in the chat', 'Спросите в чате'))}
+      ${chatHelp('settings', L('Did not find the setting you need?', 'Не нашли нужную настройку?'), L('Ask in the chat', 'Спросите в чате'))}
     </div>
   </main>`;
 
@@ -1010,7 +1016,7 @@ function tweakPage(item) {
           <ol class="steps">
             ${applySteps(item).map(step => `<li><span>${step}</span></li>`).join('\n            ')}
           </ol>
-          ${chatHelp(L('Did not work?', 'Не сработало?'), L('Ask in the chat', 'Спросите в чате'))}
+          ${chatHelp('tweak', L('Did not work?', 'Не сработало?'), L('Ask in the chat', 'Спросите в чате'))}
         </section>` : '';
   const extras = [tweakCommands(item), tweakDownloads(item), tweakKeys(item)].filter(Boolean).join('');
 
@@ -1206,6 +1212,7 @@ function counterKeys() {
     pages: sitePaths(),
     tweaks: [...settings.items.map(i => i.id), ...(featured.show ? ['featured'] : [])],
     places: ['header', 'footer', 'home', 'build'], // data-tg-placement of the Telegram links
+    chatplaces: CHAT_PLACES, // data-chat-placement of the links that open the site chat
     files: counterFiles(),
   }, null, 2) + '\n');
 }

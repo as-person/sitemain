@@ -82,6 +82,14 @@
     "home",
     "build"
   ],
+  "chatplaces": [
+    "footer",
+    "build",
+    "tweak",
+    "archive",
+    "settings",
+    "settings-empty"
+  ],
   "files": {
     "enable_dragdrop.reg": "tweak:drag-and-drop",
     "DisableExplorersTabs.reg": "tweak:explorer-tabs",

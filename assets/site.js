@@ -6,8 +6,8 @@
   const root = document.documentElement;
 
   const STRINGS = {
-    en: { copied: 'Copied', copyFailed: 'Could not copy', found: 'Found', clicks: 'Downloads', download: 'Download', linkCopied: 'Link copied', copies: 'Copies', linkClicks: 'Link clicks', tgClicks: 'Telegram clicks', fromHere: 'from here', views: 'Page views', today: 'today', week: '7 days', month: '30 days', total: 'all time', allCount: 'total', people: 'people', repeated: 'repeated', sum: 'Total', onlyYou: 'visible only to you', viaKey: 'signed in by key', shareMenu: 'Share menu', shareOpened: 'opened', shared: 'shared', share_open: 'Opened the menu', share_copy: 'Copy link', share_native: 'Other apps', share_vk: 'VK' },
-    ru: { copied: 'Скопировано', copyFailed: 'Не удалось скопировать', found: 'Найдено', clicks: 'Скачиваний', download: 'Скачать', linkCopied: 'Ссылка скопирована', copies: 'Копирований', linkClicks: 'Переходов', tgClicks: 'Переходов в Telegram', fromHere: 'отсюда', views: 'Просмотры страницы', today: 'сегодня', week: 'неделя', month: 'месяц', total: 'за всё время', allCount: 'всего', people: 'людей', repeated: 'повторно', sum: 'Итого', onlyYou: 'видно только вам', viaKey: 'вход по ключу', shareMenu: 'Меню «Поделиться»', shareOpened: 'открыли', shared: 'поделились', share_open: 'Открыли меню', share_copy: 'Скопировать ссылку', share_native: 'Другие приложения', share_vk: 'ВКонтакте' },
+    en: { copied: 'Copied', copyFailed: 'Could not copy', found: 'Found', clicks: 'Downloads', download: 'Download', linkCopied: 'Link copied', copies: 'Copies', linkClicks: 'Link clicks', tgClicks: 'Telegram clicks', fromHere: 'from here', views: 'Page views', today: 'today', week: '7 days', month: '30 days', total: 'all time', allCount: 'total', people: 'people', repeated: 'repeated', sum: 'Total', onlyYou: 'visible only to you', viaKey: 'signed in by key', shareMenu: 'Share menu', shareOpened: 'opened', shared: 'shared', share_open: 'Opened the menu', share_copy: 'Copy link', share_native: 'Other apps', share_vk: 'VK', chatClicks: 'Chat opened' },
+    ru: { copied: 'Скопировано', copyFailed: 'Не удалось скопировать', found: 'Найдено', clicks: 'Скачиваний', download: 'Скачать', linkCopied: 'Ссылка скопирована', copies: 'Копирований', linkClicks: 'Переходов', tgClicks: 'Переходов в Telegram', fromHere: 'отсюда', views: 'Просмотры страницы', today: 'сегодня', week: 'неделя', month: 'месяц', total: 'за всё время', allCount: 'всего', people: 'людей', repeated: 'повторно', sum: 'Итого', onlyYou: 'видно только вам', viaKey: 'вход по ключу', shareMenu: 'Меню «Поделиться»', shareOpened: 'открыли', shared: 'поделились', share_open: 'Открыли меню', share_copy: 'Скопировать ссылку', share_native: 'Другие приложения', share_vk: 'ВКонтакте', chatClicks: 'Открыли чат' },
   };
   const currentLang = () => (root.lang === 'ru' ? 'ru' : 'en');
   const t = key => STRINGS[currentLang()][key];
@@ -188,6 +188,17 @@
       line.hidden = false;
     });
 
+    // Links to the site chat: opened from anywhere on the site, and from this place
+    $$('[data-chat-stats]').forEach(line => {
+      const site = statsCounts.chat || {};
+      const here = statsCounts['chat:' + line.dataset.chatStats] || {};
+      statDetails(line, t('chatClicks') + ': ' + (site.click || 0) + ' · ' + t('fromHere') + ' ' + (here.click || 0), [
+        { label: t('chatClicks'), unique: site.click || 0, all: site['all:click'] || 0 },
+        { label: t('fromHere'), unique: here.click || 0, all: here['all:click'] || 0 },
+      ], false);
+      line.hidden = false;
+    });
+
     // Share menu of this page: opened, and what was chosen in it
     $$('[data-share-stats]').forEach(line => {
       const counts = statsCounts['share:' + pagePathNow()] || {};
@@ -228,7 +239,7 @@
       ranking.hidden = false;
     }
   }
-  if ($('[data-stats-file], [data-tweak-stats], [data-tg-stats], [data-share-stats]')) {
+  if ($('[data-stats-file], [data-tweak-stats], [data-tg-stats], [data-chat-stats], [data-share-stats]')) {
     languageListeners.push(renderStats);
     // The page asks the counter once, in <head>; see `analytics` in _src/build.mjs.
     (window.siteOwner || fetch(withOwner(COUNTER + '/stats')).then(response => response.json()))
@@ -509,6 +520,19 @@
       fetch(url, { method: 'POST', mode: 'no-cors', keepalive: true }).catch(() => {});
     }
   };
+  /* Links that open the site chat: the counter keeps the clicks per place (footer, build, tweak...) */
+  $$('[data-chat-placement]').forEach(link => {
+    link.addEventListener('click', () => {
+      if (typeof window.gtag === 'function') {
+        window.gtag('event', 'chat_open', { placement: link.dataset.chatPlacement, transport_type: 'beacon' });
+      }
+      const url = withOwner(COUNTER + '/count?chat=' + link.dataset.chatPlacement + '&kind=click');
+      if (!(navigator.sendBeacon && navigator.sendBeacon(url))) {
+        fetch(url, { method: 'POST', mode: 'no-cors', keepalive: true }).catch(() => {});
+      }
+    });
+  });
+
   $$('[data-tg-placement]').forEach(link => {
     link.addEventListener('click', event => reportTelegram(link, event));
     link.addEventListener('auxclick', event => reportTelegram(link, event));

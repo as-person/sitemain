@@ -8,6 +8,7 @@ POST /api/count      the site reports what never reaches the server:
                        ?tweak=<id>&kind=copy|link         a tweak command was copied / a tweak link was opened
                        ?page=<path>&kind=view             a page was opened (once per IP per page per day)
                        ?tg=<place>&kind=click             a link to the Telegram channel was clicked
+                       ?chat=<place>&kind=click           a link that opens the site chat was clicked (where it was)
                        ?share=<action>&on=<page>&kind=click   the Share menu was opened or used (counted per page
                                                           under 'share:<page>' and for the whole site under 'share')
 GET  /api/stats      returns the counts to the owner (IP in OWNER_IPS or ?owner=<token> from OWNER_TOKENS),
@@ -120,6 +121,7 @@ def remember_files(files):
 
 def parse_keys(data):
     keys = {name: set(data[name]) for name in ('pages', 'tweaks', 'places')}
+    keys['chatplaces'] = set(data.get('chatplaces', []))   # places of the links to the site chat
     keys['files'] = dict(data.get('files', {}))
     if not all(isinstance(v, str) for values in keys.values() for v in values) or not keys['pages']:
         raise ValueError('bad counter keys')
@@ -506,6 +508,21 @@ class Handler(BaseHTTPRequestHandler):
                     if total_allowed((ip, 'tg', place)):
                         add('tg', 'all:click')
                         add('tg:' + place, 'all:click')
+                return self.respond(204)
+            place = query.get('chat', [''])[0]
+            if place:
+                if kind != 'click' or not PLACE_RE.match(place) or not known('chatplaces', place):
+                    return self.respond(400)
+                ip = self.headers.get('X-Real-IP', '')
+                if ip and not self.ignored():
+                    # like Telegram: 'chat' for the whole site (one per IP per day), 'chat:<place>' per place
+                    if first_today((ip, 'chat')):
+                        add('chat', 'click')
+                    if first_today((ip, 'chat', place)):
+                        add('chat:' + place, 'click')
+                    if total_allowed((ip, 'chat', place)):
+                        add('chat', 'all:click')
+                        add('chat:' + place, 'all:click')
                 return self.respond(204)
             action = query.get('share', [''])[0]
             if action:
