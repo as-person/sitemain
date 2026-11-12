@@ -60,6 +60,7 @@
         // the bottom drift: a row of rounded humps of uneven width that meet in soft dips, on a slow swell
         : max * (0.5 + 0.08 * Math.sin(x / 200 + a) + 0.42 * hump(Math.sin(x / 36 + 0.8 * Math.sin(x / 90 + b) + a)));
     }
+    p.waves = p.caps.slice();
     if (old) for (let i = 0; i < count; i++) p.cols[i] = Math.min(p.caps[i], old.cols[Math.min(i, old.cols.length - 1)] || 0);
     p.cache.width = Math.ceil((count * COL + COL) * dpr);
     p.cache.height = Math.ceil((max + 4) * dpr);
@@ -81,6 +82,28 @@
     const tall = m.actualBoundingBoxAscent, rest = tall - (tall - small) * 0.65;
     const drop = m.fontBoundingBoxAscent ? m.fontBoundingBoxAscent - rest : size * 0.4;
     return { left: r.left, right: r.right, width: r.width, top: r.top + drop, bottom: r.bottom };
+  }
+
+  // No snow over the space between words ("Поддержать проект"): there the ceiling is 0, and towards it the layer
+  // thins out over a few columns, as at the ends of the word
+  function cutGaps(s) {
+    const p = s.pile, text = s.el.textContent;
+    p.caps.set(p.waves);
+    if (!text.includes(' ')) return;
+    const cs = getComputedStyle(s.el);
+    measurer.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    const scale = s.el.getBoundingClientRect().width / (measurer.measureText(text).width || 1);
+    const gaps = [];
+    for (let k = text.indexOf(' '); k >= 0; k = text.indexOf(' ', k + 1)) {
+      gaps.push([measurer.measureText(text.slice(0, k)).width * scale - 1, measurer.measureText(text.slice(0, k + 1)).width * scale + 1]);
+    }
+    for (let i = 0; i < p.caps.length; i++) {
+      const x = i * COL + COL / 2;
+      let near = Infinity;
+      for (const [a, b] of gaps) near = Math.min(near, x >= a && x <= b ? 0 : Math.min(Math.abs(x - a), Math.abs(x - b)));
+      p.caps[i] *= Math.min(1, near / (6 * COL));
+      if (p.cols[i] > p.caps[i]) { p.cols[i] = p.caps[i]; p.dirty = true; }
+    }
   }
 
   function measure() {
@@ -183,7 +206,9 @@
         p.cache.style.height = p.cache.height / dpr + 'px';
         if (!sticky) cardLayer.append(p.cache);
       }
-      return { el, inset, rect: null, key, pile: p, sticky, word };
+      const surface = { el, inset, rect: null, key, pile: p, sticky, word };
+      if (word) cutGaps(surface);
+      return surface;
     });
     const now = new Set(surfaces.map(s => s.pile.cache));   // cards gone from the page take their snow along
     for (const c of [...cardLayer.children]) if (!now.has(c)) c.remove();
@@ -283,7 +308,7 @@
     for (const [side, share] of sides) {
       for (let k = 0; k < BANK.length; k++) {
         const i = i0 + side * (reach + 1 + k);
-        if (i >= 0 && i < cols.length) cols[i] = Math.min(p.max, cols[i] + pushed * share * BANK[k]);
+        if (i >= 0 && i < cols.length && p.caps[i] > 0) cols[i] = Math.min(p.max, cols[i] + pushed * share * BANK[k]);
       }
     }
     // the clumps: each holds about 2.4 of snow; what does not make a whole clump waits for the next frame
@@ -318,7 +343,7 @@
     const cols = p.cols;
     for (let k = 0; k < HEAP.length; k++) {
       const j = i + k - 2;
-      if (j >= 0 && j < cols.length) cols[j] = Math.min(p.max, cols[j] + amount * HEAP[k]);
+      if (j >= 0 && j < cols.length && p.caps[j] > 0) cols[j] = Math.min(p.max, cols[j] + amount * HEAP[k]);
     }
     p.dirty = true;
     p.settling = 12;
@@ -570,7 +595,8 @@
   new MutationObserver(refind).observe(document.body, { childList: true, subtree: true });
   // the language switched: the footer's words are others (and of another width)
   new MutationObserver(refind).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-  if (document.fonts) document.fonts.ready.then(measure);   // the letters' height is known for sure once the font is in
+  // the letters' height and the spaces' places are known for sure once the font is in
+  if (document.fonts) document.fonts.ready.then(() => { for (const s of surfaces) if (s.word) cutGaps(s); measure(); });
 
   resize();
   requestAnimationFrame(loop);
