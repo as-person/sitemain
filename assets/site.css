@@ -906,6 +906,8 @@ html:not([data-image]) .img-ru { display: none !important; }
 .footer-links a:hover { color: var(--text); }
 .footer-end { margin-left: auto; align-self: flex-end; }
 
+.help-line { margin-top: 16px; color: var(--muted); font-size: var(--fs-sm); }
+
 /* -- Toast --------------------------------------------------------------- */
 
 .toast {

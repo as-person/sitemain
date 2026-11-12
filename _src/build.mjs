@@ -552,6 +552,7 @@ function buildPage(build, preset) {
             <li><span>${L('Write the ISO to a USB drive of 8 GB or more, for example with', 'Запишите ISO на флешку от 8 ГБ, например с помощью')} <a class="link" href="https://rufus.ie/" target="_blank" rel="noopener">Rufus</a>.</span></li>
             <li><span>${L('Boot from the USB drive and follow the installer.', 'Загрузитесь с флешки и следуйте шагам установщика.')}</span></li>
           </ol>
+          ${chatHelp(L('Something does not work?', 'Что-то не получается?'), L('Ask in the chat', 'Спросите в чате'), L('we will help.', 'поможем.'))}
         </section>
 
         <section class="section">
@@ -730,6 +731,7 @@ function archivePage() {
       <div class="section">
         ${archive.releases.map(releaseHtml).join('\n      ')}
       </div>
+      ${chatHelp(L('Questions about old versions?', 'Есть вопрос по старым версиям?'), L('Ask in the chat', 'Спросите в чате'))}
     </div>
   </main>`;
 
@@ -764,6 +766,10 @@ const shareRow = () => `<div class="share">
           </div>
           <div class="stats-line share-stats" data-share-stats hidden></div>
         </div>`;
+
+// A quiet line under instructions: the moment a question comes up, the chat is one click away (opens it, see site.js)
+const chatHelp = (question, link, tail = '') =>
+  `<p class="help-line">${question} <a class="link" href="#chat" data-chat-open>${link}</a>${tail ? ` — ${tail}` : ''}</p>`;
 
 const tgCard = placement => `<a class="tg-card" href="${TELEGRAM}" target="_blank" rel="noopener" data-tg-placement="${placement}">
           <span class="tg-icon">${icon('send')}</span>
@@ -1003,6 +1009,7 @@ function tweakPage(item) {
           <ol class="steps">
             ${applySteps(item).map(step => `<li><span>${step}</span></li>`).join('\n            ')}
           </ol>
+          ${chatHelp(L('Did not work?', 'Не сработало?'), L('Ask in the chat', 'Спросите в чате'))}
         </section>` : '';
   const extras = [tweakCommands(item), tweakDownloads(item), tweakKeys(item)].filter(Boolean).join('');
 
