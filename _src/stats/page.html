@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Статистика · somov.org</title>
+<style>
+@font-face { font-family: "Flags"; src: url("/stats/flags.woff2") format("woff2"); unicode-range: U+1F1E6-1F1FF; }
+:root {
+  --bg: #0f1115; --surface: #171a21; --raised: #1f232c; --border: rgb(255 255 255 / .09);
+  --text: #f0f2f5; --muted: #a9b0bc; --faint: #6b7280; --accent: #3b82f6; --accent-soft: rgb(59 130 246 / .16);
+  --up: #7ee2a8; --down: #f59e9e;
+  --r: 14px; --font: "Flags", Inter, "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font: 15px/1.5 var(--font); -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 28px 20px 60px; }
+header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
+h1 { font-size: 24px; font-weight: 700; letter-spacing: -.01em; }
+.sub { color: var(--faint); font-size: 13px; margin-top: 2px; }
+.periods { display: flex; gap: 2px; padding: 3px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); }
+.periods button { padding: 7px 14px; border: 0; border-radius: 999px; background: none; color: var(--muted); font: inherit; font-size: 13.5px; cursor: pointer; }
+.periods button:hover { color: var(--text); }
+.periods button[aria-pressed="true"] { background: var(--text); color: var(--bg); font-weight: 600; }
+
+.kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 14px; }
+.kpi { padding: 16px 18px; border: 1px solid var(--border); border-radius: var(--r); background: var(--surface); }
+.kpi-label { color: var(--muted); font-size: 13px; }
+.kpi-value { margin-top: 4px; font-size: 30px; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.kpi-delta { margin-top: 2px; color: var(--faint); font-size: 12.5px; }
+.kpi-delta b { font-weight: 600; }
+.kpi-delta .up { color: var(--up); } .kpi-delta .down { color: var(--down); }
+
+.card { padding: 18px 20px; border: 1px solid var(--border); border-radius: var(--r); background: var(--surface); }
+.card h2 { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 12px; font-size: 15px; font-weight: 600; }
+.card h2 small { color: var(--faint); font-size: 12.5px; font-weight: 400; }
+.hint { color: var(--faint); font-size: 12.5px; margin-top: 10px; }
+
+.chart-card { margin-bottom: 14px; }
+.tabs { display: flex; gap: 14px; }
+.tabs button { padding: 0 0 4px; border: 0; border-bottom: 2px solid transparent; background: none; color: var(--muted); font: inherit; font-size: 13.5px; cursor: pointer; }
+.tabs button[aria-pressed="true"] { color: var(--text); border-color: var(--accent); }
+.chart { position: relative; height: 220px; }
+.chart svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.chart .grid { stroke: rgb(255 255 255 / .07); }
+.chart .axis { fill: var(--faint); font-size: 11px; }
+.chart .bar { fill: var(--accent); }
+.chart .bar.today { fill: rgb(59 130 246 / .55); }
+.chart .hit { fill: transparent; }
+.chart .hit:hover + .bar, .chart g:hover .bar { fill: #60a5fa; }
+.tip { position: absolute; pointer-events: none; padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--raised); font-size: 12.5px; white-space: nowrap; transform: translate(-50%, -110%); }
+.tip b { font-size: 14px; }
+
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-bottom: 14px; }
+.list { display: grid; gap: 2px; }
+.row { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 6px 8px; border-radius: 8px; }
+.row::before { content: ""; position: absolute; inset: 0 auto 0 0; width: var(--w, 0%); border-radius: 8px; background: var(--accent-soft); }
+.row > * { position: relative; }
+.row .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row .num { font-variant-numeric: tabular-nums; font-weight: 600; }
+.row .num small { margin-left: 6px; color: var(--faint); font-weight: 400; }
+.row .detail { grid-column: 1 / -1; margin-top: -2px; color: var(--faint); font-size: 12.5px; }
+.flag { display: inline-block; width: 1.4em; }
+.empty { color: var(--faint); font-size: 13.5px; padding: 6px 8px; }
+.split { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.split h3 { margin: 0 0 6px 8px; color: var(--muted); font-size: 12.5px; font-weight: 500; }
+
+.feed { display: grid; gap: 0; }
+.feed div { display: grid; grid-template-columns: 52px 1.6em minmax(0, 1fr); gap: 8px; padding: 6px 8px; border-bottom: 1px solid var(--border); font-size: 13.5px; }
+.feed div:last-child { border-bottom: 0; }
+.feed time { color: var(--faint); font-variant-numeric: tabular-nums; }
+.feed span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+@media (max-width: 900px) { .kpis { grid-template-columns: repeat(3, 1fr); } .grid2 { grid-template-columns: 1fr; } }
+@media (max-width: 560px) {
+  .wrap { padding: 20px 14px 40px; }
+  .kpis { grid-template-columns: repeat(2, 1fr); }
+  .kpi-value { font-size: 26px; }
+  .periods { width: 100%; overflow-x: auto; } .periods button { flex: 1; padding: 7px 8px; }
+  .split { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Статистика</h1>
+      <p class="sub" id="sub">somov.org</p>
+    </div>
+    <nav class="periods" id="periods" aria-label="Период">
+      <button data-p="today">Сегодня</button><button data-p="7">7 дней</button><button data-p="30">30 дней</button><button data-p="90">90 дней</button><button data-p="all">Всё время</button>
+    </nav>
+  </header>
+
+  <section class="kpis" id="kpis"></section>
+
+  <section class="card chart-card">
+    <h2><span class="tabs" id="tabs"><button data-m="people">Посещения</button><button data-m="views">Просмотры</button><button data-m="downloads">Скачивания</button></span><small id="chart-note"></small></h2>
+    <div class="chart" id="chart"></div>
+  </section>
+
+  <div class="grid2">
+    <section class="card"><h2>Страны <small>посещения</small></h2><div class="list" id="countries"></div></section>
+    <section class="card"><h2>Откуда приходят <small>посещения</small></h2><div class="list" id="sources"></div><p class="hint">Источник — первое, откуда человек пришёл за день. «Прямые ссылки на файлы» — скачали, не заходя на сайт (ссылки из Telegram и т. п.).</p></section>
+  </div>
+
+  <div class="grid2">
+    <section class="card"><h2>Сборки <small>людей · ISO / торрент / magnet</small></h2><div class="list" id="builds"></div><p class="hint" id="dlvia"></p></section>
+    <section class="card"><h2>Страницы <small>просмотры</small></h2><div class="list" id="pages"></div></section>
+  </div>
+
+  <section class="card" style="margin-bottom:14px"><h2>Устройства <small>посещения</small></h2>
+    <div class="split"><div><h3>Тип</h3><div class="list" id="devices"></div><h3 style="margin-top:12px">Язык сайта</h3><div class="list" id="langs"></div></div><div><h3>Система</h3><div class="list" id="os"></div></div><div><h3>Браузер</h3><div class="list" id="browsers"></div></div></div>
+  </section>
+
+  <div class="grid2">
+    <section class="card"><h2>Настройки и файлы <small>людей</small></h2><div class="list" id="tweaks"></div></section>
+    <section class="card"><h2>Telegram и чат <small>нажатия, людей</small></h2><div class="list" id="clicks"></div></section>
+  </div>
+
+  <section class="card"><h2>Последние действия <small>время Вьетнама</small></h2><div class="feed" id="feed"></div></section>
+</div>
+
+<script nonce="{{nonce}}">
+(function () {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const nf = new Intl.NumberFormat('ru-RU');
+  const regions = (() => { try { return new Intl.DisplayNames(['ru'], { type: 'region' }); } catch (e) { return null; } })();
+  let period = (() => { try { return localStorage.getItem('statsPeriod') || '7'; } catch (e) { return '7'; } })();
+  let metric = 'people';
+  let data = null;
+
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const flag = cc => (/^[A-Z]{2}$/.test(cc) ? String.fromCodePoint(...[...cc].map(c => 0x1F1E6 + c.charCodeAt(0) - 65)) : '🌐');
+  const countryName = cc => (cc === '??' ? 'Не определена' : (regions && regions.of(cc)) || cc);
+  const PERIOD_WORD = { today: 'вчера', 7: 'прошлым 7 дням', 30: 'прошлым 30 дням', 90: 'прошлым 90 дням' };
+  const SOURCES = {
+    ad: 'Реклама (Яндекс Директ)', yandex: 'Поиск Яндекса', google: 'Поиск Google', bing: 'Поиск Bing',
+    telegram: 'Telegram', vk: 'ВКонтакте', none: 'Прямой заход или закладка', link: 'Прямые ссылки на файлы',
+    unknown: 'Нет данных (до 12 ноября)',
+  };
+  const PAGES = { '/': 'Главная', '/windows-11': 'Windows 11', '/windows-10': 'Windows 10', '/ghost-spectre': 'Ghost Spectre',
+    '/settings-for-windows': 'Настройки для Windows', '/support': 'Поддержать проект', '/archive': 'Архив сборок' };
+  const PLACES = { header: 'шапка', footer: 'подвал', home: 'главная', build: 'страница сборки', tweak: 'страница твика',
+    archive: 'архив', settings: 'низ настроек', 'settings-empty': 'пустой поиск' };
+  const KINDS = { download: 'ISO', torrent: 'торрент', magnet: 'magnet' };
+  const pageName = p => PAGES[p] || (p.startsWith('/tweaks/') ? 'Твик: ' + p.slice(8) : p);
+  function buildName(file) {
+    const m = file.match(/^(en-us|ru-ru)_windows_(\d+)_iot_enterprise_ltsc_\d+_x64_([\d.]+)_by_somov\.iso$/i);
+    if (m) return `Windows ${m[2]} LTSC · ${m[3]} · ${m[1].startsWith('ru') ? 'RU' : 'EN'}`;
+    return 'Ghost Spectre · ' + file.replace(/\.iso$/i, '').replace(/\.X64\.\(WPE\)/i, '').replace(/^WIN/, 'Win').replace(/\./g, ' ');
+  }
+
+  /* KPI tiles: the number and its change against the same length of time before */
+  function kpis() {
+    const box = $('kpis');
+    box.textContent = '';
+    const items = [['people', 'Посещения'], ['views', 'Просмотры страниц'], ['downloads', 'Скачивания сборок'], ['tgall', 'Переходы в Telegram'], ['chatall', 'Открыли чат']];
+    items.forEach(([key, label]) => {
+      const now = (data.now[key] || {}).uniq || 0;
+      const before = (data.before[key] || {}).uniq || 0;
+      const tile = el('div', 'kpi');
+      tile.append(el('div', 'kpi-label', label), el('div', 'kpi-value', nf.format(now)));
+      const delta = el('div', 'kpi-delta');
+      if (data.period !== 'all') {
+        if (!before && !now) delta.textContent = 'нет данных';
+        else if (!before) delta.textContent = 'раньше не было';
+        else {
+          const change = Math.round((now - before) / before * 100);
+          const mark = el('b', change > 0 ? 'up' : change < 0 ? 'down' : '', (change > 0 ? '▲ +' : change < 0 ? '▼ ' : '') + change + '%');
+          delta.append(mark, ' к ' + PERIOD_WORD[data.period]);
+        }
+      } else delta.textContent = 'с ' + new Date(data.since).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
+      tile.append(delta);
+      box.append(tile);
+    });
+  }
+
+  /* Daily bars of one measure (one at a time: one axis), with the exact number on hover */
+  function chart() {
+    const box = $('chart');
+    box.textContent = '';
+    const series = data.series;
+    const values = series.map(d => d[metric] || 0);
+    const max = Math.max(4, ...values);
+    const step = Math.pow(10, Math.floor(Math.log10(max)));
+    const top = Math.ceil(max / step) * step;
+    const W = box.clientWidth || 600, H = 220, left = 34, bottom = 22;
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    const make = (tag, attrs) => { const e = document.createElementNS(ns, tag); Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v)); return e; };
+    [0, .5, 1].forEach(f => {
+      const y = (H - bottom) * (1 - f) + .5;
+      svg.append(make('line', { x1: left, x2: W, y1: y, y2: y, class: 'grid' }));
+      const label = make('text', { x: left - 8, y: y + 4, 'text-anchor': 'end', class: 'axis' });
+      label.textContent = nf.format(Math.round(top * f));
+      svg.append(label);
+    });
+    const slot = (W - left) / series.length;
+    const barW = Math.max(3, Math.min(28, slot * .62));
+    const tip = el('div', 'tip');
+    tip.hidden = true;
+    const todayIso = data.end;
+    series.forEach((d, i) => {
+      const v = d[metric] || 0;
+      const h = (H - bottom) * v / top;
+      const x = left + slot * i + (slot - barW) / 2;
+      const y = H - bottom - h;
+      const g = make('g', {});
+      const r = Math.min(4, barW / 2, h / 2);
+      const path = h > 0 ? `M${x},${H - bottom} V${y + r} Q${x},${y} ${x + r},${y} H${x + barW - r} Q${x + barW},${y} ${x + barW},${y + r} V${H - bottom} Z` : '';
+      const hit = make('rect', { x: left + slot * i, y: 0, width: slot, height: H - bottom, class: 'hit' });
+      g.append(hit);
+      if (path) g.append(make('path', { d: path, class: 'bar' + (d.day === todayIso ? ' today' : '') }));
+      g.addEventListener('mouseenter', () => {
+        tip.hidden = false;
+        tip.textContent = '';
+        tip.append(el('b', '', nf.format(v)), el('span', '', ' · ' + new Date(d.day).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', weekday: 'short' }) + (d.day === todayIso ? ' (сегодня, ещё идёт)' : '')));
+        tip.style.left = (x + barW / 2) / W * 100 + '%';
+        tip.style.top = Math.max(y, 20) + 'px';
+      });
+      g.addEventListener('mouseleave', () => { tip.hidden = true; });
+      svg.append(g);
+      const every = Math.ceil(series.length / 10);
+      if (i % every === 0 || i === series.length - 1) {
+        const label = make('text', { x: x + barW / 2, y: H - 6, 'text-anchor': 'middle', class: 'axis' });
+        label.textContent = new Date(d.day).toLocaleDateString('ru-RU', { day: 'numeric', month: series.length > 20 ? 'numeric' : 'short' });
+        svg.append(label);
+      }
+    });
+    box.append(svg, tip);
+    $('chart-note').textContent = data.period === 'today' ? 'последние 14 дней' : 'по дням';
+  }
+
+  /* A list of names with a number and a soft bar behind (share of the largest) */
+  function list(id, rows, nameOf, opts = {}) {
+    const box = $(id);
+    box.textContent = '';
+    if (!rows.length) { box.append(el('div', 'empty', 'Пока ничего')); return; }
+    const total = rows.reduce((s, r) => s + r.uniq, 0);
+    const max = Math.max(...rows.map(r => r.uniq));
+    rows.slice(0, opts.limit || 12).forEach(r => {
+      const row = el('div', 'row');
+      row.style.setProperty('--w', (r.uniq / max * 100).toFixed(1) + '%');
+      const name = el('span', 'name');
+      name.append(...[].concat(nameOf(r)));
+      const num = el('span', 'num', nf.format(r.uniq));
+      if (opts.percent !== false && total) num.append(el('small', '', Math.round(r.uniq / total * 100) + '%'));
+      row.append(name, num);
+      if (opts.detail) { const d = opts.detail(r); if (d) row.append(el('span', 'detail', d)); }
+      row.title = opts.title ? opts.title(r) : '';
+      box.append(row);
+    });
+  }
+
+  function tables() {
+    list('countries', data.countries, r => [el('span', 'flag', flag(r.key)), countryName(r.key)]);
+    list('sources', data.sources, r => SOURCES[r.key] || (r.key.startsWith('ref:') ? 'Сайт ' + r.key.slice(4) : r.key));
+    const kinds = {};
+    data.buildkinds.forEach(r => { const [file, kind] = r.key.split('|'); (kinds[file] = kinds[file] || {})[kind] = r.uniq; });
+    list('builds', data.builds, r => buildName(r.key), {
+      detail: r => Object.entries(KINDS).filter(([k]) => (kinds[r.key] || {})[k]).map(([k, n]) => `${n} ${nf.format(kinds[r.key][k])}`).join(' · '),
+      title: r => r.key,
+    });
+    const via = Object.fromEntries(data.dlvia.map(r => [r.key, r.uniq]));
+    $('dlvia').textContent = (via.site || via.link) ? `Скачали с сайта: ${nf.format(via.site || 0)} · по прямой ссылке: ${nf.format(via.link || 0)}` : '';
+    list('pages', data.pages, r => pageName(r.key), { title: r => r.key });
+    list('devices', data.devices, r => r.key);
+    list('langs', data.langs, r => (r.key === 'ru' ? 'Русский' : 'Английский'));
+    list('os', data.os, r => r.key);
+    list('browsers', data.browsers, r => r.key);
+    const tweakRows = {};
+    data.files.forEach(r => { const k = r.key.replace(/^tweak:/, ''); (tweakRows[k] = tweakRows[k] || { key: k, uniq: 0, parts: [] }).uniq += r.uniq; tweakRows[k].parts.push('скачали ' + nf.format(r.uniq)); });
+    data.tweaks.forEach(r => { const [id, kind] = r.key.replace(/^tweak:/, '').split('|'); const t = (tweakRows[id] = tweakRows[id] || { key: id, uniq: 0, parts: [] }); t.uniq += r.uniq; t.parts.push((kind === 'copy' ? 'скопировали ' : 'открыли ссылку ') + nf.format(r.uniq)); });
+    list('tweaks', Object.values(tweakRows).sort((a, b) => b.uniq - a.uniq), r => r.key, { percent: false, detail: r => r.parts.join(' · ') });
+    const clicks = [...data.tg.map(r => ({ ...r, label: 'Telegram · ' + (PLACES[r.key] || r.key) })), ...data.chat.map(r => ({ ...r, label: 'Чат · ' + (PLACES[r.key] || r.key) }))].sort((a, b) => b.uniq - a.uniq);
+    list('clicks', clicks, r => r.label, { percent: false });
+  }
+
+  /* What happened last: time, country, action in plain words */
+  function feed() {
+    const box = $('feed');
+    box.textContent = '';
+    if (!data.feed.length) { box.append(el('div', 'empty', 'Пока ничего')); return; }
+    data.feed.slice(0, 40).forEach(f => {
+      const row = el('div');
+      const t = new Date(f.t * 1000);
+      const time = el('time', '', t.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Ho_Chi_Minh' }));
+      time.title = t.toLocaleString('ru-RU', { timeZone: 'Asia/Ho_Chi_Minh' });
+      let text = f.key;
+      if (f.what === 'view') text = 'открыл ' + pageName(f.key);
+      else if (f.what === 'dl') { const [file, kind] = f.key.split('|'); text = 'скачал ' + buildName(file) + ' (' + (KINDS[kind] || kind) + ')'; }
+      else if (f.what === 'file') text = 'скачал файл ' + f.key.split('|')[0].replace(/^tweak:/, '');
+      else if (f.what === 'tg') text = 'перешёл в Telegram (' + (PLACES[f.key] || f.key) + ')';
+      else if (f.what === 'chat') text = 'открыл чат (' + (PLACES[f.key] || f.key) + ')';
+      row.append(time, el('span', 'flag', flag(f.cc)), el('span', '', text));
+      row.title = countryName(f.cc);
+      box.append(row);
+    });
+  }
+
+  function paint() {
+    if (!data) return;
+    const updated = data.updated ? new Date(data.updated * 1000).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) : '—';
+    $('sub').textContent = `somov.org · обновлено в ${updated} · человек считается один раз в сутки`;
+    kpis(); chart(); tables(); feed();
+  }
+
+  function load() {
+    fetch('/stats/data?period=' + period, { cache: 'no-store' })
+      .then(r => r.json()).then(d => { data = d; paint(); }).catch(() => {});
+  }
+
+  const press = (container, attr, value) => container.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset[attr] === value)));
+  $('periods').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    period = b.dataset.p; try { localStorage.setItem('statsPeriod', period); } catch (err) {}
+    press($('periods'), 'p', period); load();
+  });
+  $('tabs').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    metric = b.dataset.m; press($('tabs'), 'm', metric); chart();
+  });
+  press($('periods'), 'p', period);
+  press($('tabs'), 'm', metric);
+  let resize;
+  window.addEventListener('resize', () => { clearTimeout(resize); resize = setTimeout(() => data && chart(), 150); });
+  load();
+  setInterval(load, 120000);
+})();
+</script>
+</body>
+</html>

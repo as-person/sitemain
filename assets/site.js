@@ -257,7 +257,26 @@
   if (!$('.not-found')) {
     const pagePath = pagePathNow();
     if (/^\/[a-z0-9/-]{0,100}$/.test(pagePath)) {
-      const url = withOwner(COUNTER + '/count?page=' + encodeURIComponent(pagePath) + '&kind=view');
+      // For the owner's statistics page (it reads them from the nginx log): where the visitor came from, as a
+      // category only (the other site's name, never its full address), and the language they read the site in
+      const sourceOf = () => {
+        const q = new URLSearchParams(location.search);
+        if (q.has('yclid') || q.has('gclid') || /cpc|ppc|ad/i.test(q.get('utm_medium') || '')) return 'ad';
+        const tag = (q.get('utm_source') || q.get('from') || '').toLowerCase();
+        if (/^(tg|telegram)$/.test(tag)) return 'telegram';
+        let host = '';
+        try { host = document.referrer ? new URL(document.referrer).hostname.replace(/^www\./, '') : ''; } catch (e) {}
+        if (!host) return 'none';
+        if (host === location.hostname || host.endsWith('somov.org')) return 'site';
+        if (/(^|\.)google\./.test(host)) return 'google';
+        if (/(^|\.)(yandex|ya)\.[a-z]+$/.test(host)) return 'yandex';
+        if (/(^|\.)bing\.com$/.test(host)) return 'bing';
+        if (/(^|\.)(t\.me|telegram\.org|telegram\.me)$/.test(host)) return 'telegram';
+        if (/(^|\.)(vk\.com|vk\.ru)$/.test(host)) return 'vk';
+        return 'ref:' + host.slice(0, 60);
+      };
+      const url = withOwner(COUNTER + '/count?page=' + encodeURIComponent(pagePath) + '&kind=view'
+        + '&src=' + encodeURIComponent(sourceOf()) + '&lang=' + currentLang());
       if (!(navigator.sendBeacon && navigator.sendBeacon(url))) {
         fetch(url, { method: 'POST', mode: 'no-cors', keepalive: true }).catch(() => {});
       }
