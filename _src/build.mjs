@@ -789,7 +789,7 @@ const tgCard = placement => `<a class="tg-card" href="${TELEGRAM}" target="_blan
             <span class="tg-title">${L('Be the first to know about new builds', 'Узнавайте о новых сборках первыми')}</span>
             <span class="tg-sub">${L('Updates, tweaks and answers to questions on Telegram', 'Обновления, твики и ответы на вопросы — в Telegram')}</span>
           </span>
-          <span class="tg-action" ${attr('aria-label', 'Subscribe', 'Подписаться')}>${icon('d')}</span>
+          <span class="tg-action" aria-hidden="true">${icon('d')}</span>
         </a>
         <div class="stats-line tg-stats" data-tg-stats="${placement}" hidden></div>`;
 

@@ -897,7 +897,12 @@ html:not([data-image]) .img-ru { display: none !important; }
 .hash-copy code { font-size: 12px; }
 .hash-copy .icon { width: 14px; height: 14px; }
 .hash-copy.is-copied { color: var(--success); }
-@media (pointer: coarse) { .hash-copy { min-height: 44px; } } /* easy to hit with a finger */
+/* Touch screens: 44px to the finger. The EN/RU switch keeps its look and gets a taller invisible hit area. */
+@media (pointer: coarse) {
+  .hash-copy, .archive-link { min-height: 44px; } /* footer links: next to their own rule below */
+  .lang-switch button { position: relative; }
+  .lang-switch button::after { content: ""; position: absolute; inset: -6px 0; }
+}
 
 .footer-links a {
   display: inline-flex;
@@ -907,6 +912,7 @@ html:not([data-image]) .img-ru { display: none !important; }
   transition: color var(--ease);
 }
 .footer-links a:hover { color: var(--text); }
+@media (pointer: coarse) { .footer-links a { min-height: 44px; } } /* easy to hit with a finger */
 .footer-end { margin-left: auto; align-self: flex-end; }
 
 .help-line { margin-top: 16px; color: var(--muted); font-size: var(--fs-sm); }
@@ -1293,7 +1299,7 @@ html:not([data-image]) .img-ru { display: none !important; }
   box-shadow: 0 0 0 2px var(--bg);
 }
 @media (prefers-reduced-motion: no-preference) {
-  .chat-fab { animation: chat-pop 320ms cubic-bezier(.2, 1.2, .4, 1); }
+  .chat-fab { animation: chat-pop 320ms cubic-bezier(.16, 1, .3, 1); } /* settles in without overshoot */
   @keyframes chat-pop { from { opacity: 0; transform: translateY(8px) scale(.9); } }
 }
 @media (max-width: 1023px) {
