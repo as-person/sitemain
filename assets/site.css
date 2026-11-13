@@ -856,6 +856,10 @@ html:not([data-image]) .img-ru { display: none !important; }
 
 .item-action { display: flex; align-items: center; gap: 10px; }
 .file-type { color: var(--muted); font-family: var(--mono); font-size: .75rem; }
+/* The download of each item: a quiet button (there are 30+ of them) with the file type inside it */
+.item-action .btn-secondary { border-color: var(--border); }
+.item-action .btn-secondary:hover { border-color: var(--border-strong); }
+.item-action .file-type { margin-left: 2px; }
 
 .commands { display: grid; gap: 10px; margin-top: 10px; }
 .command-label { margin-bottom: 4px; color: var(--muted); font-size: var(--fs-sm); }
@@ -1008,8 +1012,10 @@ html:not([data-image]) .img-ru { display: none !important; }
 
   .toolbar { top: 0; }
   .chips { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  /* More chips to the right: a soft fade on the edge (site.js sets the class), like the header links */
+  .chips.is-scrollable { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent); }
   .item { grid-template-columns: 1fr; }
-  .item-action .btn { flex: 1; }
+  .item-action { justify-content: flex-start; } /* a compact button, not a full-width bar on every item */
   .keys div { grid-template-columns: 1fr; gap: 0; }
 
   .footer-end { margin-left: 0; }

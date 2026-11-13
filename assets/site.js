@@ -331,6 +331,17 @@
     languageListeners.push(fitTelegram);
   }
 
+  /* Category chips on a phone: one row that scrolls sideways; a soft fade on the right shows there is more */
+  const chipRow = $('.chips');
+  if (chipRow) {
+    const fadeChips = () => chipRow.classList.toggle('is-scrollable', chipRow.scrollLeft + chipRow.clientWidth < chipRow.scrollWidth - 2);
+    fadeChips();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fadeChips);
+    chipRow.addEventListener('scroll', fadeChips, { passive: true });
+    addEventListener('resize', fadeChips);
+    languageListeners.push(fadeChips);
+  }
+
   /* Header "Builds" menu (a <details>, so it works without scripts too). Closes on a click outside or Esc.
      On phones the nav row scrolls sideways and would clip it, so there it is placed under the button by hand. */
   $$('[data-nav-menu]').forEach(menu => {

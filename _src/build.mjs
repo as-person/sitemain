@@ -900,8 +900,7 @@ function settingsPage() {
             ${tweakStats(item)}
           </div>
           ${hasAction ? `<div class="item-action">
-            <span class="file-type">${fileType(item.file)}</span>
-            <a class="btn btn-secondary btn-sm" href="${CDN}${item.file}">${icon('download')} <span>${S.download}</span></a>
+            <a class="btn btn-secondary btn-sm" href="${CDN}${item.file}">${icon('download')} <span>${S.download}</span> <span class="file-type">${fileType(item.file)}</span></a>
           </div>` : ''}
         </article>`;
   };
@@ -940,8 +939,7 @@ function settingsPage() {
             ${featuredStats}
           </div>
           ${fileUrl ? `<div class="item-action">
-            <span class="file-type">${fileTypeOf(fileName)}</span>
-            <a class="btn btn-secondary btn-sm" href="${esc(fileUrl)}"${external ? ' ' + tweakCount('featured', 'link') : ''}>${icon('download')} <span>${S.download}</span></a>
+            <a class="btn btn-secondary btn-sm" href="${esc(fileUrl)}"${external ? ' ' + tweakCount('featured', 'link') : ''}>${icon('download')} <span>${S.download}</span> <span class="file-type">${fileTypeOf(fileName)}</span></a>
           </div>` : ''}
         </article>
         </div>
