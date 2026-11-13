@@ -337,6 +337,7 @@ function homePage() {
         url: img.url,
         magnet: img.magnet,
         size: { en: formatSize(img.size, 'en'), ru: formatSize(img.size, 'ru') },
+        sha256: img.sums.sha256,
         details: img.path,
       }];
     })),
@@ -393,6 +394,8 @@ function homePage() {
               <a class="btn btn-secondary btn-sm" id="torrent-link" href="${image.url}.torrent">Torrent</a>
               <a class="btn btn-secondary btn-sm" id="magnet-link" href="${esc(image.magnet)}" ${countAttr(image.file, 'magnet')}>Magnet</a>
             </div>
+            <!-- Right under the download: the image's SHA-256 (shortened; a press copies the whole one), the same control as in the archive -->
+            <button type="button" class="hash-copy" id="build-sha256" data-copy="${image.sums.sha256}" ${attr('title', 'Copy SHA-256', 'Скопировать SHA-256')}>SHA-256 <code>${image.sums.sha256.slice(0, 8)}…${image.sums.sha256.slice(-8)}</code> ${icon('copy')}</button>
             ${statsLine(image.file)}
             ${supportNudge}
           </div>

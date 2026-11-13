@@ -392,6 +392,9 @@
       $('#torrent-link').href = image.url + '.torrent';
       $('#magnet-link').href = image.magnet;
       $('#magnet-link').dataset.countFile = image.file;
+      const sha = $('#build-sha256');
+      sha.dataset.copy = image.sha256;
+      sha.querySelector('code').textContent = image.sha256.slice(0, 8) + '…' + image.sha256.slice(-8);
       $('.composer [data-stats-file]').dataset.statsFile = image.file;
       renderStats();
     }

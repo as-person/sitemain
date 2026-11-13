@@ -413,6 +413,7 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 /* Home: Torrent and Magnet are the fallback, so they step back from Download */
 .result .dl-alt .btn-secondary { border-color: var(--border); color: var(--muted); font-weight: 500; }
 .result .dl-alt .btn-secondary:hover { border-color: var(--border-strong); color: var(--text); }
+.result .hash-copy { justify-self: center; margin-top: -2px; }
 
 .more { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
 .more-card {
