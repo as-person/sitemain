@@ -283,7 +283,7 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 2px 9px;
+  padding: 3px 10px;
   border: 1px solid var(--border-strong);
   border-radius: var(--pill);
   color: var(--text);
@@ -897,6 +897,7 @@ html:not([data-image]) .img-ru { display: none !important; }
 .hash-copy code { font-size: 12px; }
 .hash-copy .icon { width: 14px; height: 14px; }
 .hash-copy.is-copied { color: var(--success); }
+@media (pointer: coarse) { .hash-copy { min-height: 44px; } } /* easy to hit with a finger */
 
 .footer-links a {
   display: inline-flex;
