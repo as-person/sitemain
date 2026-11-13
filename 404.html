@@ -19,13 +19,20 @@
   <script>
 (function(){var r=document.documentElement,p=location.pathname,s;try{s=localStorage.getItem('siteLanguage')}catch(e){}if(/^\/ru(\/|$)/.test(p)){if(!s){s='ru';try{localStorage.setItem('siteLanguage','ru')}catch(e){}}history.replaceState(null,'',(p.replace(/^\/ru/,'')||'/')+location.search+location.hash)}var l=s==='ru'||s==='en'?s:(r.lang==='ru'||(navigator.language||'').toLowerCase().indexOf('ru')===0?'ru':'en');r.lang=l;r.classList.remove('lang-en-active','lang-ru-active');r.classList.add('lang-'+l+'-active');if(l==='ru'){if(r.dataset.titleRu)document.title=r.dataset.titleRu;var k=document.createElement('link');k.rel='preload';k.as='font';k.type='font/woff2';k.crossOrigin='';k.href='/assets/fonts/inter-cyrillic-wght-normal.woff2';document.head.appendChild(k);}})();
 </script>
-  <link rel="stylesheet" href="/assets/site.css?v=b5c56c7f">
+  <link rel="stylesheet" href="/assets/site.css?v=6d77d882">
 </head>
 <body>
   <main class="not-found" id="content">
     <h1 class="not-found-code">404</h1>
     <p><span class="lang-en">This page doesn’t exist.</span><span class="lang-ru">Такой страницы не существует.</span></p>
     <a class="btn btn-primary" href="/"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg> <span><span class="lang-en">Back to home</span><span class="lang-ru">На главную</span></span></a>
+    <!-- Most people land here from an old link to a build or a tweak: the sections are one click away -->
+    <nav class="not-found-links" aria-label="Sections" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Sections&quot;,&quot;ru&quot;:&quot;Разделы&quot;}}">
+      <a href="/windows-11">Windows 11</a>
+      <a href="/windows-10">Windows 10</a>
+      <a href="/ghost-spectre">Ghost Spectre</a>
+      <a href="/settings-for-windows"><span class="lang-en">Settings for Windows</span><span class="lang-ru">Настройки для Windows</span></a>
+    </nav>
   </main>
 </body>
 </html>

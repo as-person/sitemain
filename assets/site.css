@@ -888,6 +888,10 @@ html:not([data-image]) .img-ru { display: none !important; }
 .not-found { flex: 1; display: grid; place-content: center; justify-items: center; padding: 64px 20px; text-align: center; }
 .not-found-code { font-size: clamp(4.5rem, 16vw, 7.5rem); font-weight: 600; line-height: 1; letter-spacing: -.04em; }
 .not-found p { margin-block: 12px 28px; color: var(--muted); font-size: 1.125rem; }
+/* Under the button: the site's sections as quiet links, for those who came by an old link */
+.not-found-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 0 20px; margin-top: 20px; font-size: var(--fs-sm); }
+.not-found-links a { display: inline-flex; align-items: center; min-height: 40px; color: var(--muted); transition: color var(--ease); }
+.not-found-links a:hover { color: var(--text); }
 
 /* -- Footer -------------------------------------------------------------- */
 

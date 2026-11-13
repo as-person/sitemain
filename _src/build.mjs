@@ -104,6 +104,12 @@ const countAttr = (file, kind) => `data-count-file="${esc(file)}" data-count-kin
 const supportNudge = `<p class="support-nudge">${L('The builds are free. If they helped you, you can <a class="link" href="/support">support the project</a>.', 'Сборки бесплатные. Если пригодились, можно <a class="link" href="/support">поддержать проект</a>.')}</p>`;
 const statsLine = (file, kinds = 'download,torrent,magnet') =>
   `<div class="stats-line" data-stats-file="${esc(file)}" data-stats-kinds="${kinds}" hidden></div>`;
+// The SHA-256 under a download: shortened, a press copies the whole one. Always lower case on every page,
+// whatever case the data has (archive.json keeps them in upper case).
+const hashCopy = (sha256, extra = '') => {
+  const sha = String(sha256).toLowerCase();
+  return `<button type="button" class="hash-copy"${extra} data-copy="${sha}" ${attr('title', 'Copy SHA-256', 'Скопировать SHA-256')}>SHA-256 <code>${sha.slice(0, 8)}…${sha.slice(-8)}</code> ${icon('copy')}</button>`;
+};
 
 const PATHS = {
   d: 'M5 12h14m-6-6 6 6-6 6',
@@ -339,7 +345,7 @@ function homePage() {
         url: img.url,
         magnet: img.magnet,
         size: { en: formatSize(img.size, 'en'), ru: formatSize(img.size, 'ru') },
-        sha256: img.sums.sha256,
+        sha256: img.sums.sha256.toLowerCase(),
         details: img.path,
       }];
     })),
@@ -401,7 +407,7 @@ function homePage() {
               <a class="btn btn-secondary btn-sm" id="magnet-link" href="${esc(image.magnet)}" ${countAttr(image.file, 'magnet')}>Magnet</a>
             </div>
             <!-- Right under the download: the image's SHA-256 (shortened; a press copies the whole one), the same control as in the archive -->
-            <button type="button" class="hash-copy" id="build-sha256" data-copy="${image.sums.sha256}" ${attr('title', 'Copy SHA-256', 'Скопировать SHA-256')}>SHA-256 <code>${image.sums.sha256.slice(0, 8)}…${image.sums.sha256.slice(-8)}</code> ${icon('copy')}</button>
+            ${hashCopy(image.sums.sha256, ' id="build-sha256"')}
             ${statsLine(image.file)}
             ${supportNudge}
             ${chatLink('home', `<span>${L('Have a question? Ask in the chat', 'Есть вопрос? Напишите в чат')}</span> ${icon('d')}`, 'details-link home-chat-narrow')}</a>
@@ -539,7 +545,7 @@ function buildPage(build, preset) {
                 <a class="btn btn-secondary btn-sm" href="${images[l].url}.torrent" ${altTitle.torrent[l]}>Torrent</a>
                 <a class="btn btn-secondary btn-sm" href="${esc(images[l].magnet)}" ${countAttr(images[l].file, 'magnet')} ${altTitle.magnet[l]}>Magnet</a>
               </div>
-              <button type="button" class="hash-copy" data-copy="${images[l].sums.sha256}" ${attr('title', 'Copy SHA-256', 'Скопировать SHA-256')}>SHA-256 <code>${images[l].sums.sha256.slice(0, 8)}…${images[l].sums.sha256.slice(-8)}</code> ${icon('copy')}</button>
+              ${hashCopy(images[l].sums.sha256)}
               ${statsLine(images[l].file)}`, 'div', 'dl-variant')}
             ${supportNudge}
           </div>
@@ -648,7 +654,7 @@ function ghostPage() {
               <span>${sizeL(item.size)}</span>
               ${item.status ? `<span class="badge">${T(item.status)}</span>` : ''}
             </div>
-            ${item.sha256 ? `<button type="button" class="hash-copy" data-copy="${item.sha256}" ${attr('title', 'Copy SHA-256', 'Скопировать SHA-256')}>SHA-256 <code>${item.sha256.slice(0, 8)}…${item.sha256.slice(-8)}</code> ${icon('copy')}</button>` : ''}
+            ${item.sha256 ? hashCopy(item.sha256) : ''}
             ${statsLine(item.file, 'download,torrent')}
           </div>
           <div class="row-actions">
@@ -718,7 +724,7 @@ function archivePage() {
                 <span aria-hidden="true">·</span>
                 <span>ISO · x64</span>
               </div>
-              <button type="button" class="hash-copy" data-copy="${image.sha256}" ${attr('title', 'Copy SHA-256', 'Скопировать SHA-256')}>SHA-256 <code>${image.sha256.slice(0, 8)}…${image.sha256.slice(-8)}</code> ${icon('copy')}</button>
+              ${hashCopy(image.sha256)}
               ${statsLine(image.file)}
             </div>
             <div class="row-actions">
@@ -1104,6 +1110,13 @@ function notFoundPage() {
     <h1 class="not-found-code">404</h1>
     <p>${L('This page doesn’t exist.', 'Такой страницы не существует.')}</p>
     <a class="btn btn-primary" href="/">${icon('back')} <span>${L('Back to home', 'На главную')}</span></a>
+    <!-- Most people land here from an old link to a build or a tweak: the sections are one click away -->
+    <nav class="not-found-links" ${attr('aria-label', 'Sections', 'Разделы')}>
+      <a href="/windows-11">Windows 11</a>
+      <a href="/windows-10">Windows 10</a>
+      <a href="/ghost-spectre">Ghost Spectre</a>
+      <a href="/settings-for-windows">${L('Settings for Windows', 'Настройки для Windows')}</a>
+    </nav>
   </main>
 </body>
 </html>
