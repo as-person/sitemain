@@ -167,7 +167,7 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
   min-height: 64px;
 }
 .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; white-space: nowrap; }
-.brand img { width: 32px; height: 32px; border-radius: 8px; background: var(--paper); }
+.brand img { width: 32px; height: 32px; border-radius: var(--r-sm); background: var(--paper); }
 
 .site-nav { display: flex; align-items: center; gap: 4px; flex: 1; }
 .site-nav a {
@@ -508,7 +508,7 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
   min-height: 32px;
   padding: 0 12px;
   border: 1px solid var(--border);
-  border-radius: var(--pill);
+  border-radius: var(--r-sm);   /* an action, like Torrent and Magnet: a rounded rectangle, not a pill */
   color: var(--muted);
   font-size: var(--fs-sm);
   font-weight: 500;
