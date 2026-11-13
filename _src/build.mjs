@@ -636,7 +636,7 @@ function buildPage(build, preset) {
 function ghostPage() {
   const row = item => {
     const url = `${CDN}${item.file}`;
-    return `<article class="row${item.muted ? ' row-muted' : ''}">
+    return `<article class="row${item.muted ? ' row-muted' : ''}"${item.recommended ? ' id="recommended"' : ''}>
           <div>
             <h3 class="row-name">${esc(item.name)} ${item.version}</h3>
             <div class="meta">
@@ -657,6 +657,13 @@ function ghostPage() {
         </article>`;
   };
 
+  // "recommended": true in ghost-spectre.json marks the build to suggest when a visitor does not know which to take
+  // (move the mark when a newer one comes out). Its name without the group's "Windows 11": "Pro 25H2".
+  const pickGroup = ghost.groups.find(g => g.items.some(i => i.recommended));
+  const pick = pickGroup?.items.find(i => i.recommended);
+  const pickName = pick ? `${pick.name.replace(pickGroup.title, '').trim()} ${pick.version}` : '';
+  const pickHint = pick ? `<p class="pick-hint">${L('Not sure which to choose? Take', 'Не знаете, какую выбрать? Берите')} <a class="link" href="#recommended">${esc(pickName)}</a>.</p>` : '';
+
   const body = `<main class="page" id="content">
     <div class="container container-narrow">
       <a href="/" class="back">${icon('back')} ${S.home}</a>
@@ -667,6 +674,7 @@ function ghostPage() {
         <a class="link" href="${ghost.youtube}" target="_blank" rel="noopener">YouTube</a> ·
         <a class="link" href="${ghost.website}" target="_blank" rel="noopener">${L('Website', 'Сайт')}</a>
       </p>
+      ${pickHint}
       <div class="section">
         ${ghost.groups.map(group => `<section class="group">
         <h2 class="group-title">${group.title}</h2>

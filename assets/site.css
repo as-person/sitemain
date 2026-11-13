@@ -751,6 +751,8 @@ html:not([data-image]) .img-ru { display: none !important; }
 .row-text-link:hover { color: var(--text); background: var(--raised-hover); }
 .row-muted .row-name { color: var(--muted); }
 .notice { margin-top: 6px; color: var(--muted); font-size: var(--fs-sm); }
+/* Ghost Spectre: one line for those who do not know which build to take; the name leads to that build */
+.pick-hint { margin-top: 16px; font-size: var(--fs-sm); }
 .stats-line { color: var(--muted); font-size: var(--fs-xs); }
 /* Owner stats: a short line (people), and on click a small table people / total / repeated */
 .owner-stat summary { display: inline; cursor: pointer; list-style: none; }
