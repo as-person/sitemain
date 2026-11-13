@@ -424,6 +424,7 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
    wide screens and at the end of the card on phones (see the 720px block) */
 .result .details-link { display: flex; width: fit-content; }
 .result .details-link + .details-link { margin-top: 0; }
+@media (pointer: fine) { .result .details-link { min-height: 32px; } } /* a mouse needs no finger-sized rows: the two links sit as close as the lines above */
 .result .home-chat-narrow { display: none; }
 
 .more { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
