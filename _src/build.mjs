@@ -113,6 +113,7 @@ const PATHS = {
   check: 'm5 12 5 5 9-10',
   send: 'M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z',
   link: 'M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.5 1.5M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.5-1.5',
+  external: 'M7 17 17 7M8 7h9v9',   // ↗: the link opens another site in a new tab
   share: 'M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13',
   search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
   close: 'M6 6l12 12M18 6 6 18',
@@ -1176,13 +1177,13 @@ function supportPage() {
     DONATE.tribute && `<article class="support-card support-card-tribute" id="tribute">
           <h2>${L('Bank card', 'Банковская карта')}</h2>
           <p>${L('Cards from any country, through Tribute.', 'Карты любых стран и СБП, через Tribute.')}</p>
-          <a class="btn btn-secondary" href="${esc(DONATE.tribute)}" target="_blank" rel="noopener">${L('Support by card', 'Поддержать картой')}</a>
+          <a class="btn btn-secondary" href="${esc(DONATE.tribute)}" target="_blank" rel="noopener">${L('Support by card', 'Поддержать картой')} ${icon('external')}</a>
         </article>`,
     cryptoCard(copyRow),
     `<article class="support-card support-card-yoomoney" id="yoomoney">
           <h2>${L('YooMoney', 'ЮMoney')}</h2>
           <p>${L('Russian bank cards and YooMoney wallet.', 'Российские карты и кошелёк ЮMoney.')}</p>
-          <a class="btn btn-secondary" href="${esc(DONATE.yoomoney)}" target="_blank" rel="noopener">${L('Open YooMoney', 'Перейти в ЮMoney')}</a>
+          <a class="btn btn-secondary" href="${esc(DONATE.yoomoney)}" target="_blank" rel="noopener">${L('Open YooMoney', 'Перейти в ЮMoney')} ${icon('external')}</a>
         </article>`,
   ].filter(Boolean);
 
