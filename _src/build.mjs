@@ -471,7 +471,8 @@ function gallery(build, imageLang, shown) {
   const dir = `/images/windows-${build.id}-${imageLang}`;
   return SHOT_ORDER.map((n, index) => {
     const sizes = index === 0 ? '(min-width: 1024px) 720px, 100vw' : '(min-width: 1024px) 140px, 33vw';
-    const srcset = [480, 960, 1600].map(x => `${dir}/${n}-${x}.webp ${x}w`).join(', ');
+    // 240: the thumbnails on ordinary desktop screens (140px at 100-150%); _src/images.py makes all four sizes
+    const srcset = [240, 480, 960, 1600].map(x => `${dir}/${n}-${x}.webp ${x}w`).join(', ');
     const loading = index === 0 && shown ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"';
     return `<a class="shot" href="${dir}/${n}-1600.webp"><img src="${dir}/${n}-${index === 0 ? 960 : 480}.webp" srcset="${srcset}" sizes="${sizes}" width="${w}" height="${h}" ${attr('alt', SHOT_ALT.en[n - 1], SHOT_ALT.ru[n - 1])} ${loading} decoding="async"></a>`;
   }).join('\n          ');

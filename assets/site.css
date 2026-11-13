@@ -640,6 +640,10 @@ html:not([data-image]) .img-ru { display: none !important; }
 /* On the page background the track would be invisible: give it the panel look */
 .seg-inline { width: min(280px, 100%); background: var(--surface); border: 1px solid var(--border); }
 .seg-inline a { min-height: 32px; }
+/* Touch screens: 44px to the finger for the build page's small controls (a mouse keeps the compact sizes above) */
+@media (pointer: coarse) {
+  .back, .share-btn, .seg-links a, .seg-inline a { min-height: 44px; }
+}
 .sums-hint { margin: -2px 0 12px; color: var(--muted); font-size: var(--fs-sm); }
 
 .icon-btn {

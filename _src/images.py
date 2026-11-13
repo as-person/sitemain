@@ -4,7 +4,7 @@ Run from the repo root after adding new screenshots: python _src/images.py"""
 import glob, os
 from PIL import Image
 
-WIDTHS = (480, 960, 1600)
+WIDTHS = (240, 480, 960, 1600)   # 240: gallery thumbnails on ordinary (100-150%) desktop screens
 for png in sorted(glob.glob('images/windows-*/*.png')):
     stem = png[:-4]
     img = Image.open(png).convert('RGB')
