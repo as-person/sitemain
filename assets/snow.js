@@ -1,8 +1,8 @@
 /* Winter snow for somov.org, loaded by site.js only in the season or for the owner's preview (_src/data/snow.json).
    Written for this site after the idea of Snowhush's Snow mode (no code of it is used):
-   - small soft flakes of different size and speed (near ones bigger and faster) drifting down calmly, like snow on a
-     windless night: each sways slowly from side to side, lingers for a moment at the end of a swing and glides on,
-     the near ones softly brightening and dimming as they turn; a slow breeze;
+   - small soft flakes of different size and speed (near ones bigger and faster) falling in a dead calm, like snow on
+     a windless night: no wind at all, each only sways slowly from side to side about its own way down, lingers for a
+     moment at the end of a swing and glides on, the near ones softly brightening and dimming as they turn;
    - snow piles up along the bottom of the screen and slumps into a natural slope;
    - a thin layer settles on the tops of the large cards and moves with them when the page scrolls;
    - the pointer ploughs through the snow: it pushes it aside into little banks, throws up clumps that fly in an
@@ -43,7 +43,7 @@
   const measurer = document.createElement('canvas').getContext('2d');
   let W = 0, H = 0, dpr = 1, phone = false;
   let flakes = [], bits = [], ground = null, surfaces = [];
-  let running = true, last = 0, frame = 0, breeze = 0, target = 0;
+  let running = true, last = 0, frame = 0, target = 0;
   const pointer = { x: -1, y: -1, px: -1, active: false };
 
   /* A pile: heights of its columns, and its own small picture redrawn only when they change */
@@ -175,9 +175,6 @@
       vy: 0.15 + z * 0.34 + Math.random() * 0.08,  // slow, like a windless night
       vx: 0,                                    // a puff from the pointer, sideways and down/up (calms down)
       gy: 0,
-      sway: Math.random() * Math.PI * 2,         // a slow drift to one side and back
-      swaySpeed: 0.004 + Math.random() * 0.007,
-      swayWide: 0.08 + Math.random() * 0.17,
       flutter: Math.random() * Math.PI * 2,      // the unhurried swing of a falling flake (7 to 13 s), wider near by
       flutterSpeed: 0.008 + Math.random() * 0.007,
       flutterWide: (0.18 + Math.random() * 0.22) * (0.6 + z * 0.7),
@@ -410,7 +407,6 @@
     frame++;
     if (frame % 30 === 0) measure();             // cards that moved without a scroll (the page changed)
     for (const s of surfaces) if (s.sticky) s.rect = boxOf(s);
-    breeze += ((Math.sin(frame / 700) * 0.45 + Math.sin(frame / 211) * 0.15) - breeze) * 0.01;
     // A puff of air from the moving pointer: how far it went since the last frame (a still pointer blows nothing)
     let gustX = 0, gustY = 0, gust = false;
     if (pointer.active && pointer.gx !== undefined) {
@@ -438,10 +434,9 @@
         const calm = Math.pow(0.94, dt);
         f.vx *= calm;
         f.gy *= calm;
-        f.sway += f.swaySpeed * dt;
         f.flutter += f.flutterSpeed * dt;
         const swing = Math.sin(f.flutter);
-        f.x += (swing * f.flutterWide + Math.sin(f.sway) * f.swayWide + breeze * (0.4 + f.z) + f.vx) * dt;
+        f.x += (swing * f.flutterWide + f.vx) * dt;   // a dead calm: no wind, only the flake's own swing
         // lingering a little at the ends of the swing, gliding through the middle (the same pace on the whole)
         f.y += (f.vy * (0.75 + 0.5 * swing * swing) + f.gy) * dt;
         if (f.intro) {
