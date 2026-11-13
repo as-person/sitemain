@@ -391,27 +391,28 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 .result h2 { font-size: var(--fs-xl); line-height: 1.25; letter-spacing: -.015em; }
 .result .meta { margin-top: 8px; }
 .result .meta .author, .build-head .meta .author { flex-basis: 100%; } /* author on its own line, the build details below it */
-/* A soft button without a border: clearly clickable, but unlike the download buttons next to it */
+/* A quiet text link like "Archive of previous versions": the blue Download button is the only loud thing here.
+   The 40px height keeps it easy to hit with a finger. */
 .details-link {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   min-height: 40px;
-  margin-top: 14px;
-  padding: 0 14px;
-  border-radius: var(--r-sm);
-  background: var(--raised);
-  color: var(--text);
+  margin-top: 4px;
+  color: var(--muted);
   font-size: var(--fs-sm);
-  font-weight: 600;
-  transition: background var(--ease);
+  font-weight: 500;
+  transition: color var(--ease);
 }
-.details-link:hover { background: var(--raised-hover); }
-.details-link .icon { flex: none; width: 16px; height: 16px; transition: transform var(--ease); }
-.details-link:hover .icon { transform: translateX(3px); }
+.details-link:hover { color: var(--text); }
+.details-link .icon { flex: none; width: 14px; height: 14px; transition: transform var(--ease); }
+.details-link:hover .icon { transform: translateX(2px); }
 
 .dl-actions { display: grid; gap: 10px; }
 .dl-alt { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+/* Home: Torrent and Magnet are the fallback, so they step back from Download */
+.result .dl-alt .btn-secondary { border-color: var(--border); color: var(--muted); font-weight: 500; }
+.result .dl-alt .btn-secondary:hover { border-color: var(--border-strong); color: var(--text); }
 
 .more { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
 .more-card {
@@ -968,7 +969,7 @@ html:not([data-image]) .img-ru { display: none !important; }
   .selectors .field-label { margin-bottom: 6px; }
   .result { grid-template-columns: minmax(0, 1fr); gap: 16px; margin-top: 16px; padding-top: 16px; }
   .result h2 { font-size: var(--fs-lg); } /* the build name on one line */
-  .result .details-link { margin-top: 8px; }
+  .result .details-link { margin-top: 0; }
   /* One column: a line separates the build description from the download buttons */
   .result > .dl-actions { padding-top: 16px; border-top: 1px solid var(--border); }
   .more { grid-template-columns: 1fr; }
