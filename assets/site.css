@@ -388,7 +388,7 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
   padding-top: 28px;
   border-top: 1px solid var(--border);
 }
-.result h2 { font-size: var(--fs-xl); line-height: 1.25; letter-spacing: -.015em; }
+.result h2 { font-size: var(--fs-lg); line-height: 1.25; letter-spacing: -.01em; } /* one line: the Download button stays the strongest thing in the card */
 .result .meta { margin-top: 8px; }
 .result .meta .author, .build-head .meta .author { flex-basis: 100%; } /* author on its own line, the build details below it */
 /* A quiet text link like "Archive of previous versions": the blue Download button is the only loud thing here.
@@ -541,7 +541,7 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
   transition: border-color var(--ease), background var(--ease);
 }
 .tg-card:hover { border-color: var(--border-strong); background: var(--raised); }
-.home .tg-card { margin-top: 16px; }
+.home .tg-card { margin-top: 12px; } /* under the two cards, with the same gap as between them */
 .tg-icon { display: grid; flex: none; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--raised-hover); color: var(--text); }
 .tg-icon .icon { width: 17px; height: 17px; }
 .tg-text { display: grid; flex: 1; min-width: 0; }
@@ -970,7 +970,6 @@ html:not([data-image]) .img-ru { display: none !important; }
   .selectors { grid-template-columns: 1fr; gap: 12px; }
   .selectors .field-label { margin-bottom: 6px; }
   .result { grid-template-columns: minmax(0, 1fr); gap: 16px; margin-top: 16px; padding-top: 16px; }
-  .result h2 { font-size: var(--fs-lg); } /* the build name on one line */
   .result .details-link { margin-top: 0; }
   /* One column: a line separates the build description from the download buttons */
   .result > .dl-actions { padding-top: 16px; border-top: 1px solid var(--border); }

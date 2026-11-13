@@ -402,8 +402,6 @@ function homePage() {
         </div>
       </section>
 
-      ${tgCard('home')}
-
       <noscript>
         <p class="noscript-links">
           ${builds.flatMap(b => LANGS.map(l => `<a class="link" href="/windows-${b.id}-${l}">Windows ${b.id} (${l === 'ru' ? 'Russian' : 'English'})</a>`)).join(' · ')}
@@ -426,6 +424,8 @@ function homePage() {
           ${icon('d')}
         </a>
       </nav>
+      <!-- Telegram after the other sections: the download is the page's job, the channel is a follow-up -->
+      ${tgCard('home')}
       ${archiveOn() && archivedReleases('11').length ? `<a class="archive-link" href="${archiveHref()}">${L('Archive of previous versions', 'Архив предыдущих версий')} ${icon('d')}</a>` : ''}
     </div>
   </main>
