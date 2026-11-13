@@ -752,7 +752,7 @@ html:not([data-image]) .img-ru { display: none !important; }
 .row-muted .row-name { color: var(--muted); }
 .notice { margin-top: 6px; color: var(--muted); font-size: var(--fs-sm); }
 /* Ghost Spectre: one line for those who do not know which build to take; the name leads to that build */
-.pick-hint { margin-top: 16px; font-size: var(--fs-sm); }
+.pick-hint { margin-top: 16px; }   /* body size: a tip to read, above the small grey mirror note */
 .stats-line { color: var(--muted); font-size: var(--fs-xs); }
 /* Owner stats: a short line (people), and on click a small table people / total / repeated */
 .owner-stat summary { display: inline; cursor: pointer; list-style: none; }
@@ -1267,7 +1267,7 @@ html:not([data-image]) .img-ru { display: none !important; }
   box-shadow: 0 0 0 2px var(--bg);
 }
 @media (prefers-reduced-motion: no-preference) {
-  .chat-dot { animation: chat-dot 2.4s ease-out infinite; }
+  .chat-dot { animation: chat-dot 2.4s ease-out 3; } /* three soft pulses when an answer comes, then a still dot */
   @keyframes chat-dot {
     0% { box-shadow: 0 0 0 2px var(--bg), 0 0 0 2px color-mix(in srgb, var(--danger) 60%, transparent); }
     70%, 100% { box-shadow: 0 0 0 2px var(--bg), 0 0 0 6px color-mix(in srgb, var(--danger) 0%, transparent); }
