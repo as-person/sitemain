@@ -222,13 +222,28 @@ def file_name(name):
     return name[-120:] or 'file'
 
 
+files_lock = threading.Lock()   # quota check and write as one step, so parallel uploads can't overshoot
+
+
 def store_file(thread, name, data):
+    """Save a file and return its id, or '' when it would not fit under FILES_TOTAL."""
     fid = secrets.token_hex(16)
     mime = sniff(data)
-    with open(os.path.join(FILES_DIR, fid), 'wb') as out:
-        out.write(data)
-    run('INSERT INTO files (id, thread, name, mime, size, image, t) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        fid, thread, file_name(name), mime or 'application/octet-stream', len(data), int(bool(mime)), int(time.time()))
+    with files_lock:
+        if files_total() + len(data) > FILES_TOTAL:
+            return ''
+        path = os.path.join(FILES_DIR, fid)
+        try:
+            with open(path, 'wb') as out:
+                out.write(data)
+            run('INSERT INTO files (id, thread, name, mime, size, image, t) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                fid, thread, file_name(name), mime or 'application/octet-stream', len(data), int(bool(mime)), int(time.time()))
+        except BaseException:
+            try:
+                os.remove(path)
+            except OSError:
+                pass
+            raise
     return fid
 
 
@@ -364,6 +379,9 @@ def owner_message(message):
             say('Файл слишком большой: можно до 20 МБ.', message['message_id'])
             return
         fid = store_file(thread, name, data)
+        if not fid:
+            say('Файл слишком большой: можно до 20 МБ.', message['message_id'])
+            return
     now = int(time.time())
     run('INSERT INTO messages (thread, owner, text, t, sent, file) VALUES (?, 1, ?, ?, 1, ?)', thread, text[:4000], now, fid)
     run('UPDATE threads SET active = ? WHERE id = ?', now, thread)
@@ -1051,7 +1069,9 @@ def bring_letter(raw):
             continue
         fname = part.get_filename() or 'file'
         fid = store_file(thread, fname, data)
-        stored = q('SELECT name, mime, image FROM files WHERE id = ?', fid)[0]
+        if not fid:
+            continue
+        stored =q('SELECT name, mime, image FROM files WHERE id = ?', fid)[0]
         run('INSERT INTO messages (thread, owner, text, page, t, sent, src, file) VALUES (?, 0, ?, ?, ?, 1, ?, ?)',
             thread, '', 'email', now, 'mail', fid)
         try:
@@ -1328,6 +1348,9 @@ class Handler(BaseHTTPRequestHandler):
                 log('files: storage is full')
                 return self.reply(507, {'error': 'full'})
             fid = store_file(visitor, params.get('name'), data)
+            if not fid:
+                log('files: storage is full')
+                return self.reply(507, {'error': 'full'})
             mid, now = add_message(visitor, '', clean(params.get('page'), MAX_PAGE).replace('\n', ' '),
                                    clean(params.get('contact'), MAX_CONTACT).replace('\n', ' '),
                                    'ru' if params.get('lang') == 'ru' else 'en', fid, country(ip))
