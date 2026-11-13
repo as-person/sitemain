@@ -2,3 +2,8 @@ backup-*.zip
 node_modules/
 __pycache__/
 _preview/
+
+# Impeccable (design skill) working files: local only, must not be published by GitHub Pages
+PRODUCT.md
+DESIGN.md
+.impeccable/
