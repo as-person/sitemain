@@ -457,13 +457,16 @@ const SHOT_ALT = {
 // The first screenshot is shown large: the desktop with the About Windows dialog reads best.
 const SHOT_ORDER = [5, 2, 3, 4, 1, 6];
 
-function gallery(build, imageLang) {
+// shown: the gallery of the image language the page opens with. Its large first shot is on the first screen of a
+// desktop, so it loads at once; everything else (and the hidden gallery of the other language) loads lazily.
+function gallery(build, imageLang, shown) {
   const [w, h] = build.ratio;
   const dir = `/images/windows-${build.id}-${imageLang}`;
   return SHOT_ORDER.map((n, index) => {
     const sizes = index === 0 ? '(min-width: 1024px) 720px, 100vw' : '(min-width: 1024px) 140px, 33vw';
     const srcset = [480, 960, 1600].map(x => `${dir}/${n}-${x}.webp ${x}w`).join(', ');
-    return `<a class="shot" href="${dir}/${n}-1600.webp"><img src="${dir}/${n}-${index === 0 ? 960 : 480}.webp" srcset="${srcset}" sizes="${sizes}" width="${w}" height="${h}" ${attr('alt', SHOT_ALT.en[n - 1], SHOT_ALT.ru[n - 1])} loading="lazy" decoding="async"></a>`;
+    const loading = index === 0 && shown ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"';
+    return `<a class="shot" href="${dir}/${n}-1600.webp"><img src="${dir}/${n}-${index === 0 ? 960 : 480}.webp" srcset="${srcset}" sizes="${sizes}" width="${w}" height="${h}" ${attr('alt', SHOT_ALT.en[n - 1], SHOT_ALT.ru[n - 1])} ${loading} decoding="async"></a>`;
   }).join('\n          ');
 }
 
@@ -535,6 +538,7 @@ function buildPage(build, preset) {
                 <a class="btn btn-secondary btn-sm" href="${images[l].url}.torrent" ${altTitle.torrent[l]}>Torrent</a>
                 <a class="btn btn-secondary btn-sm" href="${esc(images[l].magnet)}" ${countAttr(images[l].file, 'magnet')} ${altTitle.magnet[l]}>Magnet</a>
               </div>
+              <button type="button" class="hash-copy" data-copy="${images[l].sums.sha256}" ${attr('title', 'Copy SHA-256', 'Скопировать SHA-256')}>SHA-256 <code>${images[l].sums.sha256.slice(0, 8)}…${images[l].sums.sha256.slice(-8)}</code> ${icon('copy')}</button>
               ${statsLine(images[l].file)}`, 'div', 'dl-variant')}
             ${supportNudge}
           </div>
@@ -553,7 +557,7 @@ function buildPage(build, preset) {
         <section class="section">
           <h2>${L('Screenshots', 'Скриншоты')}</h2>
           ${LANGS.map(l => `<div class="gallery img-${l}">
-          ${gallery(build, l)}
+          ${gallery(build, l, l === start)}
           </div>`).join('\n          ')}
         </section>
 

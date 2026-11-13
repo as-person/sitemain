@@ -416,10 +416,11 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 
 .dl-actions { display: grid; gap: 10px; }
 .dl-alt { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-/* Home: Torrent and Magnet are the fallback, so they step back from Download */
-.result .dl-alt .btn-secondary { border-color: var(--border); color: var(--muted); font-weight: 500; }
-.result .dl-alt .btn-secondary:hover { border-color: var(--border-strong); color: var(--text); }
-.result .hash-copy { justify-self: center; margin-top: -2px; }
+/* Home and build pages: Torrent and Magnet are the fallback, so they step back from Download */
+.dl-alt .btn-secondary { border-color: var(--border); color: var(--muted); font-weight: 500; }
+.dl-alt .btn-secondary:hover { border-color: var(--border-strong); color: var(--text); }
+/* The image's SHA-256 right under the download buttons (home and the build page's panel) */
+.dl-actions .hash-copy { justify-self: center; margin-top: -2px; }
 /* Home: the quiet links under the build name stand one under the other; "Ask in the chat" is in this column on
    wide screens and at the end of the card on phones (see the 720px block) */
 .result .details-link { display: flex; width: fit-content; }
@@ -632,7 +633,7 @@ html:not([data-image]) .img-ru { display: none !important; }
 .sum-row + .sum-row { border-top: 1px solid var(--border); }
 .sum-label { color: var(--muted); font-size: var(--fs-xs); font-weight: 600; }
 .sum-val { font-family: var(--mono); font-size: var(--fs-xs); overflow-wrap: anywhere; }
-.sums-file { margin-top: 10px; color: var(--muted); font-family: var(--mono); font-size: .75rem; overflow-wrap: anywhere; }
+.sums-file { margin-top: 10px; color: var(--muted); font-family: var(--mono); font-size: .75rem; word-break: break-all; } /* a long file name fills each line instead of breaking after "en-" */
 /* Image switch above the checksums, the same control as in the download panel */
 .sums-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
 .sums-head-label { color: var(--muted); font-size: var(--fs-sm); }

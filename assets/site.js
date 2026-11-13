@@ -969,15 +969,20 @@
     }, true);
   }
 
-  /* Build page: on small screens, show the download bar once the panel scrolls away */
-  const panel = $('.panel');
+  /* Build page: on small screens, the download bar is shown whenever the panel's Download button is out of sight:
+     before it (the first screen of a phone is the title and the description, the panel comes later) and after it.
+     The button, not the whole panel: the panel's top edge peeking at the bottom of the screen is not a button. */
+  const panelButtons = $$('.panel .btn-primary');   // one per image language; the hidden one never counts
   const bar = $('.dl-bar');
-  if (panel && bar && 'IntersectionObserver' in window) {
+  if (panelButtons.length && bar && 'IntersectionObserver' in window) {
     // The bar stays in the page and slides in and out (CSS .is-shown) instead of appearing at once
     bar.hidden = false;
-    new IntersectionObserver(entries => {
-      bar.classList.toggle('is-shown', !(entries[0].isIntersecting || entries[0].boundingClientRect.top > 0));
-    }).observe(panel);
+    const inView = new Map();
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => inView.set(entry.target, entry.intersectionRatio > 0.9));
+      bar.classList.toggle('is-shown', ![...inView.values()].some(Boolean));
+    }, { threshold: [0, 0.9, 1] });
+    panelButtons.forEach(button => observer.observe(button));
   }
 
   /* Settings: search and category filter */
