@@ -46,12 +46,12 @@
   --r-lg: 16px;
   --pill: 999px;
 
-  --fs-xs: 13px;
-  --fs-sm: 14px;
-  --fs-md: 16px;
-  --fs-lg: 20px;
-  --fs-xl: clamp(24px, 4vw, 28px);
-  --fs-2xl: clamp(30px, 5.4vw, 40px);
+  --fs-xs: .8125rem;
+  --fs-sm: .875rem;
+  --fs-md: 1rem;
+  --fs-lg: 1.25rem;
+  --fs-xl: clamp(1.5rem, 4vw, 1.75rem);
+  --fs-2xl: clamp(1.875rem, 5.4vw, 2.5rem);
 
   --mono: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace;
   --ease: 160ms cubic-bezier(.2, 0, 0, 1);
@@ -262,7 +262,7 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 .dl-actions .btn-block, .dl-bar .btn-block { white-space: normal; text-align: center; text-wrap: balance; line-height: 1.3; padding-block: 10px; }
 @media (max-width: 400px) {
   /* A slightly smaller label fits on one line down to 360px; narrower phones get two lines */
-  .dl-actions .btn-block, .dl-bar .btn-block { font-size: 15px; padding-inline: 14px; }
+  .dl-actions .btn-block, .dl-bar .btn-block { font-size: .9375rem; padding-inline: 14px; }
 }
 .btn-primary { background: var(--accent); color: #fff; }
 .btn-primary:hover { background: var(--accent-hover); }
@@ -319,7 +319,7 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 
 .hero { text-align: center; margin-bottom: 36px; }
 .hero h1 { font-size: var(--fs-2xl); line-height: 1.12; letter-spacing: -.025em; }
-.hero p { margin-top: 12px; color: var(--muted); font-size: 18px; }
+.hero p { margin-top: 12px; color: var(--muted); font-size: 1.125rem; }
 
 .composer {
   padding: 28px;
@@ -620,7 +620,7 @@ html:not([data-image]) .img-ru { display: none !important; }
 .sum-row + .sum-row { border-top: 1px solid var(--border); }
 .sum-label { color: var(--muted); font-size: var(--fs-xs); font-weight: 600; }
 .sum-val { font-family: var(--mono); font-size: var(--fs-xs); overflow-wrap: anywhere; }
-.sums-file { margin-top: 10px; color: var(--muted); font-family: var(--mono); font-size: 12px; overflow-wrap: anywhere; }
+.sums-file { margin-top: 10px; color: var(--muted); font-family: var(--mono); font-size: .75rem; overflow-wrap: anywhere; }
 /* Image switch above the checksums, the same control as in the download panel */
 .sums-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
 .sums-head-label { color: var(--muted); font-size: var(--fs-sm); }
@@ -755,7 +755,7 @@ html:not([data-image]) .img-ru { display: none !important; }
   text-align: right;
 }
 .owner-stat th, .owner-stat td { padding: 3px 10px; font-weight: 400; white-space: nowrap; }
-.owner-stat tr:first-child th { color: var(--muted); font-size: 11px; }
+.owner-stat tr:first-child th { color: var(--muted); font-size: .6875rem; }
 .owner-stat tr th:first-child { text-align: left; color: var(--muted); }
 .owner-stat td { color: var(--text); }
 .owner-stat tr.sum th, .owner-stat tr.sum td { border-top: 1px solid var(--border); font-weight: 600; }
@@ -842,7 +842,7 @@ html:not([data-image]) .img-ru { display: none !important; }
 .lead + .item-warning { margin-top: 16px; }
 
 .item-action { display: flex; align-items: center; gap: 10px; }
-.file-type { color: var(--muted); font-family: var(--mono); font-size: 12px; }
+.file-type { color: var(--muted); font-family: var(--mono); font-size: .75rem; }
 
 .commands { display: grid; gap: 10px; margin-top: 10px; }
 .command-label { margin-bottom: 4px; color: var(--muted); font-size: var(--fs-sm); }
@@ -867,8 +867,8 @@ html:not([data-image]) .img-ru { display: none !important; }
 /* -- 404 ----------------------------------------------------------------- */
 
 .not-found { flex: 1; display: grid; place-content: center; justify-items: center; padding: 64px 20px; text-align: center; }
-.not-found-code { font-size: clamp(72px, 16vw, 120px); font-weight: 600; line-height: 1; letter-spacing: -.04em; }
-.not-found p { margin-block: 12px 28px; color: var(--muted); font-size: 18px; }
+.not-found-code { font-size: clamp(4.5rem, 16vw, 7.5rem); font-weight: 600; line-height: 1; letter-spacing: -.04em; }
+.not-found p { margin-block: 12px 28px; color: var(--muted); font-size: 1.125rem; }
 
 /* -- Footer -------------------------------------------------------------- */
 
@@ -894,7 +894,7 @@ html:not([data-image]) .img-ru { display: none !important; }
   transition: color var(--ease);
 }
 .hash-copy:hover { color: var(--text); }
-.hash-copy code { font-size: 12px; }
+.hash-copy code { font-size: .75rem; }
 .hash-copy .icon { width: 14px; height: 14px; }
 .hash-copy.is-copied { color: var(--success); }
 /* Touch screens: 44px to the finger. The EN/RU switch keeps its look and gets a taller invisible hit area. */
@@ -970,8 +970,8 @@ html:not([data-image]) .img-ru { display: none !important; }
   /* Phones: the question, both choices and the Download button fit the first screen (~390x750) */
   .home { padding-block: 24px 48px; }
   .hero { margin-bottom: 20px; }
-  .hero h1 { font-size: 28px; }
-  .hero p { margin-top: 6px; font-size: 15px; }
+  .hero h1 { font-size: 1.75rem; }
+  .hero p { margin-top: 6px; font-size: .9375rem; }
   .composer { padding: 16px; }
   .selectors { grid-template-columns: 1fr; gap: 12px; }
   .selectors .field-label { margin-bottom: 6px; }
@@ -987,7 +987,8 @@ html:not([data-image]) .img-ru { display: none !important; }
   .shot:nth-child(n + 5) { flex-basis: calc((100% - 8px) / 2); }
   .req div { grid-template-columns: 1fr; gap: 2px; }
 
-  .row { grid-template-columns: 1fr; }
+  .row { grid-template-columns: minmax(0, 1fr); } /* may shrink: with a larger browser font the buttons wrap instead of being cut */
+  .row-actions { flex-wrap: wrap; }
   .row-actions .btn { flex: 1; }
 
   .toolbar { top: 0; }
@@ -1125,7 +1126,7 @@ html:not([data-image]) .img-ru { display: none !important; }
 .crypto-warning b { color: var(--text); font-weight: 600; }
 .crypto-info .address { margin-top: 0; }
 .crypto-list { display: grid; gap: 8px; font-size: var(--fs-sm); }
-.crypto-list code { font-size: 12px; overflow-wrap: anywhere; }
+.crypto-list code { font-size: .75rem; overflow-wrap: anywhere; }
 .qr { width: 160px; height: 160px; margin-top: 4px; border-radius: var(--r-sm); background: #fff; }
 .qr-wrap { position: relative; display: block; width: 160px; border-radius: var(--r-sm); }
 .qr-wrap:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 3px; }
@@ -1158,7 +1159,7 @@ html:not([data-image]) .img-ru { display: none !important; }
   border-radius: var(--r-sm);
   background: var(--bg);
 }
-.address code { font-size: 12px; overflow-wrap: anywhere; }
+.address code { font-size: .75rem; overflow-wrap: anywhere; }
 @media (max-width: 720px) {
   .crypto-variant { grid-template-columns: 1fr; justify-items: start; }
   .crypto-fields { grid-template-columns: 1fr; }
@@ -1191,7 +1192,7 @@ html:not([data-image]) .img-ru { display: none !important; }
 .tweak-stats { margin-top: 8px; }
 .tg-stats { margin-top: 6px; padding-inline: 4px; }
 /* Owner-only line under the header: laid over the top padding of the page, so appearing after load moves nothing */
-.page-views { position: absolute; top: 0; left: 0; right: 0; z-index: 5; border-bottom: 1px dashed var(--border-strong); background: var(--bg); color: var(--muted); font-size: 12px; line-height: 1.4; }
+.page-views { position: absolute; top: 0; left: 0; right: 0; z-index: 5; border-bottom: 1px dashed var(--border-strong); background: var(--bg); color: var(--muted); font-size: .75rem; line-height: 1.4; }
 .page-views .container { padding-block: 5px; text-align: right; }
 .owner-stats { margin-top: 20px; padding: 12px 20px; border: 1px dashed var(--border-strong); border-radius: var(--r-lg); }
 .owner-stats summary { color: var(--muted); font-size: var(--fs-sm); font-weight: 600; cursor: pointer; }
@@ -1274,7 +1275,7 @@ html:not([data-image]) .img-ru { display: none !important; }
 .chat-fab[hidden] { display: none; }
 .chat-fab:hover { border-color: rgb(255 255 255 / .2); }
 .chat-fab.is-peek { max-width: 300px; }
-.chat-fab .chat-avatar { width: 28px; height: 28px; font-size: 13px; }
+.chat-fab .chat-avatar { width: 28px; height: 28px; font-size: .8125rem; }
 .chat-peek {
   display: grid;
   min-width: 0;
@@ -1286,8 +1287,8 @@ html:not([data-image]) .img-ru { display: none !important; }
   transition: opacity 200ms ease, visibility 0s 200ms;
 }
 .chat-fab.is-peek .chat-peek { visibility: visible; opacity: 1; transition: opacity 200ms ease 120ms, visibility 0s; }
-.chat-peek b { color: var(--muted); font-size: 11px; font-weight: 500; letter-spacing: .02em; }
-.chat-peek-text { overflow: hidden; max-width: 220px; font-size: 13px; text-overflow: ellipsis; }
+.chat-peek b { color: var(--muted); font-size: .6875rem; font-weight: 500; letter-spacing: .02em; }
+.chat-peek-text { overflow: hidden; max-width: 220px; font-size: .8125rem; text-overflow: ellipsis; }
 .chat-fab-count {
   position: absolute;
   top: 1px;
@@ -1329,7 +1330,7 @@ html:not([data-image]) .img-ru { display: none !important; }
   border-radius: var(--r-lg);
   background: var(--chat-bg);
   box-shadow: 0 24px 64px rgb(0 0 0 / .5);
-  font-size: 15px;
+  font-size: .9375rem;
   line-height: 1.4;
 }
 .chat[hidden] { display: none; }
@@ -1377,7 +1378,7 @@ html:not([data-image]) .img-ru { display: none !important; }
   background: linear-gradient(135deg, var(--glow-a), var(--glow-b));
   color: #fff;
   font-weight: 700;
-  font-size: 17px;
+  font-size: 1.0625rem;
 }
 .chat-who { display: grid; min-width: 0; }
 .chat-title { font-weight: 600; color: var(--text); }
@@ -1406,7 +1407,7 @@ html:not([data-image]) .img-ru { display: none !important; }
   padding: 12px 14px;
   border-radius: var(--r-md);
   background: rgb(0 0 0 / .28);
-  font-size: 13px;
+  font-size: .8125rem;
   line-height: 1.45;
   text-align: center;
 }
@@ -1418,7 +1419,7 @@ html:not([data-image]) .img-ru { display: none !important; }
   border-radius: var(--pill);
   background: rgb(94 166 232 / .16);
   color: #9cc8f2;
-  font-size: 13px;
+  font-size: .8125rem;
   font-weight: 500;
   transition: background var(--ease);
 }
@@ -1434,10 +1435,10 @@ html:not([data-image]) .img-ru { display: none !important; }
   box-shadow: inset 3px 0 0 #3b82f6;
 }
 .chat-verify-bar[hidden] { display: none; }
-.chat-verify-icon { flex: none; font-size: 18px; line-height: 1.25; }
+.chat-verify-icon { flex: none; font-size: 1.125rem; line-height: 1.25; }
 .chat-verify-text { display: grid; gap: 1px; min-width: 0; }
 .chat-verify-title { color: #ffffff; font-size: var(--fs-sm); font-weight: 600; }
-.chat-verify-sub { overflow-wrap: anywhere; color: rgb(255 255 255 / .72); font-size: 12.5px; line-height: 1.4; }
+.chat-verify-sub { overflow-wrap: anywhere; color: rgb(255 255 255 / .72); font-size: .7812rem; line-height: 1.4; }
 @media (prefers-reduced-motion: no-preference) {
   .chat-verify-bar.is-pulse { animation: chat-verify-flash 1.4s ease-out 1; }
   @keyframes chat-verify-flash { 0%, 30% { background-color: rgb(59 130 246 / .38); } }
@@ -1449,7 +1450,7 @@ html:not([data-image]) .img-ru { display: none !important; }
   border-radius: var(--pill);
   background: rgb(0 0 0 / .28);
   color: var(--text);
-  font-size: 12px;
+  font-size: .75rem;
   font-weight: 500;
 }
 .chat-msg {
@@ -1468,7 +1469,7 @@ html:not([data-image]) .img-ru { display: none !important; }
   float: right;
   margin: 6px 0 -4px 10px;
   color: rgb(255 255 255 / .55);
-  font-size: 11px;
+  font-size: .6875rem;
   line-height: 1;
   white-space: nowrap;
 }
@@ -1586,7 +1587,7 @@ html:not([data-image]) .img-ru { display: none !important; }
 .chat-file-icon svg { width: 20px; height: 20px; }
 .chat-file-info { display: grid; min-width: 0; }
 .chat-file-info b { overflow: hidden; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
-.chat-file-info span { color: rgb(255 255 255 / .6); font-size: 12px; }
+.chat-file-info span { color: rgb(255 255 255 / .6); font-size: .75rem; }
 .chat-msg .chat-file + .chat-text { display: block; margin-top: 4px; }
 .chat-attach {
   display: grid;
@@ -1619,13 +1620,13 @@ html:not([data-image]) .img-ru { display: none !important; }
 }
 .chat-notify button:hover { background: rgb(94 166 232 / .26); }
 .chat-notify button:disabled { opacity: .6; cursor: default; }
-.chat-notify span { color: rgb(255 255 255 / .45); font-size: 12px; }
+.chat-notify span { color: rgb(255 255 255 / .45); font-size: .75rem; }
 .chat.is-drop .chat-list { outline: 2px dashed var(--chat-accent); outline-offset: -8px; }
 
 @media (max-width: 720px) {
   .chat { inset: 0; width: auto; height: 100dvh; border: 0; border-radius: 0; }
   .chat-open, .chat-open body { overflow: hidden; }
-  .chat-input { font-size: 16px; }   /* iPhone zooms into smaller inputs */
+  .chat-input { font-size: 1rem; }   /* iPhone zooms into smaller inputs */
 }
 
 /* Animations off in the system: no movement, but the chat still fades in and out instead of jumping
