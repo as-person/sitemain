@@ -1,6 +1,8 @@
 /* Winter snow for somov.org, loaded by site.js only in the season or for the owner's preview (_src/data/snow.json).
    Written for this site after the idea of Snowhush's Snow mode (no code of it is used):
-   - small soft flakes of different size and speed (near ones bigger and faster), slowly swaying in a breeze;
+   - small soft flakes of different size and speed (near ones bigger and faster) drifting down calmly, like snow on a
+     windless night: each sways slowly from side to side, lingers for a moment at the end of a swing and glides on,
+     the near ones softly brightening and dimming as they turn; a slow breeze;
    - snow piles up along the bottom of the screen and slumps into a natural slope;
    - a thin layer settles on the tops of the large cards and moves with them when the page scrolls;
    - the pointer ploughs through the snow: it pushes it aside into little banks, throws up clumps that fly in an
@@ -170,12 +172,15 @@
       y: anywhere ? Math.random() * H : -10 - Math.random() * 40,
       z,
       r: 0.35 + z * z * 0.95,                   // small: the near ones about 1.3 px
-      vy: 0.18 + z * 0.42 + Math.random() * 0.1,  // slow, like a windless night
+      vy: 0.15 + z * 0.34 + Math.random() * 0.08,  // slow, like a windless night
       vx: 0,                                    // a puff from the pointer, sideways and down/up (calms down)
       gy: 0,
-      sway: Math.random() * Math.PI * 2,
+      sway: Math.random() * Math.PI * 2,         // a slow drift to one side and back
       swaySpeed: 0.004 + Math.random() * 0.007,
-      swayWide: 0.15 + Math.random() * 0.35,
+      swayWide: 0.08 + Math.random() * 0.17,
+      flutter: Math.random() * Math.PI * 2,      // the unhurried swing of a falling flake (7 to 13 s), wider near by
+      flutterSpeed: 0.008 + Math.random() * 0.007,
+      flutterWide: (0.18 + Math.random() * 0.22) * (0.6 + z * 0.7),
       alpha: 0.42 + z * 0.16,                   // about 50% opaque: soft, not bright
       px: 0,
       intro: 0,                                 // on page load: how far it still drops faster than usual
@@ -434,8 +439,11 @@
         f.vx *= calm;
         f.gy *= calm;
         f.sway += f.swaySpeed * dt;
-        f.x += (Math.sin(f.sway) * f.swayWide + breeze * (0.4 + f.z) + f.vx) * dt;
-        f.y += (f.vy + f.gy) * dt;
+        f.flutter += f.flutterSpeed * dt;
+        const swing = Math.sin(f.flutter);
+        f.x += (swing * f.flutterWide + Math.sin(f.sway) * f.swayWide + breeze * (0.4 + f.z) + f.vx) * dt;
+        // lingering a little at the ends of the swing, gliding through the middle (the same pace on the whole)
+        f.y += (f.vy * (0.75 + 0.5 * swing * swing) + f.gy) * dt;
         if (f.intro) {
           const d = Math.min(f.intro, Math.min(2 + f.z, Math.max(0.3, f.intro * 0.012)) * dt);   // never faster than a soft flurry
           f.y += d;
@@ -541,7 +549,7 @@
     back.clearRect(0, 0, W, H);
     ctx.clearRect(0, 0, W, H);
     for (const f of flakes) {                     // falling snow behind the content
-      back.globalAlpha = f.alpha;
+      back.globalAlpha = f.z > 0.55 ? f.alpha * (0.86 + 0.14 * Math.cos(f.flutter)) : f.alpha;   // the near ones softly breathe
       const px = f.px || (f.px = Math.max(2, Math.round(f.r * 4 * dpr)));   // a soft glowing dot, not a hard disc
       const d = px / dpr;
       back.drawImage(sprite(px), Math.round((f.x - d / 2) * dpr) / dpr, Math.round((f.y - d / 2) * dpr) / dpr, d, d);
