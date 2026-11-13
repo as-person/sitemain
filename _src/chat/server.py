@@ -458,10 +458,30 @@ def push_ready():
     return bool(VAPID_PRIVATE and VAPID_PUBLIC)
 
 
+# Browsers' own push services. Only these are posted to: a visitor-chosen host could later re-point
+# its DNS (or redirect) into private networks after the check below has passed.
+PUSH_HOSTS = ('fcm.googleapis.com', '.push.services.mozilla.com', '.notify.windows.com', '.push.apple.com')
+
+
+def push_host_ok(host):
+    host = (host or '').lower().rstrip('.')
+    return any(host == h.lstrip('.') or (h.startswith('.') and host.endswith(h)) for h in PUSH_HOSTS)
+
+
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *args):
+        return None   # a push service never needs to send us elsewhere
+
+
+push_opener = urllib.request.build_opener(NoRedirect)
+
+
 def push_endpoint_ok(endpoint):
-    """Only an https push service on the internet: the server must not be made to post into private networks."""
+    """Only a browser's https push service on the internet: the server must not be made to post into private networks."""
     url = urlsplit(endpoint)
     if url.scheme != 'https' or not url.hostname or url.port not in (None, 443) or len(endpoint) > 1000:
+        return False
+    if not push_host_ok(url.hostname):
         return False
     try:
         ipaddress.ip_address(url.hostname)
@@ -524,11 +544,15 @@ def push(thread, text, fid):
     body = json.dumps({'title': 'somov', 'body': text[:180] + ('…' if len(text) > 180 else '')},
                       ensure_ascii=False).encode()
     for endpoint, p256dh, auth in subscriptions:
+        url = urlsplit(endpoint)
+        if url.scheme != 'https' or url.port not in (None, 443) or not push_host_ok(url.hostname):
+            run('DELETE FROM push WHERE endpoint = ?', endpoint)   # saved before the host list existed
+            continue
         try:
             request = urllib.request.Request(endpoint, push_encrypt(p256dh, auth, body), {
                 'Content-Encoding': 'aes128gcm', 'Content-Type': 'application/octet-stream',
                 'TTL': '86400', 'Urgency': 'high', 'Authorization': vapid(endpoint)})
-            urllib.request.urlopen(request, timeout=20).close()
+            push_opener.open(request, timeout=20).close()
         except urllib.error.HTTPError as error:
             if error.code in (404, 410):
                 run('DELETE FROM push WHERE endpoint = ?', endpoint)
