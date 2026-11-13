@@ -1,5 +1,5 @@
 /* Service worker of somov.org: only browser notifications about answers in the site chat.
-   Registered when a visitor turns notifications on in the chat (assets/site.js); it caches nothing.
+   Registered when a visitor turns notifications on in the chat (assets/chat.js); it caches nothing.
    The push comes from the chat service (_src/chat/server.py). */
 
 self.addEventListener('install', () => self.skipWaiting());

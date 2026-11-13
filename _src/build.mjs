@@ -76,6 +76,7 @@ const CSS_URL = `/assets/site.css?v=${assetHash('assets/site.css')}`;
 // Winter snow: on the page unless snow.json says off; the season dates go with it (node _src/snow.mjs auto|on|off)
 const SNOW_URL = `/assets/snow.js?v=${assetHash('assets/snow.js')}`;
 const JS_URL = `/assets/site.js?v=${assetHash('assets/site.js')}`;
+const CHAT_URL = `/assets/chat.js?v=${assetHash('assets/chat.js')}`;   // site.js loads it only when the chat is needed
 
 /* -- Helpers ------------------------------------------------------------- */
 
@@ -193,7 +194,7 @@ function head({ path, title, description, imageDefault }) {
   const canonical = `${SITE}${langPath(lang, path)}`;
   const staticImage = imageDefault === undefined ? '' : (imageDefault || (lang === 'ru' ? 'ru' : ''));
   return `<!DOCTYPE html>
-<html lang="${lang}"${lang === 'ru' ? ' class="lang-ru-active"' : ''}${staticImage ? ` data-image="${staticImage}"` : ''} data-title-en="${esc(title.en)}" data-title-ru="${esc(title.ru)}"${snow.mode === 'off' ? '' : ` data-snow="${SNOW_URL}" data-snow-season="${snow.mode === 'on' ? 'always' : `${snow.from}..${snow.to}`}"${snow.owner_preview ? ' data-snow-owner="1"' : ''}`}>
+<html lang="${lang}"${lang === 'ru' ? ' class="lang-ru-active"' : ''}${staticImage ? ` data-image="${staticImage}"` : ''} data-title-en="${esc(title.en)}" data-title-ru="${esc(title.ru)}" data-chat="${CHAT_URL}"${snow.mode === 'off' ? '' : ` data-snow="${SNOW_URL}" data-snow-season="${snow.mode === 'on' ? 'always' : `${snow.from}..${snow.to}`}"${snow.owner_preview ? ' data-snow-owner="1"' : ''}`}>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
