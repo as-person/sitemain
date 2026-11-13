@@ -420,6 +420,11 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 .result .dl-alt .btn-secondary { border-color: var(--border); color: var(--muted); font-weight: 500; }
 .result .dl-alt .btn-secondary:hover { border-color: var(--border-strong); color: var(--text); }
 .result .hash-copy { justify-self: center; margin-top: -2px; }
+/* Home: the quiet links under the build name stand one under the other; "Ask in the chat" is in this column on
+   wide screens and at the end of the card on phones (see the 720px block) */
+.result .details-link { display: flex; width: fit-content; }
+.result .details-link + .details-link { margin-top: 0; }
+.result .home-chat-narrow { display: none; }
 
 .more { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
 .more-card {
@@ -983,6 +988,8 @@ html:not([data-image]) .img-ru { display: none !important; }
   .selectors .field-label { margin-bottom: 6px; }
   .result { grid-template-columns: minmax(0, 1fr); gap: 16px; margin-top: 16px; padding-top: 16px; }
   .result .details-link { margin-top: 0; }
+  .result .home-chat-wide, .result .home-chat-wide + .chat-stats { display: none; }
+  .result .home-chat-narrow { display: flex; justify-self: center; }
   /* One column: a line separates the build description from the download buttons */
   .result > .dl-actions { padding-top: 16px; border-top: 1px solid var(--border); }
   .more { grid-template-columns: 1fr; }

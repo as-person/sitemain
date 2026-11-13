@@ -49,7 +49,7 @@ k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNo
 Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({owner:false})},2500)})]).then(function(d){if(d&&d.owner)return;
 ym(114172668,'init',{ssr:true,clickmap:true,referrer:document.referrer,url:location.href,accurateTrackBounce:true,trackLinks:true});});})();
 </script>
-  <link rel="stylesheet" href="/assets/site.css?v=78120b08">
+  <link rel="stylesheet" href="/assets/site.css?v=4f155cc7">
 </head>
 <body>
   <noscript><div><img src="https://mc.yandex.ru/watch/114172668" style="position:absolute; left:-9999px;" alt=""></div></noscript>
@@ -119,6 +119,10 @@ ym(114172668,'init',{ssr:true,clickmap:true,referrer:document.referrer,url:locat
             <a class="details-link" id="details-link" href="/windows-11-en">
               <span><span class="lang-en">Screenshots, checksums and details</span><span class="lang-ru">Скриншоты, хэши и описание</span></span> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
             </a>
+            <!-- A question before downloading: the chat is one click away. Here on wide screens (it fills the column);
+                 on phones the copy at the end of the card is shown instead, so the Download button stays high -->
+            <a class="details-link home-chat-wide" href="#chat" data-chat-open data-chat-placement="home"><span><span class="lang-en">Have a question? Ask in the chat</span><span class="lang-ru">Есть вопрос? Напишите в чат</span></span> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+            <div class="stats-line chat-stats" data-chat-stats="home" hidden></div>
           </div>
           <div class="dl-actions">
             <a class="btn btn-primary btn-block" id="download-link" href="https://dl3.somov.org/en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9974_by_somov.iso">
@@ -132,6 +136,7 @@ ym(114172668,'init',{ssr:true,clickmap:true,referrer:document.referrer,url:locat
             <button type="button" class="hash-copy" id="build-sha256" data-copy="4f13b1b0e24a82ce5583a2e130223b1b57f2456076a04c615b02345e0b4cbad8" title="Copy SHA-256" data-i18n="{&quot;title&quot;:{&quot;en&quot;:&quot;Copy SHA-256&quot;,&quot;ru&quot;:&quot;Скопировать SHA-256&quot;}}">SHA-256 <code>4f13b1b0…0b4cbad8</code> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button>
             <div class="stats-line" data-stats-file="en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9974_by_somov.iso" data-stats-kinds="download,torrent,magnet" hidden></div>
             <p class="support-nudge"><span class="lang-en">The builds are free. If they helped you, you can <a class="link" href="/support">support the project</a>.</span><span class="lang-ru">Сборки бесплатные. Если пригодились, можно <a class="link" href="/support">поддержать проект</a>.</span></p>
+            <a class="details-link home-chat-narrow" href="#chat" data-chat-open data-chat-placement="home"><span><span class="lang-en">Have a question? Ask in the chat</span><span class="lang-ru">Есть вопрос? Напишите в чат</span></span> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
           </div>
         </div>
       </section>

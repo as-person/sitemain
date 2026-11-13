@@ -386,6 +386,10 @@ function homePage() {
             <a class="details-link" id="details-link" href="${image.path}">
               <span>${L('Screenshots, checksums and details', 'Скриншоты, хэши и описание')}</span> ${icon('d')}
             </a>
+            <!-- A question before downloading: the chat is one click away. Here on wide screens (it fills the column);
+                 on phones the copy at the end of the card is shown instead, so the Download button stays high -->
+            ${chatLink('home', `<span>${L('Have a question? Ask in the chat', 'Есть вопрос? Напишите в чат')}</span> ${icon('d')}`, 'details-link home-chat-wide')}</a>
+            ${chatStats('home')}
           </div>
           <div class="dl-actions">
             <a class="btn btn-primary btn-block" id="download-link" href="${image.url}">
@@ -399,6 +403,7 @@ function homePage() {
             <button type="button" class="hash-copy" id="build-sha256" data-copy="${image.sums.sha256}" ${attr('title', 'Copy SHA-256', 'Скопировать SHA-256')}>SHA-256 <code>${image.sums.sha256.slice(0, 8)}…${image.sums.sha256.slice(-8)}</code> ${icon('copy')}</button>
             ${statsLine(image.file)}
             ${supportNudge}
+            ${chatLink('home', `<span>${L('Have a question? Ask in the chat', 'Есть вопрос? Напишите в чат')}</span> ${icon('d')}`, 'details-link home-chat-narrow')}</a>
           </div>
         </div>
       </section>
@@ -777,7 +782,7 @@ const shareRow = () => `<div class="share">
 
 // A quiet line under instructions: the moment a question comes up, the chat is one click away (opens it, see site.js)
 // place: where the link is, counted per place by the counter (CHAT_PLACES); the owner sees the clicks under it
-const CHAT_PLACES = ['footer', 'build', 'tweak', 'archive', 'settings', 'settings-empty'];
+const CHAT_PLACES = ['footer', 'build', 'tweak', 'archive', 'settings', 'settings-empty', 'home'];
 const chatLink = (place, text, cls = '') =>
   `<a${cls ? ` class="${cls}"` : ''} href="#chat" data-chat-open data-chat-placement="${place}">${text}`;
 const chatStats = place => `<div class="stats-line chat-stats" data-chat-stats="${place}" hidden></div>`;
