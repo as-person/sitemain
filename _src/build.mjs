@@ -1159,9 +1159,10 @@ function cryptoCard(copyRow) {
               </span>
             </div>`).join('\n            ')}
           </div>
+          <!-- All QR codes load with the page (about 13 KB together), so switching coin or network is instant -->
           ${variants.map(v => `<div class="crypto-variant" data-variant="${v.key}"${isDefault(v) ? '' : ' hidden'}>
             <a class="qr-wrap" href="/images/qr-${v.net.qr}.png" download="somov-${v.key}-qr.png" ${attr('title', 'Save QR code', 'Сохранить QR-код')}>
-              <img class="qr" src="/images/qr-${v.net.qr}.svg" width="160" height="160" ${attr('alt', `QR code of the ${v.coin.name} address`, `QR-код адреса ${v.coin.name}`)} loading="lazy">
+              <img class="qr" src="/images/qr-${v.net.qr}.svg" width="160" height="160" ${attr('alt', `QR code of the ${v.coin.name} address`, `QR-код адреса ${v.coin.name}`)} loading="eager">
               <span class="qr-save" aria-hidden="true">${icon('download')}</span>
             </a>
             <div class="crypto-info">
