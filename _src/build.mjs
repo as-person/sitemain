@@ -22,7 +22,7 @@ const SITE = 'https://somov.org';
 const CDN = 'https://dl3.somov.org/';
 const GA_ID = 'G-4RBN0G8775';
 const YM_ID = 114172668; // Yandex.Metrika
-const TELEGRAM = 'https://t.me/+gmXk9-zXZ405YWY6';
+const TELEGRAM = 'https://t.me/+gmXk9-zXZ405YWY6'; // an invite link of the public channel (Invite links): Telegram counts who joined from the site. Keep it.
 // Donation methods for /support. QR codes come from _src/qr.py, keep the addresses in sync.
 const DONATE = {
   patreon: '', // the Patreon page URL; the card appears on /support once it is set
@@ -1260,7 +1260,7 @@ function counterKeys() {
   writeFileSync(join(ROOT, 'counter-keys.json'), JSON.stringify({
     pages: sitePaths(),
     tweaks: [...settings.items.map(i => i.id), ...(featured.show ? ['featured'] : [])],
-    places: ['header', 'footer', 'home', 'build'], // data-tg-placement of the Telegram links
+    places: ['header', 'footer', 'home', 'build', 'download'], // data-tg-placement of the Telegram links ('download': the line after a download, site.js)
     chatplaces: CHAT_PLACES, // data-chat-placement of the links that open the site chat
     files: counterFiles(),
   }, null, 2) + '\n');

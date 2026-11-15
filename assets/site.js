@@ -597,6 +597,57 @@
     link.addEventListener('auxclick', event => reportTelegram(link, event));
   });
 
+  /* After a download starts: one quiet line offers the Telegram channel. The visitor waits for gigabytes and has
+     just trusted the site, the best moment to ask. Shown once per page, next to the button that was pressed;
+     not shown again once the visitor has followed it. Its clicks count as the "download" place. */
+  const tgHome = $('[data-tg-placement]');
+  const TG_DONE = 'tgFromDownload';
+  const tgDone = () => { try { return localStorage.getItem(TG_DONE) === '1'; } catch { return false; } };
+  let tgShown = false;
+  const isDownload = link => /\.iso(\.torrent)?$/i.test(link.pathname || '') || /^magnet:/i.test(link.getAttribute('href') || '');
+  function offerTelegram(link) {
+    if (tgShown || !tgHome || tgDone()) return;
+    const ru = currentLang() === 'ru';
+    const note = document.createElement('a');
+    note.className = 'tg-after';
+    note.href = tgHome.href;
+    note.target = '_blank';
+    note.rel = 'noopener';
+    note.dataset.tgPlacement = 'download';
+    note.innerHTML = '<span class="tg-after-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z"/></svg></span>'
+      + '<span class="tg-after-text"><span class="tg-after-title"></span><span class="tg-after-sub"></span></span>';
+    $('.tg-after-title', note).textContent = ru ? 'Пока качается — подпишитесь на канал' : 'While it downloads, join the channel';
+    $('.tg-after-sub', note).textContent = ru ? 'Новые сборки и ответы на вопросы в Telegram' : 'New builds and answers to questions on Telegram';
+    const send = event => {
+      reportTelegram(note, event);
+      try { localStorage.setItem(TG_DONE, '1'); } catch {}
+    };
+    note.addEventListener('click', send);
+    note.addEventListener('auxclick', send);
+
+    // Where: the phone's download bar, the download column (before the support line), or under a list row
+    const bar = link.closest('.dl-bar');
+    const actions = link.closest('.dl-actions');
+    const row = link.closest('.row');
+    if (bar) bar.prepend(note);
+    else if (actions) actions.insertBefore(note, $(':scope > .card-note, :scope > .support-nudge', actions));
+    else if (row) row.append(note);
+    else return;
+    tgShown = true;
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches && note.animate) {
+      note.animate([{ opacity: 0, transform: 'translateY(-4px)' }, { opacity: 1, transform: 'none' }],
+        { duration: 260, easing: 'cubic-bezier(.2, .8, .2, 1)' });
+    }
+  }
+  document.addEventListener('click', event => {
+    const link = event.target.closest && event.target.closest('a[href]');
+    if (link && isDownload(link)) offerTelegram(link);
+  });
+  document.addEventListener('auxclick', event => {
+    const link = event.button === 1 && event.target.closest && event.target.closest('a[href]');
+    if (link && isDownload(link)) offerTelegram(link);
+  });
+
   /* Support page: tapping a QR code downloads it; a download icon confirms it for a moment */
   $$('.qr-wrap').forEach(link => {
     let timer;

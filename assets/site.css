@@ -505,6 +505,30 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 }
 
 .dl-actions { display: grid; gap: 10px; }
+
+/* After a download starts: the Telegram channel, one quiet line with a hint of the accent (site.js adds it) */
+.tg-after {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  border-radius: var(--r-md);
+  background: color-mix(in srgb, var(--accent) 9%, var(--surface));
+  text-align: left;
+  transition: border-color var(--ease), background var(--ease);
+}
+.tg-after:hover { border-color: color-mix(in srgb, var(--accent) 60%, transparent); background: color-mix(in srgb, var(--accent) 14%, var(--surface)); }
+.tg-after-icon { display: grid; flex: none; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: var(--on-accent); }
+.tg-after-icon .icon { width: 15px; height: 15px; margin-left: -1px; }
+.tg-after-text { display: grid; min-width: 0; }
+.tg-after-title { font-size: var(--fs-sm); font-weight: 600; line-height: 1.35; }
+.tg-after-sub { color: var(--muted); font-size: var(--fs-xs); line-height: 1.4; }
+.dl-actions > .tg-after { margin-top: 4px; }
+.row > .tg-after { grid-column: 1 / -1; }
+.dl-bar > .tg-after { margin-bottom: 10px; }
+/* Build page: once the line is there, the Telegram card under the panel would say the same again */
+.build-panel:has(.tg-after) > .tg-card { display: none; }
 .dl-alt { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 /* Home and build pages: Torrent and Magnet are the fallback, so they step back from Download */
 .dl-alt .btn-secondary { border-color: var(--border); border-radius: var(--r-md); color: var(--muted); font-weight: 500; }
@@ -516,6 +540,7 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 .card-note { margin-top: 6px; }
 /* Home, wide screens: the download column spans both rows, the chat link takes the second row of the left column,
    right under the fan, so the two columns end level */
+.result { grid-template-rows: auto 1fr; } /* extra height of the download column goes to the second row: the chat link stays right under the fan */
 .result > :first-child { grid-column: 1; grid-row: 1; }
 .result > .dl-actions { grid-column: 2; grid-row: 1 / span 2; }
 .result-chat { grid-column: 1; grid-row: 2; align-self: start; margin-top: -24px; } /* the grid's 28px row gap would push it off the fan */
@@ -1105,6 +1130,7 @@ html:not([data-image]) .img-ru { display: none !important; }
   .result { grid-template-columns: minmax(0, 1fr); gap: 16px; margin-top: 16px; padding-top: 16px; }
   /* Phones: one column in source order; the chat link is last, right under the support line, the same quiet size,
      so the two lines read as one note (the finger gets a taller invisible area instead of a tall row) */
+  .result { grid-template-rows: none; }
   .result > :first-child, .result > .dl-actions, .result-chat { grid-column: auto; grid-row: auto; }
   .result-chat { justify-self: center; margin-top: -14px; }
   .result-chat .details-link { position: relative; min-height: 0; margin-top: 0; font-size: var(--fs-xs); }
