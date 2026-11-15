@@ -108,7 +108,7 @@ const statsLine = (file, kinds = 'download,torrent,magnet') =>
 // whatever case the data has (archive.json keeps them in upper case).
 const hashCopy = (sha256, extra = '') => {
   const sha = String(sha256).toLowerCase();
-  return `<button type="button" class="hash-copy"${extra} data-copy="${sha}" ${attr('title', 'Copy SHA-256', 'Скопировать SHA-256')}>SHA-256 <code>${sha.slice(0, 8)}…${sha.slice(-8)}</code> ${icon('copy')}</button>`;
+  return `<button type="button" class="hash-copy"${extra} data-copy="${sha}" ${attr('title', 'Copy SHA-256', 'Скопировать SHA-256')}>SHA-256 <code>${sha.slice(0, 8)}…${sha.slice(-8)}</code> <span class="hash-ico">${icon('copy')}${icon('check')}</span></button>`;
 };
 
 const PATHS = {
@@ -331,7 +331,8 @@ const imageFor = (build, imageLang) => {
 
 function homePage() {
   const build = builds[0];
-  const image = imageFor(build, 'en');
+  // The page's own language: without scripts (or before they run) /ru/ leads to the Russian build and ISO
+  const image = imageFor(build, PAGE_LANG);
 
   const data = Object.fromEntries(builds.map(b => [b.id, {
     title: b.title,
@@ -391,13 +392,15 @@ function homePage() {
               <span><span class="lang-en" id="build-date-en">${build.date.en}</span><span class="lang-ru" id="build-date-ru">${build.date.ru}</span></span>
               <span class="badge" id="build-final" hidden>${S.final}</span>
             </div>
-            <a class="details-link" id="details-link" href="${image.path}">
-              <span>${L('Screenshots, checksums and details', 'Скриншоты, хэши и описание')}</span> ${icon('d')}
+            <!-- The way into the build page: three real screenshots fanned out (desktop shots only: the light windows would
+                 outshine the Download button), a hover spreads them. site.js swaps them with the chosen build. -->
+            <a class="shot-fan" id="details-link" href="${image.path}">
+              <span class="shot-fan-stack" aria-hidden="true">${FAN_SHOTS.map(n => `<span class="shot-fan-card"><img src="/images/windows-${build.id}-${PAGE_LANG}/${n}-240.webp" srcset="/images/windows-${build.id}-${PAGE_LANG}/${n}-240.webp 240w, /images/windows-${build.id}-${PAGE_LANG}/${n}-480.webp 480w" sizes="104px" data-fan-shot="${n}" alt="" width="${build.ratio[0]}" height="${build.ratio[1]}" decoding="async"></span>`).join('')}</span>
+              <span class="shot-fan-text">
+                <span class="shot-fan-title">${L('See the build', 'Посмотреть сборку')} ${icon('d')}</span>
+                <span class="shot-fan-sub">${L('6 screenshots, checksums, details', '6 скриншотов, хэши, описание')}</span>
+              </span>
             </a>
-            <!-- A question before downloading: the chat is one click away. Here on wide screens (it fills the column);
-                 on phones the copy at the end of the card is shown instead, so the Download button stays high -->
-            ${chatLink('home', `<span>${L('Have a question? Ask in the chat', 'Есть вопрос? Напишите в чат')}</span> ${icon('d')}`, 'details-link home-chat-wide')}</a>
-            ${chatStats('home')}
           </div>
           <div class="dl-actions">
             <a class="btn btn-primary btn-block" id="download-link" href="${image.url}">
@@ -410,8 +413,13 @@ function homePage() {
             <!-- Right under the download: the image's SHA-256 (shortened; a press copies the whole one), the same control as in the archive -->
             ${hashCopy(image.sums.sha256, ' id="build-sha256"')}
             ${statsLine(image.file)}
-            ${supportNudge}
-            ${chatLink('home', `<span>${L('Have a question? Ask in the chat', 'Есть вопрос? Напишите в чат')}</span> ${icon('d')}`, 'details-link home-chat-narrow')}</a>
+            <div class="card-note">${supportNudge}</div>
+          </div>
+          <!-- The way to the chat, one link for every screen: wide screens put it in the left column under the fan
+               (the columns stay even); phones put it last, right under the support line, as one quiet note -->
+          <div class="result-chat">
+            ${chatLink('home', `<span>${L('Have a question? Ask in the chat', 'Есть вопрос? Напишите в чат')}</span> ${icon('d')}`, 'details-link')}</a>
+            ${chatStats('home')}
           </div>
         </div>
       </section>
@@ -464,6 +472,8 @@ const SHOT_ALT = {
 
 // The first screenshot is shown large: the desktop with the About Windows dialog reads best.
 const SHOT_ORDER = [5, 2, 3, 4, 1, 6];
+// Home: the fan of screenshots, back to front (Task Manager, Explorer, About Windows: all on the desktop wallpaper)
+const FAN_SHOTS = [4, 2, 5];
 
 // shown: the gallery of the image language the page opens with. Its large first shot is on the first screen of a
 // desktop, so it loads at once; everything else (and the hidden gallery of the other language) loads lazily.

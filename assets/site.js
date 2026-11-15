@@ -394,6 +394,12 @@
       $('#build-date-ru').textContent = build.date.ru;
       $('#build-final').hidden = !build.final;
       $('#details-link').href = image.details;
+      // The fan shows the chosen build in the chosen language
+      $$('[data-fan-shot]').forEach(img => {
+        const base = `/images/windows-${os}-${imageLang}/${img.dataset.fanShot}`;
+        img.srcset = `${base}-240.webp 240w, ${base}-480.webp 480w`;
+        img.src = `${base}-240.webp`;
+      });
       $('#build-title').href = image.details; // the title leads to the build page too
       $('#download-link').href = image.url;
       // "Download English ISO" / "Download Russian ISO": the button names the chosen image language
@@ -410,10 +416,30 @@
       renderStats();
     }
 
+    // A new choice: the changed details settle in, so the eye catches that they changed (not on reduced motion)
+    const calm = matchMedia('(prefers-reduced-motion: reduce)');
+    function settle() {
+      if (calm.matches || !Element.prototype.animate) return;
+      $$('.result h2, .result .meta, .shot-fan-stack, #download-link > span, #build-sha256 code').forEach(el => el.animate(
+        [{ opacity: .25, transform: 'translateY(3px)' }, { opacity: 1, transform: 'none' }],
+        { duration: 240, easing: 'cubic-bezier(.2, .8, .2, 1)' }
+      ));
+    }
+
     // The image language follows the site language.
     selectImageLang(currentLang());
     render();
-    osInputs.concat(langInputs).forEach(input => input.addEventListener('change', render));
+    osInputs.concat(langInputs).forEach(input => input.addEventListener('change', () => { render(); settle(); }));
+
+    // The fan's pictures for the other choices load while the browser is idle, so a switch shows them at once
+    // (12 small files; the size the screen takes, as the browser would pick from srcset)
+    const preloadFan = () => {
+      if (navigator.connection && navigator.connection.saveData) return; // the visitor asked to save traffic
+      const size = devicePixelRatio > 1.2 ? 480 : 240;
+      Object.keys(builds).forEach(os => ['en', 'ru'].forEach(lang =>
+        $$('[data-fan-shot]').forEach(img => { new Image().src = `/images/windows-${os}-${lang}/${img.dataset.fanShot}-${size}.webp`; })));
+    };
+    addEventListener('load', () => (window.requestIdleCallback || setTimeout)(preloadFan), { once: true });
     languageListeners.push(lang => {
       selectImageLang(lang);
       render();

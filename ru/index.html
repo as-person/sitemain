@@ -50,7 +50,7 @@ k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNo
 Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({owner:false})},2500)})]).then(function(d){if(d&&d.owner)return;
 ym(114172668,'init',{ssr:true,clickmap:true,referrer:document.referrer,url:location.href,accurateTrackBounce:true,trackLinks:true});});})();
 </script>
-  <link rel="stylesheet" href="/assets/site.css?v=ee277f99">
+  <link rel="stylesheet" href="/assets/site.css?v=e022d2fa">
 </head>
 <body>
   <noscript><div><img src="https://mc.yandex.ru/watch/114172668" style="position:absolute; left:-9999px;" alt=""></div></noscript>
@@ -107,7 +107,7 @@ ym(114172668,'init',{ssr:true,clickmap:true,referrer:document.referrer,url:locat
 
         <div class="result">
           <div>
-            <h2><a id="build-title" href="/windows-11-en" tabindex="-1">Windows 11 IoT Enterprise LTSC</a></h2>
+            <h2><a id="build-title" href="/windows-11-ru" tabindex="-1">Windows 11 IoT Enterprise LTSC</a></h2>
             <div class="meta">
               <span class="author"><span class="lang-en">Author:</span><span class="lang-ru">Автор:</span> <b>somov</b></span>
               <span id="build-version">24H2</span>
@@ -117,27 +117,34 @@ ym(114172668,'init',{ssr:true,clickmap:true,referrer:document.referrer,url:locat
               <span><span class="lang-en" id="build-date-en">November 2026</span><span class="lang-ru" id="build-date-ru">Ноябрь 2026</span></span>
               <span class="badge" id="build-final" hidden><span class="lang-en">End of Servicing</span><span class="lang-ru">Окончание срока поддержки</span></span>
             </div>
-            <a class="details-link" id="details-link" href="/windows-11-en">
-              <span><span class="lang-en">Screenshots, checksums and details</span><span class="lang-ru">Скриншоты, хэши и описание</span></span> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+            <!-- The way into the build page: three real screenshots fanned out (desktop shots only: the light windows would
+                 outshine the Download button), a hover spreads them. site.js swaps them with the chosen build. -->
+            <a class="shot-fan" id="details-link" href="/windows-11-ru">
+              <span class="shot-fan-stack" aria-hidden="true"><span class="shot-fan-card"><img src="/images/windows-11-ru/4-240.webp" srcset="/images/windows-11-ru/4-240.webp 240w, /images/windows-11-ru/4-480.webp 480w" sizes="104px" data-fan-shot="4" alt="" width="1536" height="739" decoding="async"></span><span class="shot-fan-card"><img src="/images/windows-11-ru/2-240.webp" srcset="/images/windows-11-ru/2-240.webp 240w, /images/windows-11-ru/2-480.webp 480w" sizes="104px" data-fan-shot="2" alt="" width="1536" height="739" decoding="async"></span><span class="shot-fan-card"><img src="/images/windows-11-ru/5-240.webp" srcset="/images/windows-11-ru/5-240.webp 240w, /images/windows-11-ru/5-480.webp 480w" sizes="104px" data-fan-shot="5" alt="" width="1536" height="739" decoding="async"></span></span>
+              <span class="shot-fan-text">
+                <span class="shot-fan-title"><span class="lang-en">See the build</span><span class="lang-ru">Посмотреть сборку</span> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>
+                <span class="shot-fan-sub"><span class="lang-en">6 screenshots, checksums, details</span><span class="lang-ru">6 скриншотов, хэши, описание</span></span>
+              </span>
             </a>
-            <!-- A question before downloading: the chat is one click away. Here on wide screens (it fills the column);
-                 on phones the copy at the end of the card is shown instead, so the Download button stays high -->
-            <a class="details-link home-chat-wide" href="#chat" data-chat-open data-chat-placement="home"><span><span class="lang-en">Have a question? Ask in the chat</span><span class="lang-ru">Есть вопрос? Напишите в чат</span></span> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
-            <div class="stats-line chat-stats" data-chat-stats="home" hidden></div>
           </div>
           <div class="dl-actions">
-            <a class="btn btn-primary btn-block" id="download-link" href="https://dl3.somov.org/en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9974_by_somov.iso">
+            <a class="btn btn-primary btn-block" id="download-link" href="https://dl3.somov.org/ru-ru_windows_11_iot_enterprise_ltsc_2024_x64_26100.9974_by_somov.iso">
               <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span data-dl-label="en" hidden><span class="lang-en">Download English ISO</span><span class="lang-ru">Скачать английский ISO</span></span><span data-dl-label="ru"><span class="lang-en">Download Russian ISO</span><span class="lang-ru">Скачать русский ISO</span></span> · <span class="lang-en" id="download-size-en">5.4 GB</span><span class="lang-ru" id="download-size-ru">5,4 ГБ</span></span>
             </a>
             <div class="dl-alt">
-              <a class="btn btn-secondary btn-sm" id="torrent-link" href="https://dl3.somov.org/en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9974_by_somov.iso.torrent">Torrent</a>
-              <a class="btn btn-secondary btn-sm" id="magnet-link" href="magnet:?xt=urn:btih:5a7de00af8348bb109dacfe409daca8b096c1723&amp;dn=en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9974_by_somov.iso&amp;tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&amp;tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&amp;tr=udp%3A%2F%2Fopen.demonii.com%3A1337%2Fannounce&amp;tr=udp%3A%2F%2Ftracker.dler.org%3A6969%2Fannounce&amp;tr=udp%3A%2F%2Ftracker.theoks.net%3A6969%2Fannounce" data-count-file="en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9974_by_somov.iso" data-count-kind="magnet">Magnet</a>
+              <a class="btn btn-secondary btn-sm" id="torrent-link" href="https://dl3.somov.org/ru-ru_windows_11_iot_enterprise_ltsc_2024_x64_26100.9974_by_somov.iso.torrent">Torrent</a>
+              <a class="btn btn-secondary btn-sm" id="magnet-link" href="magnet:?xt=urn:btih:1f4d4cd81a500036d841a7b717c4f65ebca5d785&amp;dn=ru-ru_windows_11_iot_enterprise_ltsc_2024_x64_26100.9974_by_somov.iso&amp;tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&amp;tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&amp;tr=udp%3A%2F%2Fopen.demonii.com%3A1337%2Fannounce&amp;tr=udp%3A%2F%2Ftracker.dler.org%3A6969%2Fannounce&amp;tr=udp%3A%2F%2Ftracker.theoks.net%3A6969%2Fannounce" data-count-file="ru-ru_windows_11_iot_enterprise_ltsc_2024_x64_26100.9974_by_somov.iso" data-count-kind="magnet">Magnet</a>
             </div>
             <!-- Right under the download: the image's SHA-256 (shortened; a press copies the whole one), the same control as in the archive -->
-            <button type="button" class="hash-copy" id="build-sha256" data-copy="4f13b1b0e24a82ce5583a2e130223b1b57f2456076a04c615b02345e0b4cbad8" title="Copy SHA-256" data-i18n="{&quot;title&quot;:{&quot;en&quot;:&quot;Copy SHA-256&quot;,&quot;ru&quot;:&quot;Скопировать SHA-256&quot;}}">SHA-256 <code>4f13b1b0…0b4cbad8</code> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button>
-            <div class="stats-line" data-stats-file="en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9974_by_somov.iso" data-stats-kinds="download,torrent,magnet" hidden></div>
-            <p class="support-nudge"><span class="lang-en">The builds are free. If they helped you, you can <a class="link" href="/support">support the project</a>.</span><span class="lang-ru">Сборки бесплатные. Если пригодились, можно <a class="link" href="/support">поддержать проект</a>.</span></p>
-            <a class="details-link home-chat-narrow" href="#chat" data-chat-open data-chat-placement="home"><span><span class="lang-en">Have a question? Ask in the chat</span><span class="lang-ru">Есть вопрос? Напишите в чат</span></span> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+            <button type="button" class="hash-copy" id="build-sha256" data-copy="25c8612a5282c19d42a7dbb92221e5c5978bab9584e2d01e846af017bc24b5b4" title="Copy SHA-256" data-i18n="{&quot;title&quot;:{&quot;en&quot;:&quot;Copy SHA-256&quot;,&quot;ru&quot;:&quot;Скопировать SHA-256&quot;}}">SHA-256 <code>25c8612a…bc24b5b4</code> <span class="hash-ico"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></span></button>
+            <div class="stats-line" data-stats-file="ru-ru_windows_11_iot_enterprise_ltsc_2024_x64_26100.9974_by_somov.iso" data-stats-kinds="download,torrent,magnet" hidden></div>
+            <div class="card-note"><p class="support-nudge"><span class="lang-en">The builds are free. If they helped you, you can <a class="link" href="/support">support the project</a>.</span><span class="lang-ru">Сборки бесплатные. Если пригодились, можно <a class="link" href="/support">поддержать проект</a>.</span></p></div>
+          </div>
+          <!-- The way to the chat, one link for every screen: wide screens put it in the left column under the fan
+               (the columns stay even); phones put it last, right under the support line, as one quiet note -->
+          <div class="result-chat">
+            <a class="details-link" href="#chat" data-chat-open data-chat-placement="home"><span><span class="lang-en">Have a question? Ask in the chat</span><span class="lang-ru">Есть вопрос? Напишите в чат</span></span> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+            <div class="stats-line chat-stats" data-chat-stats="home" hidden></div>
           </div>
         </div>
       </section>
@@ -205,6 +212,6 @@ ym(114172668,'init',{ssr:true,clickmap:true,referrer:document.referrer,url:locat
     </div>
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="/assets/site.js?v=5a7ba078" defer></script>
+  <script src="/assets/site.js?v=27d78484" defer></script>
 </body>
 </html>

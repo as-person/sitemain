@@ -51,6 +51,11 @@
   --accent-text: #8fb4ff;
   --selected: #f0f2f5;
   --on-selected: #0f1115;
+  /* The chosen option in a switch: a raised dark thumb, not a white plate, so the blue button stays the brightest thing */
+  --thumb: var(--raised-hover);
+  --thumb-shadow: inset 0 1px 0 rgb(255 255 255 / .07), 0 0 0 1px rgb(255 255 255 / .06), 0 1px 3px rgb(0 0 0 / .5);
+  /* The top edge of a lit surface: the light comes from above */
+  --edge-light: inset 0 1px 0 rgb(255 255 255 / .06);
   --success: #7ee2a8;
   --danger: #ef4444;
   --warning: #f5c26b;
@@ -60,7 +65,6 @@
   --frost-light: #dbeafe;
 
   --glow-a: #3a8dff;
-  --glow-b: #a855f7;
 
   --r-sm: 8px;
   --r-md: 12px;
@@ -259,7 +263,7 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
   transition: color var(--ease), background var(--ease);
 }
 .lang-switch button:hover { color: var(--text); }
-.lang-switch button[aria-pressed="true"] { background: var(--selected); color: var(--on-selected); }
+.lang-switch button[aria-pressed="true"] { background: var(--thumb); color: var(--text); box-shadow: var(--thumb-shadow); }
 
 /* -- Buttons ------------------------------------------------------------- */
 
@@ -274,7 +278,7 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
   font-size: var(--fs-md);
   font-weight: 600;
   white-space: nowrap;
-  transition: background var(--ease), border-color var(--ease), color var(--ease), transform var(--ease);
+  transition: background var(--ease), border-color var(--ease), color var(--ease), transform var(--ease), box-shadow var(--ease);
 }
 .btn:active { transform: translateY(1px); }
 .btn-block { width: 100%; }
@@ -285,8 +289,17 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
   /* A slightly smaller label fits on one line down to 360px; narrower phones get two lines */
   .dl-actions .btn-block, .dl-bar .btn-block { font-size: .9375rem; padding-inline: 14px; }
 }
-.btn-primary { background: var(--accent); color: var(--on-accent); }
-.btn-primary:hover { background: var(--accent-hover); }
+/* The one loud thing on a page: the same blue, with a lit top edge and a soft blue light under it */
+.btn-primary {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 94%, #fff), var(--accent)); /* the top stays >= 4.5:1 under white text */
+  color: var(--on-accent);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .2), 0 1px 2px rgb(0 0 0 / .4), 0 8px 24px -10px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+.btn-primary:hover {
+  background: linear-gradient(180deg, var(--accent), var(--accent-hover));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .16), 0 1px 2px rgb(0 0 0 / .4), 0 12px 32px -10px color-mix(in srgb, var(--accent) 85%, transparent);
+}
+.btn-primary:active { box-shadow: inset 0 1px 0 rgb(255 255 255 / .1), 0 1px 2px rgb(0 0 0 / .4); }
 .btn-secondary { border: 1px solid var(--border-strong); }
 .btn-secondary:hover { background: var(--raised-hover); }
 .btn-sm { min-height: 40px; padding: 0 14px; font-size: var(--fs-sm); border-radius: var(--r-sm); }
@@ -332,22 +345,40 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
   z-index: -1;
   inset: 0 0 auto;
   height: 520px;
+  /* One blue light from above (the site's one colour), a cooler core in the middle */
   background:
-    radial-gradient(38% 60% at 36% 0%, color-mix(in srgb, var(--glow-a) 22%, transparent), transparent 100%),
-    radial-gradient(34% 56% at 66% 0%, color-mix(in srgb, var(--glow-b) 18%, transparent), transparent 100%);
+    radial-gradient(30% 48% at 50% 0%, color-mix(in srgb, var(--glow-a) 14%, transparent), transparent 100%),
+    radial-gradient(58% 64% at 50% 0%, color-mix(in srgb, var(--glow-a) 16%, transparent), transparent 100%);
+  pointer-events: none;
+}
+/* A faint dot grid under the light, fading out with it */
+.home::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 auto;
+  height: 460px;
+  background-image: radial-gradient(rgb(255 255 255 / .11) 1px, transparent 1.5px);
+  background-size: 22px 22px;
+  background-position: center top;
+  -webkit-mask-image: radial-gradient(55% 70% at 50% 0%, #000, transparent);
+  mask-image: radial-gradient(55% 70% at 50% 0%, #000, transparent);
   pointer-events: none;
 }
 
-.hero { text-align: center; margin-bottom: 36px; }
-.hero h1 { font-size: var(--fs-2xl); line-height: 1.12; letter-spacing: -.025em; }
+.hero { text-align: center; margin-bottom: 40px; }
+.hero h1 { font-size: clamp(2rem, 2.4vw + 1rem, 2.75rem); line-height: 1.08; }
+/* Wide screens: the question may run a little wider than the card, so it stays on one line in both languages */
+@media (min-width: 1024px) { .hero { margin-inline: -80px; } } /* tracking: see "The site's voice" */
 .hero p { margin-top: 12px; color: var(--muted); font-size: 1.125rem; }
 
 .composer {
   padding: 28px;
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
-  background: var(--surface);
-  box-shadow: 0 24px 60px -24px rgb(0 0 0 / .6);
+  /* Lit from above: a lighter top edge and a faint sheen fading down, then the soft shadow under the card */
+  background: linear-gradient(180deg, rgb(255 255 255 / .025), transparent 140px), var(--surface);
+  box-shadow: var(--edge-light), 0 24px 60px -24px rgb(0 0 0 / .6);
 }
 .selectors { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 24px; }
 .field-label {
@@ -365,6 +396,7 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
   padding: 4px;
   border-radius: var(--r-md);
   background: var(--bg);
+  box-shadow: inset 0 1px 2px rgb(0 0 0 / .35);
 }
 .segmented::before {
   content: "";
@@ -374,8 +406,9 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
   left: 4px;
   width: calc(50% - 4px);
   border-radius: var(--r-sm);
-  background: var(--selected);
-  transition: transform var(--ease);
+  background: var(--thumb);
+  box-shadow: var(--thumb-shadow);
+  transition: transform 260ms cubic-bezier(.2, .8, .2, 1);
 }
 .segmented:has(label:nth-child(2) input:checked)::before { transform: translateX(100%); }
 .segmented label { position: relative; cursor: pointer; }
@@ -393,11 +426,11 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
   transition: color var(--ease);
 }
 .segmented label:hover > span { color: var(--text); }
-.segmented input:checked + span { color: var(--on-selected); }
+.segmented input:checked + span { color: var(--text); }
 .segmented input:focus-visible + span { outline: 2px solid var(--accent-text); outline-offset: 2px; }
 @supports not selector(:has(*)) {
   .segmented::before { display: none; }
-  .segmented input:checked + span { background: var(--selected); }
+  .segmented input:checked + span { background: var(--thumb); box-shadow: var(--thumb-shadow); }
 }
 
 .result {
@@ -429,19 +462,64 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 .details-link .icon { flex: none; width: 14px; height: 14px; transition: transform var(--ease); }
 .details-link:hover .icon { transform: translateX(2px); }
 
+/* Home: the fan of screenshots that leads to the build page. At rest the cards lie fanned; a hover spreads them
+   and lifts the front one. */
+.shot-fan { display: flex; align-items: center; gap: 16px; width: fit-content; max-width: 100%; margin-top: 12px; margin-bottom: 4px; }
+/* Windows 10: the "End of servicing" badge above gets some air before the fan */
+.result .meta:has(.badge:not([hidden])) + .shot-fan { margin-top: 18px; }
+.shot-fan-stack { position: relative; flex: none; width: 136px; height: 76px; }
+.shot-fan-card {
+  position: absolute;
+  top: 12px;
+  left: 17px;
+  width: 102px;
+  aspect-ratio: 1536 / 739;
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  background: var(--raised);
+  box-shadow: 0 8px 18px -8px rgb(0 0 0 / .8);
+  transition: transform 280ms cubic-bezier(.2, .8, .2, 1), border-color var(--ease);
+}
+.shot-fan-card img { width: 100%; height: 100%; object-fit: cover; transition: filter var(--ease); }
+/* The two cards behind sit smaller and in shade, so the front one reads as the picture and they as depth */
+.shot-fan-card:nth-child(-n + 2) img { filter: brightness(.68) saturate(.85); }
+.shot-fan-card:nth-child(1) { transform: rotate(-9deg) translate(-12px, 2px) scale(.94); }
+.shot-fan-card:nth-child(2) { transform: rotate(7deg) translate(12px, 0) scale(.94); }
+.shot-fan-card:nth-child(3) { border-color: rgb(255 255 255 / .28); box-shadow: var(--edge-light), 0 10px 22px -8px rgb(0 0 0 / .85); }
+/* Hover, keyboard focus and a finger press spread the fan the same way */
+.shot-fan:is(:hover, :focus-visible, :active) .shot-fan-card:nth-child(-n + 2) img { filter: brightness(.9); }
+.shot-fan:is(:hover, :focus-visible, :active) .shot-fan-card:nth-child(1) { transform: rotate(-14deg) translate(-20px, 2px) scale(.96); }
+.shot-fan:is(:hover, :focus-visible, :active) .shot-fan-card:nth-child(2) { transform: rotate(12deg) translate(22px, 0) scale(.96); }
+.shot-fan:is(:hover, :focus-visible, :active) .shot-fan-card:nth-child(3) { transform: translateY(-4px) scale(1.04); border-color: rgb(255 255 255 / .38); }
+.shot-fan-text { display: grid; gap: 2px; min-width: 0; }
+.shot-fan-title { display: inline-flex; align-items: center; gap: 6px; font-size: var(--fs-sm); font-weight: 600; white-space: nowrap; }
+.shot-fan-title .icon { width: 14px; height: 14px; transition: transform var(--ease); }
+.shot-fan:is(:hover, :focus-visible) .shot-fan-title .icon { transform: translateX(3px); }
+.shot-fan-sub { color: var(--muted); font-size: var(--fs-xs); text-wrap: balance; } /* one line where it fits, else two even ones */
+.shot-fan:focus-visible { outline-offset: 6px; }
+@media (max-width: 720px) {
+  .shot-fan { gap: 14px; margin-top: 10px; }
+  .shot-fan-stack { width: 118px; height: 64px; }
+  .shot-fan-card { top: 10px; left: 16px; width: 88px; }
+}
+
 .dl-actions { display: grid; gap: 10px; }
 .dl-alt { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 /* Home and build pages: Torrent and Magnet are the fallback, so they step back from Download */
-.dl-alt .btn-secondary { border-color: var(--border); color: var(--muted); font-weight: 500; }
+.dl-alt .btn-secondary { border-color: var(--border); border-radius: var(--r-md); color: var(--muted); font-weight: 500; }
 .dl-alt .btn-secondary:hover { border-color: var(--border-strong); color: var(--text); }
 /* The image's SHA-256 right under the download buttons (home and the build page's panel) */
-.dl-actions .hash-copy { justify-self: center; margin-top: -2px; }
-/* Home: the quiet links under the build name stand one under the other; "Ask in the chat" is in this column on
-   wide screens and at the end of the card on phones (see the 720px block) */
-.result .details-link { display: flex; width: fit-content; }
-.result .details-link + .details-link { margin-top: 0; }
-@media (pointer: fine) { .result .details-link { min-height: 32px; } } /* a mouse needs no finger-sized rows: the two links sit as close as the lines above */
-.result .home-chat-narrow { display: none; }
+/* A caption to Torrent/Magnet: close under them */
+.dl-actions .hash-copy { justify-self: center; margin-top: -4px; }
+/* Home: the support line under the file */
+.card-note { margin-top: 6px; }
+/* Home, wide screens: the download column spans both rows, the chat link takes the second row of the left column,
+   right under the fan, so the two columns end level */
+.result > :first-child { grid-column: 1; grid-row: 1; }
+.result > .dl-actions { grid-column: 2; grid-row: 1 / span 2; }
+.result-chat { grid-column: 1; grid-row: 2; align-self: start; margin-top: -24px; } /* the grid's 28px row gap would push it off the fan */
+@media (pointer: fine) { .result-chat .details-link { min-height: 32px; } }
 
 .more { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
 .more-card {
@@ -450,12 +528,13 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
   justify-content: space-between;
   gap: 12px;
   padding: 18px 20px;
-  border: 1px solid var(--border);
+  /* No frame at rest: the build card above is the main thing, these are the next steps. The frame comes on hover */
+  border: 1px solid transparent;
   border-radius: var(--r-lg);
   background: var(--surface);
   transition: background var(--ease), border-color var(--ease);
 }
-.more-card:hover { background: var(--raised); border-color: var(--border-strong); }
+.more-card:hover { background: var(--raised); border-color: var(--border); }
 .more-card-title { display: block; font-weight: 600; }
 .more-card-sub { display: block; margin-top: 2px; color: var(--muted); font-size: var(--fs-sm); }
 .more-card .icon { color: var(--muted); transition: transform var(--ease), color var(--ease); }
@@ -569,7 +648,10 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
   transition: border-color var(--ease), background var(--ease);
 }
 .tg-card:hover { border-color: var(--border-strong); background: var(--raised); }
-.home .tg-card { margin-top: 12px; } /* under the two cards, with the same gap as between them */
+.home .tg-card { margin-top: 12px; padding: 18px 20px; border-color: transparent; } /* under the two cards, with the same gap, padding and look */
+.home .tg-card:hover { border-color: var(--border); }
+@media (min-width: 721px) { .home .tg-title { font-size: var(--fs-md); } } /* phones keep the smaller size */
+.tg-title { text-wrap: balance; } /* when the title wraps (RU on phones), two even lines, no lone word */
 .tg-icon { display: grid; flex: none; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--raised-hover); color: var(--text); }
 .tg-icon .icon { width: 17px; height: 17px; }
 .tg-text { display: grid; flex: 1; min-width: 0; }
@@ -585,7 +667,7 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 .panel-rows dt { color: var(--muted); }
 .panel-rows dd { font-weight: 500; text-align: right; }
 .panel-label { margin-top: 14px; margin-bottom: 8px; color: var(--muted); font-size: var(--fs-sm); }
-.seg-links { display: grid; grid-template-columns: 1fr 1fr; padding: 4px; border-radius: var(--r-md); background: var(--bg); }
+.seg-links { display: grid; grid-template-columns: 1fr 1fr; padding: 4px; border-radius: var(--r-md); background: var(--bg); box-shadow: inset 0 1px 2px rgb(0 0 0 / .35); }
 .seg-links a {
   display: grid;
   place-items: center;
@@ -597,7 +679,7 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
   transition: color var(--ease), background var(--ease);
 }
 .seg-links a:hover { color: var(--text); }
-.seg-links a[aria-current="true"] { background: var(--selected); color: var(--on-selected); }
+.seg-links a[aria-current="true"] { background: var(--thumb); color: var(--text); box-shadow: var(--thumb-shadow); }
 .dl-variant { display: grid; gap: 10px; }
 .section-note { margin: -4px 0 12px; color: var(--muted); font-size: var(--fs-sm); }
 
@@ -941,7 +1023,10 @@ html:not([data-image]) .img-ru { display: none !important; }
 .hash-copy.is-copied { color: var(--success); }
 /* Touch screens: 44px to the finger. The EN/RU switch keeps its look and gets a taller invisible hit area. */
 @media (pointer: coarse) {
-  .hash-copy, .archive-link { min-height: 44px; } /* footer links: next to their own rule below */
+  .archive-link { min-height: 44px; } /* footer links: next to their own rule below */
+  /* The hash keeps its slim line; the finger gets a taller invisible area */
+  .hash-copy { position: relative; }
+  .hash-copy::after { content: ""; position: absolute; inset: -8px 0; }
   .lang-switch button { position: relative; }
   .lang-switch button::after { content: ""; position: absolute; inset: -6px 0; }
 }
@@ -1018,9 +1103,12 @@ html:not([data-image]) .img-ru { display: none !important; }
   .selectors { grid-template-columns: 1fr; gap: 12px; }
   .selectors .field-label { margin-bottom: 6px; }
   .result { grid-template-columns: minmax(0, 1fr); gap: 16px; margin-top: 16px; padding-top: 16px; }
-  .result .details-link { margin-top: 0; }
-  .result .home-chat-wide, .result .home-chat-wide + .chat-stats { display: none; }
-  .result .home-chat-narrow { display: flex; justify-self: center; }
+  /* Phones: one column in source order; the chat link is last, right under the support line, the same quiet size,
+     so the two lines read as one note (the finger gets a taller invisible area instead of a tall row) */
+  .result > :first-child, .result > .dl-actions, .result-chat { grid-column: auto; grid-row: auto; }
+  .result-chat { justify-self: center; margin-top: -14px; }
+  .result-chat .details-link { position: relative; min-height: 0; margin-top: 0; font-size: var(--fs-xs); }
+  .result-chat .details-link::after { content: ""; position: absolute; inset: -7px 0 -10px; } /* -7px on top: clear of "support the project" above */
   /* One column: a line separates the build description from the download buttons */
   .result > .dl-actions { padding-top: 16px; border-top: 1px solid var(--border); }
   .more { grid-template-columns: 1fr; }
@@ -1433,7 +1521,7 @@ html:not([data-image]) .img-ru { display: none !important; }
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--glow-a), var(--glow-b));
+  background: linear-gradient(135deg, var(--glow-a), var(--accent));
   color: var(--on-accent);
   font-weight: 700;
   font-size: 1.0625rem;
@@ -1452,7 +1540,7 @@ html:not([data-image]) .img-ru { display: none !important; }
   overscroll-behavior: contain;
   background:
     radial-gradient(circle at 15% 20%, color-mix(in srgb, var(--glow-a) 7%, transparent), transparent 40%),
-    radial-gradient(circle at 85% 80%, color-mix(in srgb, var(--glow-b) 6%, transparent), transparent 45%),
+    radial-gradient(circle at 85% 80%, color-mix(in srgb, var(--accent) 6%, transparent), transparent 45%),
     var(--chat-bg);
 }
 .chat-intro {
@@ -1748,3 +1836,29 @@ main, .footer { position: relative; z-index: 1; }
   letter-spacing: -.025em;
 }
 .brand span { font-size: 1.0625rem; }
+.hero h1 { letter-spacing: -.032em; } /* the large size takes tighter tracking */
+/* Home: the build name and the cards' titles speak in the same voice, with the looser tracking of small sizes */
+.result h2, .home .more-card-title, .home .tg-title {
+  font-family: "Wix Madefor Display", Inter, system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -.012em;
+}
+
+/* -- Browser surfaces (2026-11-16) -------------------------------------- */
+::selection { background: color-mix(in srgb, var(--accent) 55%, transparent); color: var(--on-accent); }
+html { scrollbar-color: var(--raised-hover) var(--bg); }
+input, textarea { caret-color: var(--accent-text); }
+
+/* The header's lower edge appears once the page scrolls under it (wide screens; phones have a static header) */
+@supports (animation-timeline: scroll()) {
+  @media (min-width: 721px) and (prefers-reduced-motion: no-preference) {
+    .topbar { animation: topbar-edge linear both; animation-timeline: scroll(root); animation-range: 0 48px; }
+  }
+}
+@keyframes topbar-edge { from { border-bottom-color: transparent; } }
+
+/* SHA-256 copy: the copy icon turns into a check for a moment */
+.hash-ico { display: grid; flex: none; }
+.hash-ico .icon { grid-area: 1 / 1; transition: opacity var(--ease), scale 220ms cubic-bezier(.2, .8, .2, 1); }
+.hash-ico .icon + .icon, .is-copied .hash-ico .icon:first-child { opacity: 0; scale: .5; }
+.is-copied .hash-ico .icon + .icon { opacity: 1; scale: 1; }
