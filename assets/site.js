@@ -1173,17 +1173,31 @@
     const SNOW_TEXT = { en: ['Turn off the snow', 'Let it snow'], ru: ['Выключить снег', 'Включить снег'] };
     let on = false;
 
-    const start = () => {
-      on = true;
-      if (window.somovSnow) return;
+    const load = () => {
       const script = document.createElement('script');
       script.src = root.dataset.snow;
       script.defer = true;
       document.head.append(script);
     };
+    // from: the switch, when the visitor turned the snow on: the snow bursts out of it (snow.js reads where it is)
+    const start = from => {
+      on = true;
+      if (from) {
+        const r = from.getBoundingClientRect();
+        window.somovSnowArrival = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+      }
+      if (window.somovSnow) {
+        // still melting from the last switch-off: the new snow comes as soon as the old one is gone
+        if (window.somovSnow.melting) window.addEventListener('somov-snow-gone', () => { if (on) load(); }, { once: true });
+        return;
+      }
+      load();
+    };
+    // Switched off: the snow thaws (turns to rain, the piles melt) and is gone in under two seconds
     const stop = () => {
       on = false;
-      if (window.somovSnow) window.somovSnow.stop();
+      delete window.somovSnowArrival;
+      if (window.somovSnow) window.somovSnow.melt ? window.somovSnow.melt() : window.somovSnow.stop();
     };
 
     // The switch: a round snowflake button in the header, next to the language switch, where a visitor looks for
@@ -1204,10 +1218,13 @@
         toggle.setAttribute('aria-pressed', String(on));
       };
       toggle.addEventListener('click', () => {
-        if (on) stop(); else start();
+        if (on) stop(); else start(toggle);
         store(localStorage, 'snow', on ? 'on' : 'off');
         store(sessionStorage, 'snowVisit', on ? 'on' : 'off');
-        toggle.classList.remove('is-breath');
+        toggle.classList.remove('is-breath', 'is-snow-on', 'is-snow-off');
+        void toggle.offsetWidth;                  // restart the button's animation on a quick second press
+        toggle.classList.add(on ? 'is-snow-on' : 'is-snow-off');
+        if (navigator.vibrate && matchMedia('(pointer: coarse)').matches) navigator.vibrate(on ? 12 : 8);   // a light tick under the finger
         label();
       });
       langSwitch.before(toggle);

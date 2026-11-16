@@ -1842,6 +1842,37 @@ main, .footer { position: relative; z-index: 1; }
 }
 .snow-switch:hover { color: var(--text); border-color: var(--border-strong, var(--muted)); }
 .snow-switch svg { width: 18px; height: 18px; }
+/* Pressed on: the snowflake turns a quarter with a spring and a frosty ring spreads out of the button (the snow
+   bursts out of it, snow.js). Pressed off: it shrinks a little and the stroke draws across it while the snow thaws. */
+.snow-switch { position: relative; }
+.snow-switch::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  border: 1.5px solid var(--frost);
+  opacity: 0;
+  pointer-events: none;
+}
+.snow-switch.is-snow-on svg { animation: snow-turn 700ms cubic-bezier(.25, 1.6, .45, 1); }
+.snow-switch.is-snow-on::after { animation: snow-ring 650ms cubic-bezier(.2, .8, .2, 1); }
+.snow-switch.is-snow-off svg { animation: snow-shrink 420ms cubic-bezier(.3, .7, .3, 1); }
+.snow-switch.is-snow-off .snow-slash { stroke-dasharray: 26; animation: snow-strike 340ms cubic-bezier(.4, 0, .2, 1) 60ms both; }
+@keyframes snow-turn {
+  0% { transform: rotate(0) scale(1); }
+  35% { transform: rotate(50deg) scale(1.28); color: var(--frost-light); }
+  100% { transform: rotate(90deg) scale(1); }
+}
+@keyframes snow-ring {
+  0% { opacity: .75; transform: scale(1); }
+  100% { opacity: 0; transform: scale(2.1); }
+}
+@keyframes snow-shrink {
+  0% { transform: scale(1); }
+  40% { transform: scale(.78); }
+  100% { transform: scale(1); }
+}
+@keyframes snow-strike { from { stroke-dashoffset: 26; } to { stroke-dashoffset: 0; } }
 .snow-switch .snow-slash { display: none; }
 /* Off: a dimmer snowflake struck through, the stroke cut out of it by a band of the header's colour */
 .snow-switch[aria-pressed="false"] { color: rgb(255 255 255 / .38); }

@@ -44,6 +44,14 @@
   let W = 0, H = 0, dpr = 1, phone = false;
   let flakes = [], bits = [], ground = null, surfaces = [];
   let running = true, last = 0, frame = 0, target = 0;
+  // Animations off in the system: the switch works at once, without the burst and the thaw
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // The visitor has just turned the snow on with the switch (site.js leaves where the button is): a puff of snow
+  // bursts out of the button and the snowfall comes in from the top
+  const arrival = window.somovSnowArrival || null;
+  delete window.somovSnowArrival;
+  // The thaw (api.melt): frames since it began, 0 while the snow is as usual
+  let thaw = 0, thawDone = null;
   const pointer = { x: -1, y: -1, px: -1, active: false };
 
   /* A pile: heights of its columns, and its own small picture redrawn only when they change */
@@ -152,7 +160,7 @@
     // only the first page of the tab: on the next ones the snow is already falling, like the drift already lying
     let dropIn = false;
     if (first) {
-      try { dropIn = !sessionStorage.getItem('snowFell'); sessionStorage.setItem('snowFell', '1'); } catch (e) {}
+      try { dropIn = !!arrival || !sessionStorage.getItem('snowFell'); sessionStorage.setItem('snowFell', '1'); } catch (e) {}
     }
     while (flakes.length < target) {
       const f = flake(true);
@@ -162,7 +170,105 @@
       flakes.push(f);
     }
     flakes.length = target;
+    if (first && arrival && !still) burst(arrival.x, arrival.y);
     findSurfaces();
+  }
+
+  // The switch turned the snow on: a puff of flakes flies out of the button in every direction, a little upwards on
+  // the whole, slows down in the air (the usual calming of a pushed flake) and joins the snowfall. In front of the
+  // header while it flies, then behind the content like every flake.
+  function burst(x, y) {
+    const n = Math.min(phone ? 40 : 70, flakes.length);
+    for (let k = 0; k < n; k++) {
+      // most fly out fast and far, a few just tumble out of the button; downwards more than up (the button is at the top)
+      const f = flakes[k], a = Math.random() * Math.PI * 2, speed = (k % 5 ? 4 : 1.5) + Math.random() * (k % 5 ? 7 : 2);
+      f.x = x + (Math.random() - 0.5) * 8;
+      f.y = y + (Math.random() - 0.5) * 8;
+      f.intro = 0;
+      f.vx = Math.cos(a) * speed * 1.15;
+      f.gy = Math.abs(Math.sin(a)) * speed * 0.8 * (Math.random() < 0.3 ? -0.4 : 1);
+      f.z = 0.6 + Math.random() * 0.4;            // near flakes: the burst is big and bright
+      f.r = (0.35 + f.z * f.z * 0.95) * 1.35;
+      f.alpha = 0.7 + f.z * 0.3;
+      f.px = 0;
+      f.front = 60 + Math.random() * 50;          // frames drawn in front of everything
+    }
+  }
+
+  /* The thaw: the snow in the air turns to rain (stops swaying, speeds up, stretches into thin streaks, fades), the
+     piles melt unevenly, turning grey and see-through like wet snow, and drops run off the cards' edges. ~1.7 s. */
+  const THAW = 100;                               // frames
+  function stepThaw(dt) {
+    thaw += dt;
+    frame++;
+    if (frame % 30 === 0) measure();
+    for (let n = flakes.length - 1; n >= 0; n--) {
+      const f = flakes[n];
+      if (f.wait > 0) { f.wait -= dt; f.y += f.vy * dt; continue; }   // not every flake turns at the same moment
+      f.m = Math.min(1, (f.m || 0) + dt / (34 + f.z * 14));
+      f.fall = (f.fall || f.vy) + 0.32 * dt;     // a drop has weight
+      f.vx *= Math.pow(0.9, dt);
+      f.x += f.vx * dt;
+      f.y += f.fall * dt;
+      if (f.m >= 1 || f.y > H + 30) flakes.splice(n, 1);
+    }
+    const wet = Math.min(1, thaw / 26);
+    for (const p of [ground, ...surfaces.map(s => s.pile)]) {
+      const cols = p.cols, seed = p.seed || (p.seed = Math.random() * 10);
+      // a whole pile melts in about 1.4 s; thin places first, a few lumps hold out a little longer
+      const rate = p.max / 62;
+      for (let i = 0; i < cols.length; i++) {
+        if (cols[i] <= 0) continue;
+        const uneven = 0.55 + 0.9 * (0.5 + 0.5 * Math.sin(i * 0.31 + seed) * Math.sin(i * 0.083 + seed * 1.7));
+        cols[i] = Math.max(0, cols[i] - rate * uneven * dt);
+      }
+      p.wet = wet;
+      p.dirty = true;
+    }
+    // drops run off the melting layer on the cards: a few at a time, from where there is still snow
+    for (let tries = 0; tries < 3 && thaw < THAW * 0.8 && bits.length < (phone ? 40 : 70); tries++) {
+      const s = surfaces[Math.floor(Math.random() * surfaces.length)];
+      const r = s && s.rect;
+      if (r && r.bottom > 0 && r.top < H) {
+        const i = Math.floor(Math.random() * s.pile.cols.length);
+        if (s.pile.cols[i] > 1) {
+          bits.push({ drip: true, x: r.left + s.inset + i * COL + COL / 2, y: r.top - s.pile.cols[i] * 0.4,
+            vy: 0.1 + Math.random() * 0.3, life: 1, len: 2 + Math.random() * 2 });
+        }
+      }
+    }
+    for (let n = bits.length - 1; n >= 0; n--) {
+      const b = bits[n];
+      if (b.drip) {
+        b.vy += 0.16 * dt;
+        b.y += b.vy * dt;
+        b.life -= dt / 34;
+        if (b.life <= 0) bits.splice(n, 1);
+      } else {
+        b.life = Math.min(b.life === undefined ? 1 : b.life, 1) - dt / 20;   // thrown snow melts in the air
+        b.y += (b.vy = (b.vy || 0) + 0.2 * dt) * dt;
+        if (b.life <= 0 || b.y > H + 20) bits.splice(n, 1);
+      }
+    }
+    const melted = ![ground, ...surfaces.map(s => s.pile)].some(p => p.cols.some(h => h > 0.05));
+    if (thaw > THAW && melted && !flakes.length && !bits.length) finish();
+  }
+
+  // Everything gone: the layers leave the page, the remembered piles are forgotten (the next snow starts afresh)
+  function finish() {
+    running = false;
+    clearInterval(saver);
+    for (const o of observers) o.disconnect();
+    canvas.remove();
+    backCanvas.remove();
+    cardLayer.remove();
+    if (ground) ground.cache.remove();
+    try { sessionStorage.removeItem('snowPiles'); } catch (e) {}
+    delete window.somovSnow;
+    const done = thawDone;
+    thawDone = null;
+    window.dispatchEvent(new Event('somov-snow-gone'));
+    if (done) done();
   }
 
   function flake(anywhere) {
@@ -243,6 +349,7 @@
     p.dirty = true;
   }
   function save() {
+    if (!running || thaw) return;                 // melting or gone: nothing to take along
     try {
       saved.ground = pack(ground);
       for (const s of surfaces) saved.cards[s.key] = pack(s.pile);
@@ -434,6 +541,7 @@
         const calm = Math.pow(0.94, dt);
         f.vx *= calm;
         f.gy *= calm;
+        if (f.front) f.front = Math.max(0, f.front - dt);
         f.flutter += f.flutterSpeed * dt;
         const swing = Math.sin(f.flutter);
         f.x += (swing * f.flutterWide + f.vx) * dt;   // a dead calm: no wind, only the flake's own swing
@@ -501,7 +609,9 @@
     const h = i => (p.taper ? cols[i] * Math.min(1, (i + 1) / 6, (n - i) / 6) : cols[i]);
     c.setTransform(dpr, 0, 0, dpr, 0, 0);
     c.clearRect(0, 0, n * COL + COL, base);
-    c.fillStyle = '#eef3fa';
+    // melting snow turns wet: greyer, bluer and see-through
+    const w = p.wet || 0;
+    c.fillStyle = w ? `rgba(${Math.round(238 - 52 * w)}, ${Math.round(243 - 34 * w)}, ${Math.round(250 - 12 * w)}, ${1 - 0.5 * w})` : '#eef3fa';
     c.beginPath();
     c.moveTo(0, base);
     c.lineTo(0, base - h(0));
@@ -513,7 +623,7 @@
   }
 
   function stamp(p, left, baseY) {
-    if (p.dirty && frame - p.painted >= 6) { paint(p); p.painted = frame; }   // at most 10 times a second
+    if (p.dirty && frame - p.painted >= (thaw ? 1 : 6)) { paint(p); p.painted = frame; }   // at most 10 times a second (every frame while it melts)
     const w = p.cache.width / dpr, h = p.cache.height / dpr;
     ctx.drawImage(p.cache, left, baseY - h, w, h);
   }
@@ -544,16 +654,44 @@
     back.clearRect(0, 0, W, H);
     ctx.clearRect(0, 0, W, H);
     for (const f of flakes) {                     // falling snow behind the content
-      back.globalAlpha = f.z > 0.55 ? f.alpha * (0.86 + 0.14 * Math.cos(f.flutter)) : f.alpha;   // the near ones softly breathe
+      const g = f.front ? ctx : back;              // the burst from the switch flies in front of the header
+      if (f.m) {                                   // the thaw: a flake turned into a drop of rain, a thin pale streak
+        const len = 2 + f.m * 16 * (0.5 + f.z);
+        g.globalAlpha = f.alpha * (1 - f.m) * 0.9;
+        g.strokeStyle = '#c8dcf5';
+        g.lineWidth = Math.max(0.7, f.r * 1.1);
+        g.beginPath();
+        g.moveTo(f.x, f.y - len);
+        g.lineTo(f.x, f.y);
+        g.stroke();
+        continue;
+      }
+      g.globalAlpha = f.z > 0.55 ? f.alpha * (0.86 + 0.14 * Math.cos(f.flutter)) : f.alpha;   // the near ones softly breathe
       const px = f.px || (f.px = Math.max(2, Math.round(f.r * 4 * dpr)));   // a soft glowing dot, not a hard disc
       const d = px / dpr;
-      back.drawImage(sprite(px), Math.round((f.x - d / 2) * dpr) / dpr, Math.round((f.y - d / 2) * dpr) / dpr, d, d);
+      g.drawImage(sprite(px), Math.round((f.x - d / 2) * dpr) / dpr, Math.round((f.y - d / 2) * dpr) / dpr, d, d);
     }
     back.globalAlpha = 1;
+    ctx.globalAlpha = 1;
+    // the thaw: drops running off the cards, a round head with a short tail
+    if (thaw) {
+      ctx.fillStyle = '#c8dcf5';
+      for (const b of bits) {
+        if (!b.drip) continue;
+        ctx.globalAlpha = 0.85 * b.life;
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, 1.3, 0, Math.PI * 2);
+        ctx.moveTo(b.x - 0.7, b.y);
+        ctx.lineTo(b.x, b.y - b.len - b.vy * 2);
+        ctx.lineTo(b.x + 0.7, b.y);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
     // what the pointer threw, in front: powder as soft specks, clumps as solid bits of the same snow as the piles
     if (bits.length) {
       for (const b of bits) {
-        if (b.clump) continue;
+        if (b.clump || b.drip) continue;
         ctx.globalAlpha = 0.45 * b.life * b.life;
         const px = b.px || (b.px = Math.max(2, Math.round(b.r * 4 * dpr)));
         const d = px / dpr;
@@ -564,6 +702,7 @@
       ctx.beginPath();
       for (const b of bits) {
         if (!b.clump) continue;
+        if (thaw) ctx.globalAlpha = 0.95 * Math.max(0, b.life);   // thrown snow melting in the air
         ctx.moveTo(b.x + b.r, b.y);
         ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
         ctx.moveTo(b.x + b.ox + b.r * b.or, b.y + b.oy);
@@ -574,7 +713,7 @@
     }
     // the drift and the cards' pictures live in the page: only repaint the ones whose snow changed (10 times a second)
     for (const p of [ground, ...surfaces.filter(s => !s.sticky).map(s => s.pile)]) {
-      if (p.dirty && frame - p.painted >= 6) { paint(p); p.painted = frame; }
+      if (p.dirty && frame - p.painted >= (thaw ? 1 : 6)) { paint(p); p.painted = frame; }
     }
     ctx.globalAlpha = 0.92;
     for (const s of surfaces) {
@@ -588,13 +727,17 @@
     if (!running) return;
     const dt = last ? Math.min(3, (t - last) / 16.67) : 1;   // in 60 fps frames, whatever the screen does
     last = t;
-    if (!document.hidden) { step(dt); draw(); }
+    if (!document.hidden || thaw) {
+      if (thaw) stepThaw(dt); else step(dt);
+      if (!running) return;                       // the thaw has just finished
+      draw();
+    }
     requestAnimationFrame(loop);
   }
 
-  window.addEventListener('resize', () => { clearTimeout(resize.t); resize.t = setTimeout(resize, 150); });
+  window.addEventListener('resize', () => { clearTimeout(resize.t); resize.t = setTimeout(() => { if (running) resize(); }, 150); });
   window.addEventListener('pagehide', save);      // leaving the page: take the snow along
-  setInterval(save, 5000);
+  const saver = setInterval(save, 5000);
   window.addEventListener('scroll', measure, { passive: true });
   window.addEventListener('pointermove', e => {
     if (!pointer.active) pointer.px = e.clientX;
@@ -614,10 +757,11 @@
   window.addEventListener('touchend', e => { if (!e.touches.length) pointer.active = false; }, { passive: true });
   window.addEventListener('touchcancel', () => { pointer.active = false; }, { passive: true });
   document.addEventListener('visibilitychange', () => { last = 0; });
-  const refind = () => { clearTimeout(findSurfaces.t); findSurfaces.t = setTimeout(findSurfaces, 300); };
-  new MutationObserver(refind).observe(document.body, { childList: true, subtree: true });
+  const refind = () => { clearTimeout(findSurfaces.t); findSurfaces.t = setTimeout(() => { if (running && !thaw) findSurfaces(); }, 300); };
+  const observers = [new MutationObserver(refind), new MutationObserver(refind)];
+  observers[0].observe(document.body, { childList: true, subtree: true });
   // the language switched: the footer's words are others (and of another width)
-  new MutationObserver(refind).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+  observers[1].observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
   // the letters' height and the spaces' places are known for sure once the font is in
   if (document.fonts) document.fonts.ready.then(() => { for (const s of surfaces) if (s.word) cutGaps(s); measure(); });
 
@@ -627,13 +771,15 @@
   const api = window.somovSnow = {
     ready: false,
     heights: () => Array.from(ground.cols),       // the drift's columns, for checks from the browser console
-    stop() {
-      running = false;
-      canvas.remove();
-      backCanvas.remove();
-      cardLayer.remove();
-      ground.cache.remove();
-      delete window.somovSnow;
+    get melting() { return thaw > 0; },
+    // The switch turned the snow off: it thaws (see stepThaw), then everything leaves the page; done() after that
+    melt(done) {
+      if (thaw) return;
+      thawDone = done || null;
+      if (still) { finish(); return; }
+      thaw = 0.001;
+      for (const f of flakes) { f.wait = Math.random() * 16; f.front = 0; }
     },
+    stop() { finish(); },
   };
 })();
