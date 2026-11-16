@@ -170,28 +170,22 @@
       flakes.push(f);
     }
     flakes.length = target;
-    if (first && arrival && !still) burst(arrival.x, arrival.y);
+    if (first && arrival && !still) wave(arrival.x);
     findSurfaces();
   }
 
-  // The switch turned the snow on: a puff of flakes flies out of the button in every direction, a little upwards on
-  // the whole, slows down in the air (the usual calming of a pushed flake) and joins the snowfall. In front of the
-  // header while it flies, then behind the content like every flake.
-  function burst(x, y) {
-    const n = Math.min(phone ? 40 : 70, flakes.length);
-    for (let k = 0; k < n; k++) {
-      // most fly out fast and far, a few just tumble out of the button; downwards more than up (the button is at the top)
-      const f = flakes[k], a = Math.random() * Math.PI * 2, speed = (k % 5 ? 4 : 1.5) + Math.random() * (k % 5 ? 7 : 2);
-      f.x = x + (Math.random() - 0.5) * 8;
-      f.y = y + (Math.random() - 0.5) * 8;
-      f.intro = 0;
-      f.vx = Math.cos(a) * speed * 1.15;
-      f.gy = Math.abs(Math.sin(a)) * speed * 0.8 * (Math.random() < 0.3 ? -0.4 : 1);
-      f.z = 0.6 + Math.random() * 0.4;            // near flakes: the burst is big and bright
-      f.r = (0.35 + f.z * f.z * 0.95) * 1.35;
-      f.alpha = 0.7 + f.z * 0.3;
-      f.px = 0;
-      f.front = 60 + Math.random() * 50;          // frames drawn in front of everything
+  // The switch turned the snow on: the snowfall begins at the top of the screen right above the button and spreads
+  // from there across the whole width in about a second, a wave. Each flake waits (hold) by its distance from the
+  // button, then drops in from the top like on the tab's first page. Nothing flies around the button itself.
+  function wave(x) {
+    const far = Math.max(x, W - x) || 1;
+    for (const f of flakes) {
+      f.hold = (Math.abs(f.x - x) / far) * 60 + Math.random() * 8;   // frames
+      // from just above the top edge down to its place (the quick drop-in, see intro), never popping up mid-screen
+      const start = -12 - Math.random() * 40;
+      f.intro = f.y - start;
+      f.y = start;
+      f.rush = true;
     }
   }
 
@@ -526,6 +520,7 @@
     const reach = phone ? 80 : 110, reach2 = reach * reach;
     for (let n = flakes.length - 1; n >= 0; n--) {
       const f = flakes[n];
+      if (f.hold > 0) { f.hold -= dt; continue; }  // the wave from the switch has not reached it yet
       const oldY = f.y;
       {
         // the puff: along the pointer's way and a little away from it, stronger close by, then it calms down
@@ -541,14 +536,14 @@
         const calm = Math.pow(0.94, dt);
         f.vx *= calm;
         f.gy *= calm;
-        if (f.front) f.front = Math.max(0, f.front - dt);
         f.flutter += f.flutterSpeed * dt;
         const swing = Math.sin(f.flutter);
         f.x += (swing * f.flutterWide + f.vx) * dt;   // a dead calm: no wind, only the flake's own swing
         // lingering a little at the ends of the swing, gliding through the middle (the same pace on the whole)
         f.y += (f.vy * (0.75 + 0.5 * swing * swing) + f.gy) * dt;
         if (f.intro) {
-          const d = Math.min(f.intro, Math.min(2 + f.z, Math.max(0.3, f.intro * 0.012)) * dt);   // never faster than a soft flurry
+          // never faster than a soft flurry; the wave from the switch comes quicker (rush), slowing down near its place
+          const d = Math.min(f.intro, (f.rush ? Math.min(8, Math.max(0.3, f.intro * 0.03)) : Math.min(2 + f.z, Math.max(0.3, f.intro * 0.012))) * dt);
           f.y += d;
           f.intro = f.intro - d < 0.5 ? 0 : f.intro - d;
         }
@@ -654,7 +649,8 @@
     back.clearRect(0, 0, W, H);
     ctx.clearRect(0, 0, W, H);
     for (const f of flakes) {                     // falling snow behind the content
-      const g = f.front ? ctx : back;              // the burst from the switch flies in front of the header
+      if (f.hold > 0) continue;                    // not come in yet (the wave from the switch)
+      const g = back;
       if (f.m) {                                   // the thaw: a flake turned into a drop of rain, a thin pale streak
         const len = 2 + f.m * 16 * (0.5 + f.z);
         g.globalAlpha = f.alpha * (1 - f.m) * 0.9;
@@ -778,7 +774,7 @@
       thawDone = done || null;
       if (still) { finish(); return; }
       thaw = 0.001;
-      for (const f of flakes) { f.wait = Math.random() * 16; f.front = 0; }
+      for (const f of flakes) { f.wait = Math.random() * 16; f.hold = 0; }
     },
     stop() { finish(); },
   };
