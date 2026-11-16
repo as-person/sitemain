@@ -782,7 +782,7 @@ html:not([data-image]) .img-ru { display: none !important; }
 
 .dl-bar {
   position: fixed;
-  z-index: 15;
+  z-index: 46;   /* over the snow drift at the bottom of the screen (45): the drift must not cover the button's glow */
   inset: auto 0 0;
   display: none;
   padding: 10px var(--gutter) calc(10px + env(safe-area-inset-bottom));
@@ -1822,7 +1822,9 @@ html:not([data-image]) .img-ru { display: none !important; }
    the header is sticky with its own z-index, the fixed bars and the chat stay above as before) */
 .snow-back { z-index: 0; }
 /* The snow on the cards: pictures placed in the page, so they scroll with the cards (above them, under the header) */
-.snow-cards { position: absolute; z-index: 2; top: 0; left: 0; width: 0; height: 0; pointer-events: none; }
+/* The same level as main and before it in the page (snow.js puts it first in body): the snow shows over the cards'
+   edges, where main is see-through, but every menu or popup opened in main (Share, a dropdown) covers it */
+.snow-cards { position: absolute; z-index: 1; top: 0; left: 0; width: 0; height: 0; pointer-events: none; }
 .snow-cards canvas { position: absolute; top: 0; left: 0; opacity: .92; }
 /* The drift at the bottom of the screen: held there by the browser, whatever the phone's address bar does */
 .snow-ground { position: fixed; z-index: 45; left: 0; bottom: 0; opacity: .92; pointer-events: none; }

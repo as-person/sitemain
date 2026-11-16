@@ -32,7 +32,8 @@
   const cardLayer = document.createElement('div');
   cardLayer.className = 'snow-cards';
   cardLayer.setAttribute('aria-hidden', 'true');
-  document.body.append(cardLayer);
+  // first in the page, on main's level (CSS): menus and popups opened in main are drawn over the snow, not under it
+  document.body.prepend(cardLayer);
   const back = backCanvas.getContext('2d'), ctx = canvas.getContext('2d');
 
   const COL = 3;                                  // width of one column of a snow pile, px
