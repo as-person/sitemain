@@ -1131,6 +1131,11 @@ html:not([data-image]) .img-ru { display: none !important; }
   /* Phones: one column in source order; the chat link is last, right under the support line, the same quiet size,
      so the two lines read as one note (the finger gets a taller invisible area instead of a tall row) */
   .result { grid-template-rows: none; }
+  /* Phones: no SHA-256 on the home page. Phones mostly choose and pass the link on; the ISO (84% of downloaders)
+     and its check are on a computer, where the hash stays. The build page (the fan says "checksums") has them all. */
+  .dl-actions #build-sha256 { display: none; }
+  /* With the hash gone, the support line and the chat link stand apart from the buttons as the card's quiet footer */
+  .dl-actions > .card-note { margin-top: 12px; }
   .result > :first-child, .result > .dl-actions, .result-chat { grid-column: auto; grid-row: auto; }
   .result-chat { justify-self: center; margin-top: -14px; }
   .result-chat .details-link { position: relative; min-height: 0; margin-top: 0; font-size: var(--fs-xs); }
