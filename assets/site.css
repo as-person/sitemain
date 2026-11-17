@@ -426,7 +426,8 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
   transition: color var(--ease);
 }
 .segmented label:hover > span { color: var(--text); }
-.segmented input:checked + span { color: var(--text); }
+.segmented label > span { font-weight: 500; } /* the chosen option alone is bold: the choice reads at a glance */
+.segmented input:checked + span { color: var(--text); font-weight: 600; }
 .segmented input:focus-visible + span { outline: 2px solid var(--accent-text); outline-offset: 2px; }
 @supports not selector(:has(*)) {
   .segmented::before { display: none; }
@@ -1388,6 +1389,30 @@ html:not([data-image]) .img-ru { display: none !important; }
 .archive-link .icon { width: 14px; height: 14px; transition: transform var(--ease); }
 .archive-link:hover .icon { transform: translateX(2px); }
 .meta-archive { white-space: nowrap; }
+/* Home card: the last line, a build no longer updated (Windows 10) for those who still want it */
+.composer-alt {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--border);
+}
+.composer-alt:hover .composer-alt-title { color: var(--text); }
+.composer-alt-title { display: block; font-weight: 600; }
+.composer-alt-sub { display: block; margin-top: 2px; color: var(--muted); font-size: var(--fs-sm); }
+.composer-alt-go { display: flex; align-items: center; gap: 4px; flex: none; color: var(--muted); font-size: var(--fs-sm); font-weight: 600; transition: color var(--ease); }
+.composer-alt-go .icon { width: 14px; height: 14px; transition: transform var(--ease); }
+.composer-alt:hover .composer-alt-go { color: var(--text); }
+.composer-alt:hover .composer-alt-go .icon { transform: translateX(2px); }
+.composer-alt:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 4px; border-radius: var(--r-sm); }
+@media (max-width: 720px) { .composer-alt { margin-top: 16px; } }
+/* One build on the home page: no picker row on top; the image language sits in the download column, above the button */
+.result.result-solo { margin-top: 0; padding-top: 0; border-top: 0; }
+.dl-actions > .lang-field { margin-bottom: 6px; }
+.hero p { text-wrap: balance; } /* no single word left alone on a phone's second line */
+/* Home card: what was changed in the build, under its name */
+.result-trust { display: flex; align-items: flex-start; gap: 6px; margin-top: 10px; color: var(--muted); font-size: var(--fs-sm); line-height: 1.45; }
+.result-trust .icon { flex: none; width: 16px; height: 16px; margin-top: 2px; color: var(--accent-text); }
+.dl-actions > .lang-field .field-label { margin-bottom: 8px; }
+/* Build page of a build no longer updated: a calm note above the description */
+.retired-note { margin: 16px 0 0; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; color: var(--muted); font-size: var(--fs-sm); line-height: 1.5; }
 /* Phones: the footer as a neat two-column grid. With three sections the third (Contact) takes the full width,
    since its two links do not fit half of it; the copyright is the last line, on the left. */
 @media (max-width: 720px) {

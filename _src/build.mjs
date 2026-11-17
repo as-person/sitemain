@@ -330,11 +330,15 @@ const imageFor = (build, imageLang) => {
 };
 
 function homePage() {
-  const build = builds[0];
+  // Builds no longer updated ("retired": true in builds.json) leave the picker; their pages and files stay,
+  // and the home page links to them quietly at the bottom
+  const homeBuilds = builds.filter(b => !b.retired);
+  const retiredBuilds = builds.filter(b => b.retired);
+  const build = homeBuilds[0];
   // The page's own language: without scripts (or before they run) /ru/ leads to the Russian build and ISO
   const image = imageFor(build, PAGE_LANG);
 
-  const data = Object.fromEntries(builds.map(b => [b.id, {
+  const data = Object.fromEntries(homeBuilds.map(b => [b.id, {
     title: b.title,
     version: b.version,
     number: b.number,
@@ -355,32 +359,37 @@ function homePage() {
 
   const radio = (name, value, label, checked) =>
     `<label><input type="radio" name="${name}" value="${value}"${checked ? ' checked' : ''}><span>${label}</span></label>`;
-
-  const body = `<main class="home" id="content">
-    <div class="container container-narrow">
-      <div class="hero">
-        <h1>${L('Which Windows do you want to install?', 'Какую Windows вы хотите установить?')}</h1>
-        <p>${L('IoT Enterprise LTSC builds by somov', 'Сборки IoT Enterprise LTSC от somov')}</p>
-      </div>
-
-      <section class="composer" aria-labelledby="build-title">
-        <div class="selectors">
-          <fieldset>
-            <legend class="field-label">${L('Version', 'Версия')}</legend>
-            <div class="segmented">
-              ${builds.map((b, i) => radio('os', b.id, `Windows ${b.id}`, i === 0)).join('\n              ')}
-            </div>
-          </fieldset>
-          <fieldset>
+  // With one build there is nothing to pick but the image language: the switch moves into the download column,
+  // right above the button it changes, and the card loses its top row
+  const solo = homeBuilds.length === 1;
+  const langField = `<fieldset class="lang-field">
             <legend class="field-label">${L('Image language', 'Язык образа')}</legend>
             <div class="segmented">
               ${radio('image-lang', 'en', S.english, PAGE_LANG === 'en')}
               ${radio('image-lang', 'ru', S.russian, PAGE_LANG === 'ru')}
             </div>
-          </fieldset>
-        </div>
+          </fieldset>`;
 
-        <div class="result">
+  const body = `<main class="home" id="content">
+    <div class="container container-narrow">
+      <div class="hero">
+        <!-- With one build on the page a statement, not a question: there is nothing left to choose between -->
+        <h1>${solo ? L(`Windows ${build.id} LTSC, nothing extra`, `Windows ${build.id} LTSC без лишнего`) : L('Which Windows do you want to install?', 'Какую Windows вы хотите установить?')}</h1>
+        <p>${solo ? L('Free builds by somov, in English and Russian', 'Бесплатные сборки от somov, на русском и английском') : L('IoT Enterprise LTSC builds by somov', 'Сборки IoT Enterprise LTSC от somov')}</p>
+      </div>
+
+      <section class="composer" aria-labelledby="build-title">
+        ${solo ? '' : `<div class="selectors">
+          <fieldset>
+            <legend class="field-label">${L('Version', 'Версия')}</legend>
+            <div class="segmented">
+              ${homeBuilds.map((b, i) => radio('os', b.id, `Windows ${b.id}`, i === 0)).join('\n              ')}
+            </div>
+          </fieldset>
+          ${langField}
+        </div>`}
+
+        <div class="result${solo ? ' result-solo' : ''}">
           <div>
             <h2><a id="build-title" href="${image.path}" tabindex="-1">${esc(build.title)}</a></h2>
             <div class="meta">
@@ -392,6 +401,8 @@ function homePage() {
               <span><span class="lang-en" id="build-date-en">${build.date.en}</span><span class="lang-ru" id="build-date-ru">${build.date.ru}</span></span>
               <span class="badge" id="build-final" hidden>${S.final}</span>
             </div>
+            ${solo && build.changes[0] ? `<!-- What was changed in the build, right by its name: a stranger from an ad sees it before the Download button -->
+            <p class="result-trust">${icon('check')}<span>${T(build.changes[0])}</span></p>` : ''}
             <!-- The way into the build page: three real screenshots fanned out (desktop shots only: the light windows would
                  outshine the Download button), a hover spreads them. site.js swaps them with the chosen build. -->
             <a class="shot-fan" id="details-link" href="${image.path}">
@@ -403,6 +414,7 @@ function homePage() {
             </a>
           </div>
           <div class="dl-actions">
+            ${solo ? langField : ''}
             <a class="btn btn-primary btn-block" id="download-link" href="${image.url}">
               ${icon('download')} <span>${LANGS.map(l => `<span data-dl-label="${l}"${l === PAGE_LANG ? '' : ' hidden'}>${S.downloadIsoIn[l]}</span>`).join('')} · <span class="lang-en" id="download-size-en">${formatSize(image.size, 'en')}</span><span class="lang-ru" id="download-size-ru">${formatSize(image.size, 'ru')}</span></span>
             </a>
@@ -422,11 +434,21 @@ function homePage() {
             ${chatStats('home')}
           </div>
         </div>
+        ${retiredBuilds.map(b => `<!-- A build no longer updated but still taken: inside the card, where people used to pick it,
+             one line below the main download, so Windows 11 stays the obvious choice -->
+        <a class="composer-alt" href="/windows-${b.id}">
+          <span class="composer-alt-text">
+            <span class="composer-alt-title">${L(`Need Windows ${b.id}?`, `Нужна Windows ${b.id}?`)}</span>
+            <span class="composer-alt-sub">${L(`IoT LTSC ${b.version} · no longer updated, final build ${b.date.en}`, `IoT LTSC ${b.version} · больше не обновляется, финальная сборка — ${b.date.ru.toLowerCase()}`)}</span>
+          </span>
+          <span class="composer-alt-go">${L('Download', 'Скачать')} ${icon('d')}</span>
+        </a>`).join('\n        ')}
       </section>
 
       <noscript>
+        ${solo ? '<style>.lang-field { display: none; }</style>' : ''}<!-- without scripts the switch cannot change the button: the links below do the job -->
         <p class="noscript-links">
-          ${builds.flatMap(b => LANGS.map(l => `<a class="link" href="/windows-${b.id}-${l}">Windows ${b.id} (${l === 'ru' ? 'Russian' : 'English'})</a>`)).join(' · ')}
+          ${homeBuilds.flatMap(b => LANGS.map(l => `<a class="link" href="/windows-${b.id}-${l}">Windows ${b.id} (${l === 'ru' ? 'Russian' : 'English'})</a>`)).join(' · ')}
         </p>
       </noscript>
 
@@ -536,6 +558,9 @@ function buildPage(build, preset) {
           ${archiveOn() && archivedReleases(build.id).length ? `<a class="link meta-archive" href="${archiveHref()}">${L('Previous versions', 'Предыдущие версии')}</a>` : ''}
         </div>
         ${shareRow()}
+        ${build.retired ? `<p class="retired-note">${L(
+          `This build is no longer updated: the last version is from ${build.date.en}. For a new PC take <a class="link" href="/windows-11">Windows 11 LTSC</a>; an up-to-date Windows 10 is on the <a class="link" href="/ghost-spectre">Ghost Spectre</a> page.`,
+          `Сборка больше не обновляется: последняя версия — ${build.date.ru.toLowerCase()}. Для нового ПК берите <a class="link" href="/windows-11">Windows 11 LTSC</a>, свежая Windows 10 есть на странице <a class="link" href="/ghost-spectre">Ghost Spectre</a>.`)}</p>` : ''}
         <p class="lead">${T(build.lead)}</p>
       </div>
 

@@ -50,7 +50,7 @@ k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNo
 Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({owner:false})},2500)})]).then(function(d){if(d&&d.owner)return;
 ym(114172668,'init',{ssr:true,clickmap:true,referrer:document.referrer,url:location.href,accurateTrackBounce:true,trackLinks:true});});})();
 </script>
-  <link rel="stylesheet" href="/assets/site.css?v=6bc43fbe">
+  <link rel="stylesheet" href="/assets/site.css?v=1ecd7170">
 </head>
 <body>
   <noscript><div><img src="https://mc.yandex.ru/watch/114172668" style="position:absolute; left:-9999px;" alt=""></div></noscript>
@@ -83,29 +83,15 @@ ym(114172668,'init',{ssr:true,clickmap:true,referrer:document.referrer,url:locat
   <main class="home" id="content">
     <div class="container container-narrow">
       <div class="hero">
-        <h1><span class="lang-en">Which Windows do you want to install?</span><span class="lang-ru">Какую Windows вы хотите установить?</span></h1>
-        <p><span class="lang-en">IoT Enterprise LTSC builds by somov</span><span class="lang-ru">Сборки IoT Enterprise LTSC от somov</span></p>
+        <!-- With one build on the page a statement, not a question: there is nothing left to choose between -->
+        <h1><span class="lang-en">Windows 11 LTSC, nothing extra</span><span class="lang-ru">Windows 11 LTSC без лишнего</span></h1>
+        <p><span class="lang-en">Free builds by somov, in English and Russian</span><span class="lang-ru">Бесплатные сборки от somov, на русском и английском</span></p>
       </div>
 
       <section class="composer" aria-labelledby="build-title">
-        <div class="selectors">
-          <fieldset>
-            <legend class="field-label"><span class="lang-en">Version</span><span class="lang-ru">Версия</span></legend>
-            <div class="segmented">
-              <label><input type="radio" name="os" value="11" checked><span>Windows 11</span></label>
-              <label><input type="radio" name="os" value="10"><span>Windows 10</span></label>
-            </div>
-          </fieldset>
-          <fieldset>
-            <legend class="field-label"><span class="lang-en">Image language</span><span class="lang-ru">Язык образа</span></legend>
-            <div class="segmented">
-              <label><input type="radio" name="image-lang" value="en"><span><span class="lang-en">English</span><span class="lang-ru">Английский</span></span></label>
-              <label><input type="radio" name="image-lang" value="ru" checked><span><span class="lang-en">Russian</span><span class="lang-ru">Русский</span></span></label>
-            </div>
-          </fieldset>
-        </div>
+        
 
-        <div class="result">
+        <div class="result result-solo">
           <div>
             <h2><a id="build-title" href="/windows-11-ru" tabindex="-1">Windows 11 IoT Enterprise LTSC</a></h2>
             <div class="meta">
@@ -117,6 +103,8 @@ ym(114172668,'init',{ssr:true,clickmap:true,referrer:document.referrer,url:locat
               <span><span class="lang-en" id="build-date-en">November 2026</span><span class="lang-ru" id="build-date-ru">Ноябрь 2026</span></span>
               <span class="badge" id="build-final" hidden><span class="lang-en">End of Servicing</span><span class="lang-ru">Окончание срока поддержки</span></span>
             </div>
+            <!-- What was changed in the build, right by its name: a stranger from an ad sees it before the Download button -->
+            <p class="result-trust"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg><span><span class="lang-en">TPM, Secure Boot and OOBE checks are disabled.</span><span class="lang-ru">Проверки TPM, Secure Boot и OOBE отключены.</span></span></p>
             <!-- The way into the build page: three real screenshots fanned out (desktop shots only: the light windows would
                  outshine the Download button), a hover spreads them. site.js swaps them with the chosen build. -->
             <a class="shot-fan" id="details-link" href="/windows-11-ru">
@@ -128,6 +116,13 @@ ym(114172668,'init',{ssr:true,clickmap:true,referrer:document.referrer,url:locat
             </a>
           </div>
           <div class="dl-actions">
+            <fieldset class="lang-field">
+            <legend class="field-label"><span class="lang-en">Image language</span><span class="lang-ru">Язык образа</span></legend>
+            <div class="segmented">
+              <label><input type="radio" name="image-lang" value="en"><span><span class="lang-en">English</span><span class="lang-ru">Английский</span></span></label>
+              <label><input type="radio" name="image-lang" value="ru" checked><span><span class="lang-en">Russian</span><span class="lang-ru">Русский</span></span></label>
+            </div>
+          </fieldset>
             <a class="btn btn-primary btn-block" id="download-link" href="https://dl3.somov.org/ru-ru_windows_11_iot_enterprise_ltsc_2024_x64_26100.9974_by_somov.iso">
               <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg> <span><span data-dl-label="en" hidden><span class="lang-en">Download English ISO</span><span class="lang-ru">Скачать английский ISO</span></span><span data-dl-label="ru"><span class="lang-en">Download Russian ISO</span><span class="lang-ru">Скачать русский ISO</span></span> · <span class="lang-en" id="download-size-en">5.4 GB</span><span class="lang-ru" id="download-size-ru">5,4 ГБ</span></span>
             </a>
@@ -147,11 +142,21 @@ ym(114172668,'init',{ssr:true,clickmap:true,referrer:document.referrer,url:locat
             <div class="stats-line chat-stats" data-chat-stats="home" hidden></div>
           </div>
         </div>
+        <!-- A build no longer updated but still taken: inside the card, where people used to pick it,
+             one line below the main download, so Windows 11 stays the obvious choice -->
+        <a class="composer-alt" href="/windows-10">
+          <span class="composer-alt-text">
+            <span class="composer-alt-title"><span class="lang-en">Need Windows 10?</span><span class="lang-ru">Нужна Windows 10?</span></span>
+            <span class="composer-alt-sub"><span class="lang-en">IoT LTSC 21H2 · no longer updated, final build October 2025</span><span class="lang-ru">IoT LTSC 21H2 · больше не обновляется, финальная сборка — октябрь 2025</span></span>
+          </span>
+          <span class="composer-alt-go"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>
+        </a>
       </section>
 
       <noscript>
+        <style>.lang-field { display: none; }</style><!-- without scripts the switch cannot change the button: the links below do the job -->
         <p class="noscript-links">
-          <a class="link" href="/windows-11-en">Windows 11 (English)</a> · <a class="link" href="/windows-11-ru">Windows 11 (Russian)</a> · <a class="link" href="/windows-10-en">Windows 10 (English)</a> · <a class="link" href="/windows-10-ru">Windows 10 (Russian)</a>
+          <a class="link" href="/windows-11-en">Windows 11 (English)</a> · <a class="link" href="/windows-11-ru">Windows 11 (Russian)</a>
         </p>
       </noscript>
 
@@ -184,7 +189,7 @@ ym(114172668,'init',{ssr:true,clickmap:true,referrer:document.referrer,url:locat
       <a class="archive-link" href="/archive"><span class="lang-en">Archive of previous versions</span><span class="lang-ru">Архив предыдущих версий</span> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
     </div>
   </main>
-  <script type="application/json" id="builds-data">{"10":{"title":"Windows 10 IoT Enterprise LTSC","version":"21H2","number":"19044.6456","date":{"en":"October 2025","ru":"Октябрь 2025"},"final":true,"images":{"en":{"file":"en-us_windows_10_iot_enterprise_ltsc_2021_x64_19044.6456_by_somov.iso","url":"https://dl3.somov.org/en-us_windows_10_iot_enterprise_ltsc_2021_x64_19044.6456_by_somov.iso","magnet":"magnet:?xt=urn:btih:6dd253aaaff2891e7ec188edbebefbab98cb414e&dn=en-us_windows_10_iot_enterprise_ltsc_2021_x64_19044.6456_by_somov.iso&tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&tr=udp%3A%2F%2Fopen.demonii.com%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.dler.org%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.theoks.net%3A6969%2Fannounce","size":{"en":"4.5 GB","ru":"4,5 ГБ"},"sha256":"069fa74fbd250a59af688a647543b659bfc8f3efb02e490e023601b21d085eaa","details":"/windows-10-en"},"ru":{"file":"ru-ru_windows_10_iot_enterprise_ltsc_2021_x64_19044.6456_by_somov.iso","url":"https://dl3.somov.org/ru-ru_windows_10_iot_enterprise_ltsc_2021_x64_19044.6456_by_somov.iso","magnet":"magnet:?xt=urn:btih:7d5af2ae14566256f2c37a62c2e0458bcb460b50&dn=ru-ru_windows_10_iot_enterprise_ltsc_2021_x64_19044.6456_by_somov.iso&tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&tr=udp%3A%2F%2Fopen.demonii.com%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.dler.org%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.theoks.net%3A6969%2Fannounce","size":{"en":"4.4 GB","ru":"4,4 ГБ"},"sha256":"1475b8d76d716a7b6d0f9c77ea3fa932494c675cb64782e0a3324a11208272b0","details":"/windows-10-ru"}}},"11":{"title":"Windows 11 IoT Enterprise LTSC","version":"24H2","number":"26100.9974","date":{"en":"November 2026","ru":"Ноябрь 2026"},"final":false,"images":{"en":{"file":"en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9974_by_somov.iso","url":"https://dl3.somov.org/en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9974_by_somov.iso","magnet":"magnet:?xt=urn:btih:5a7de00af8348bb109dacfe409daca8b096c1723&dn=en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9974_by_somov.iso&tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&tr=udp%3A%2F%2Fopen.demonii.com%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.dler.org%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.theoks.net%3A6969%2Fannounce","size":{"en":"5.4 GB","ru":"5,4 ГБ"},"sha256":"4f13b1b0e24a82ce5583a2e130223b1b57f2456076a04c615b02345e0b4cbad8","details":"/windows-11-en"},"ru":{"file":"ru-ru_windows_11_iot_enterprise_ltsc_2024_x64_26100.9974_by_somov.iso","url":"https://dl3.somov.org/ru-ru_windows_11_iot_enterprise_ltsc_2024_x64_26100.9974_by_somov.iso","magnet":"magnet:?xt=urn:btih:1f4d4cd81a500036d841a7b717c4f65ebca5d785&dn=ru-ru_windows_11_iot_enterprise_ltsc_2024_x64_26100.9974_by_somov.iso&tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&tr=udp%3A%2F%2Fopen.demonii.com%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.dler.org%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.theoks.net%3A6969%2Fannounce","size":{"en":"5.4 GB","ru":"5,4 ГБ"},"sha256":"25c8612a5282c19d42a7dbb92221e5c5978bab9584e2d01e846af017bc24b5b4","details":"/windows-11-ru"}}}}</script>
+  <script type="application/json" id="builds-data">{"11":{"title":"Windows 11 IoT Enterprise LTSC","version":"24H2","number":"26100.9974","date":{"en":"November 2026","ru":"Ноябрь 2026"},"final":false,"images":{"en":{"file":"en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9974_by_somov.iso","url":"https://dl3.somov.org/en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9974_by_somov.iso","magnet":"magnet:?xt=urn:btih:5a7de00af8348bb109dacfe409daca8b096c1723&dn=en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9974_by_somov.iso&tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&tr=udp%3A%2F%2Fopen.demonii.com%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.dler.org%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.theoks.net%3A6969%2Fannounce","size":{"en":"5.4 GB","ru":"5,4 ГБ"},"sha256":"4f13b1b0e24a82ce5583a2e130223b1b57f2456076a04c615b02345e0b4cbad8","details":"/windows-11-en"},"ru":{"file":"ru-ru_windows_11_iot_enterprise_ltsc_2024_x64_26100.9974_by_somov.iso","url":"https://dl3.somov.org/ru-ru_windows_11_iot_enterprise_ltsc_2024_x64_26100.9974_by_somov.iso","magnet":"magnet:?xt=urn:btih:1f4d4cd81a500036d841a7b717c4f65ebca5d785&dn=ru-ru_windows_11_iot_enterprise_ltsc_2024_x64_26100.9974_by_somov.iso&tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&tr=udp%3A%2F%2Fopen.demonii.com%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.dler.org%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.theoks.net%3A6969%2Fannounce","size":{"en":"5.4 GB","ru":"5,4 ГБ"},"sha256":"25c8612a5282c19d42a7dbb92221e5c5978bab9584e2d01e846af017bc24b5b4","details":"/windows-11-ru"}}}}</script>
   <footer class="footer">
     <div class="container footer-inner">
       <section>
@@ -212,6 +217,6 @@ ym(114172668,'init',{ssr:true,clickmap:true,referrer:document.referrer,url:locat
     </div>
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="/assets/site.js?v=9809fa52" defer></script>
+  <script src="/assets/site.js?v=edead60f" defer></script>
 </body>
 </html>

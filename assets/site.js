@@ -383,7 +383,8 @@
     };
 
     function render() {
-      const os = selected(osInputs);
+      // One build on the home page: no version picker, the build is the only one in the data
+      const os = osInputs.length ? selected(osInputs) : Object.keys(builds)[0];
       const imageLang = selected(langInputs);
       const build = builds[os];
       const image = build.images[imageLang];
