@@ -375,7 +375,7 @@ function homePage() {
       <div class="hero">
         <!-- With one build on the page a statement, not a question: there is nothing left to choose between -->
         <h1>${solo ? L(`Windows ${build.id} LTSC, nothing extra`, `Windows ${build.id} LTSC без лишнего`) : L('Which Windows do you want to install?', 'Какую Windows вы хотите установить?')}</h1>
-        <p>${solo ? L('Free builds by somov, in English and Russian', 'Бесплатные сборки от somov, на русском и английском') : L('IoT Enterprise LTSC builds by somov', 'Сборки IoT Enterprise LTSC от somov')}</p>
+        <p>${solo ? L('Free builds by somov', 'Бесплатные сборки от somov') : L('IoT Enterprise LTSC builds by somov', 'Сборки IoT Enterprise LTSC от somov')}</p>
       </div>
 
       <section class="composer" aria-labelledby="build-title">
