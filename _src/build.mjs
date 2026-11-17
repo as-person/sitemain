@@ -559,8 +559,8 @@ function buildPage(build, preset) {
         </div>
         ${shareRow()}
         ${build.retired ? `<p class="retired-note">${L(
-          `This build is no longer updated: the last version is from ${build.date.en}. For a new PC take <a class="link" href="/windows-11">Windows 11 LTSC</a>; an up-to-date Windows 10 is on the <a class="link" href="/ghost-spectre">Ghost Spectre</a> page.`,
-          `Сборка больше не обновляется: последняя версия — ${build.date.ru.toLowerCase()}. Для нового ПК берите <a class="link" href="/windows-11">Windows 11 LTSC</a>, свежая Windows 10 есть на странице <a class="link" href="/ghost-spectre">Ghost Spectre</a>.`)}</p>` : ''}
+          `This build is no longer updated: the last version is from ${build.date.en}. For a new PC take <a class="link" href="/windows-11">Windows 11 LTSC</a>; an up-to-date Windows 10 is on the page of builds by <a class="link" href="/ghost-spectre">Ghost Spectre</a>.`,
+          `Сборка больше не обновляется: последняя версия — ${build.date.ru.toLowerCase()}. Для нового ПК берите <a class="link" href="/windows-11">Windows 11 LTSC</a>, свежая Windows 10 есть на странице автора <a class="link" href="/ghost-spectre">Ghost Spectre</a>.`)}</p>` : ''}
         <p class="lead">${T(build.lead)}</p>
       </div>
 
