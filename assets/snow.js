@@ -157,7 +157,8 @@
     ground.cache.style.width = ground.cache.width / dpr + 'px';
     ground.cache.style.height = ground.cache.height / dpr + 'px';
     document.body.append(ground.cache);
-    target = Math.round(Math.min(phone ? 100 : 240, W * H / (phone ? 6500 : 5600)));
+    // about a third more than the first winter (2026-11-17): the cards gathered their snow too slowly
+    target = Math.round(Math.min(phone ? 135 : 320, W * H / (phone ? 4900 : 4200)));
     // only the first page of the tab: on the next ones the snow is already falling, like the drift already lying
     let dropIn = false;
     if (first) {
@@ -377,6 +378,9 @@
   const bell = n => { const w = Array.from({ length: n }, (_, k) => Math.exp(-(((k - (n - 1) / 2) / (n / 4)) ** 2))), t = w.reduce((a, b) => a + b);
     return w.map(v => v * 0.8 / t); };
   const SPREAD = [0.05, 0.1, 0.15, 0.2, 0.15, 0.1, 0.05], WIDE = bell(17);
+  // How much snow one flake brings to a card: more on a phone, where fewer flakes fall on a narrower screen
+  // (was 4.4 everywhere; raised 2026-11-17, the cards filled too slowly)
+  const CARD_SNOW = () => (phone ? 6.6 : 5.5);
   function settle(p, i, amount) {
     const cols = p.cols;
     if (i < 0 || i >= cols.length || cols[i] >= p.caps[i]) return false;
@@ -557,12 +561,12 @@
         if (f.x <= r.left || f.x >= r.right || f.y < r.top - s.pile.max - 2 || f.y >= r.bottom) continue;
         if (f.y > r.top) {                         // behind the card: hidden by it, falls on
           if (falling && oldY <= r.top && f.x > r.left + s.inset && f.x < r.right - s.inset
-              && settle(s.pile, Math.floor((f.x - r.left - s.inset) / COL), 4.4)) { landed = true; break; }
+              && settle(s.pile, Math.floor((f.x - r.left - s.inset) / COL), CARD_SNOW())) { landed = true; break; }
           continue;
         }
         if (falling && f.x > r.left + s.inset && f.x < r.right - s.inset) {   // above the top: on the layer?
           const i = Math.floor((f.x - r.left - s.inset) / COL);
-          if (f.y >= r.top - (s.pile.cols[i] || 0) && settle(s.pile, i, 4.4)) { landed = true; break; }
+          if (f.y >= r.top - (s.pile.cols[i] || 0) && settle(s.pile, i, CARD_SNOW())) { landed = true; break; }
         }
       }
       // the bottom of the screen
