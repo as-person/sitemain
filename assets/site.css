@@ -150,6 +150,8 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
   padding-inline: var(--gutter);
 }
 .container-narrow { max-width: 800px; }
+/* Home: a wider card, so the two columns have room to breathe (other pages keep 800) */
+.home .container-narrow { max-width: 880px; }
 
 .mono { font-family: var(--mono); }
 .icon { flex: none; width: 18px; height: 18px; }
@@ -338,7 +340,7 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 
 /* -- Home ---------------------------------------------------------------- */
 
-.home { position: relative; flex: 1; padding-block: 64px 72px; }
+.home { position: relative; flex: 1; padding-block: clamp(64px, 16vh - 80px, 160px) 72px; } /* tall screens: the stack moves down from the top third instead of leaving an empty band above the footer */
 .home::before {
   content: "";
   position: absolute;
@@ -374,6 +376,7 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 
 .composer {
   padding: 28px;
+  padding: clamp(28px, 2vw + 12px, 40px);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   /* Lit from above: a lighter top edge and a faint sheen fading down, then the soft shadow under the card */
@@ -437,7 +440,7 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 .result {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); /* the same columns as the selectors above */
-  gap: 28px 24px;
+  gap: 28px 48px; /* the gutter wider than the card padding: the two columns read as two */
   align-items: start;
   margin-top: 28px;
   padding-top: 28px;
@@ -538,13 +541,13 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 /* A caption to Torrent/Magnet: close under them */
 .dl-actions .hash-copy { justify-self: center; margin-top: -4px; }
 /* Home: the support line under the file */
-.card-note { margin-top: 10px; }
+.card-note { margin-top: 16px; } /* after the actions: a step away from them */
 /* Home, wide screens: the download column spans both rows, the chat link takes the second row of the left column,
    right under the fan, so the two columns end level */
 .result { grid-template-rows: auto 1fr; } /* extra height of the download column goes to the second row: the chat link stays right under the fan */
 .result > :first-child { grid-column: 1; grid-row: 1; }
 .result > .dl-actions { grid-column: 2; grid-row: 1 / span 2; }
-.result-chat { grid-column: 1; grid-row: 2; align-self: start; margin-top: -24px; } /* the grid's 28px row gap would push it off the fan */
+.result-chat { grid-column: 1; grid-row: 2; align-self: end; } /* level with the last line of the download column */
 @media (pointer: fine) { .result-chat .details-link { min-height: 32px; } }
 
 .more { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
@@ -1125,7 +1128,7 @@ html:not([data-image]) .img-ru { display: none !important; }
   .hero { margin-bottom: 20px; }
   .hero h1 { font-size: 1.75rem; }
   .hero p { margin-top: 6px; font-size: .9375rem; }
-  .composer { padding: 16px; }
+  .composer { padding: 20px; }
   .selectors { grid-template-columns: 1fr; gap: 12px; }
   .selectors .field-label { margin-bottom: 6px; }
   .result { grid-template-columns: minmax(0, 1fr); gap: 16px; margin-top: 16px; padding-top: 16px; }
@@ -1138,7 +1141,7 @@ html:not([data-image]) .img-ru { display: none !important; }
   /* With the hash gone, the support line and the chat link stand apart from the buttons as the card's quiet footer */
   .dl-actions > .card-note { margin-top: 12px; }
   .result > :first-child, .result > .dl-actions, .result-chat { grid-column: auto; grid-row: auto; }
-  .result-chat { justify-self: center; margin-top: -14px; }
+  .result-chat { justify-self: center; margin-top: -4px; } /* 12px under the support line: one quiet note, not glued */
   .result-chat .details-link { position: relative; min-height: 0; margin-top: 0; font-size: var(--fs-xs); }
   .result-chat .details-link::after { content: ""; position: absolute; inset: -7px 0 -10px; } /* -7px on top: clear of "support the project" above */
   /* One column: a line separates the build description from the download buttons */
@@ -1392,7 +1395,7 @@ html:not([data-image]) .img-ru { display: none !important; }
 /* Home card: the last line, a build no longer updated (Windows 10) for those who still want it */
 .composer-alt {
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
-  margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--border);
+  margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--border);
 }
 .composer-alt:hover .composer-alt-title { color: var(--text); }
 .composer-alt-title { display: block; font-weight: 600; }
@@ -1407,14 +1410,15 @@ html:not([data-image]) .img-ru { display: none !important; }
 .result.result-solo { margin-top: 0; padding-top: 0; border-top: 0; }
 /* The choice, then the action: the switch stands apart from Download (24px, against 10px inside the download group),
    is lower than the buttons on a mouse screen, and its chosen cell is flat, so it reads as a setting, not one more button */
-.dl-actions > .lang-field { margin-bottom: 14px; }
+.dl-actions > .lang-field { margin-bottom: 20px; }
 .dl-actions .segmented::before { box-shadow: none; }
 @media (pointer: fine) { .dl-actions .segmented label > span { min-height: 36px; } }
 .hero p { text-wrap: balance; } /* no single word left alone on a phone's second line */
 /* Home card: what was changed in the build, under its name */
 .result-trust { display: flex; align-items: flex-start; gap: 6px; margin-top: 10px; color: var(--muted); font-size: var(--fs-sm); line-height: 1.45; }
 .result-trust .icon { flex: none; width: 16px; height: 16px; margin-top: 2px; color: var(--accent-text); }
-.dl-actions > .lang-field .field-label { margin-bottom: 8px; }
+/* The button already says which language it downloads, so the switch's label is for screen readers only */
+.dl-actions > .lang-field .field-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 /* Build page of a build no longer updated: a calm note above the description */
 .retired-note { margin: 16px 0 0; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; color: var(--muted); font-size: var(--fs-sm); line-height: 1.5; }
 /* Phones: the footer as a neat two-column grid. With three sections the third (Contact) takes the full width,

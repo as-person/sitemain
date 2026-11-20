@@ -7,3 +7,6 @@ _preview/
 PRODUCT.md
 DESIGN.md
 .impeccable/
+
+# graphify (knowledge graph): local only, must not be published
+graphify-out/
