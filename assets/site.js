@@ -395,11 +395,12 @@
       $('#build-date-ru').textContent = build.date.ru;
       $('#build-final').hidden = !build.final;
       $('#details-link').href = image.details;
-      // The fan shows the chosen build in the chosen language
+      // The screenshot shows the chosen build in the chosen language (data-fan-sizes: the widths it has, small first)
       $$('[data-fan-shot]').forEach(img => {
         const base = `/images/windows-${os}-${imageLang}/${img.dataset.fanShot}`;
-        img.srcset = `${base}-240.webp 240w, ${base}-480.webp 480w`;
-        img.src = `${base}-240.webp`;
+        const widths = (img.dataset.fanSizes || '240,480').split(',');
+        img.srcset = widths.map(w => `${base}-${w}.webp ${w}w`).join(', ');
+        img.src = `${base}-${widths[widths.length - 1]}.webp`;
       });
       $('#build-title').href = image.details; // the title leads to the build page too
       $('#download-link').href = image.url;
@@ -410,9 +411,11 @@
       $('#torrent-link').href = image.url + '.torrent';
       $('#magnet-link').href = image.magnet;
       $('#magnet-link').dataset.countFile = image.file;
-      const sha = $('#build-sha256');
-      sha.dataset.copy = image.sha256;
-      sha.querySelector('code').textContent = image.sha256.slice(0, 8) + '…' + image.sha256.slice(-8);
+      const sha = $('#build-sha256'); // the home page no longer shows it; the build page has the checksums
+      if (sha) {
+        sha.dataset.copy = image.sha256;
+        sha.querySelector('code').textContent = image.sha256.slice(0, 8) + '…' + image.sha256.slice(-8);
+      }
       $('.composer [data-stats-file]').dataset.statsFile = image.file;
       renderStats();
     }
@@ -421,7 +424,7 @@
     const calm = matchMedia('(prefers-reduced-motion: reduce)');
     function settle() {
       if (calm.matches || !Element.prototype.animate) return;
-      $$('.result h2, .result .meta, .shot-fan-stack, #download-link > span, #build-sha256 code').forEach(el => el.animate(
+      $$('.result h2, .result .meta, .build-window img, #download-link > span, #build-sha256 code').forEach(el => el.animate(
         [{ opacity: .25, transform: 'translateY(3px)' }, { opacity: 1, transform: 'none' }],
         { duration: 240, easing: 'cubic-bezier(.2, .8, .2, 1)' }
       ));

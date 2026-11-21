@@ -375,7 +375,8 @@ function homePage() {
       <div class="hero">
         <!-- With one build on the page a statement, not a question: there is nothing left to choose between -->
         <h1>${solo ? L(`Windows ${build.id} LTSC, without the bloat`, `Windows ${build.id} LTSC без лишнего`) : L('Which Windows do you want to install?', 'Какую Windows вы хотите установить?')}</h1>
-        <p>${solo ? L('Free builds by somov', 'Бесплатные сборки от somov') : L('IoT Enterprise LTSC builds by somov', 'Сборки IoT Enterprise LTSC от somov')}</p>
+        <!-- Phones swap the subtitle for the build's main fact, so the build block below keeps three lines -->
+        <p>${solo ? `<span class="hero-sub">${L('Free builds by somov', 'Бесплатные сборки от somov')}</span><span class="hero-sub-phone">${L('Free · no TPM, Secure Boot or OOBE checks', 'Бесплатно · без проверок TPM, Secure Boot и OOBE')}</span>` : L('IoT Enterprise LTSC builds by somov', 'Сборки IoT Enterprise LTSC от somov')}</p>
       </div>
 
       <section class="composer" aria-labelledby="build-title">
@@ -403,15 +404,6 @@ function homePage() {
             </div>
             ${solo && build.changes[0] ? `<!-- What was changed in the build, right by its name: a stranger from an ad sees it before the Download button -->
             <p class="result-trust">${icon('check')}<span>${T(build.changes[0])}</span></p>` : ''}
-            <!-- The way into the build page: three real screenshots fanned out (desktop shots only: the light windows would
-                 outshine the Download button), a hover spreads them. site.js swaps them with the chosen build. -->
-            <a class="shot-fan" id="details-link" href="${image.path}">
-              <span class="shot-fan-stack" aria-hidden="true">${FAN_SHOTS.map(n => `<span class="shot-fan-card"><img src="/images/windows-${build.id}-${PAGE_LANG}/${n}-240.webp" srcset="/images/windows-${build.id}-${PAGE_LANG}/${n}-240.webp 240w, /images/windows-${build.id}-${PAGE_LANG}/${n}-480.webp 480w" sizes="104px" data-fan-shot="${n}" alt="" width="${build.ratio[0]}" height="${build.ratio[1]}" decoding="async"></span>`).join('')}</span>
-              <span class="shot-fan-text">
-                <span class="shot-fan-title">${L('See the build', 'Посмотреть сборку')} ${icon('d')}</span>
-                <span class="shot-fan-sub">${L('6 screenshots, checksums, details', '6 скриншотов, хэши, описание')}</span>
-              </span>
-            </a>
           </div>
           <div class="dl-actions">
             ${solo ? langField : ''}
@@ -422,28 +414,25 @@ function homePage() {
               <a class="btn btn-secondary btn-sm" id="torrent-link" href="${image.url}.torrent">Torrent</a>
               <a class="btn btn-secondary btn-sm" id="magnet-link" href="${esc(image.magnet)}" ${countAttr(image.file, 'magnet')}>Magnet</a>
             </div>
-            <!-- Right under the download: the image's SHA-256 (shortened; a press copies the whole one), the same control as in the archive -->
-            ${hashCopy(image.sums.sha256, ' id="build-sha256"')}
             ${statsLine(image.file)}
-            <div class="card-note">${supportNudge}</div>
-          </div>
-          <!-- The way to the chat, one link for every screen: wide screens put it in the left column under the fan
-               (the columns stay even); phones put it last, right under the support line, as one quiet note -->
-          <div class="result-chat">
-            ${chatLink('home', `<span>${L('Have a question? Ask in the chat', 'Есть вопрос? Напишите в чат')}</span> ${icon('d')}`, 'details-link')}</a>
-            ${chatStats('home')}
           </div>
         </div>
-        ${retiredBuilds.map(b => `<!-- A build no longer updated but still taken: inside the card, where people used to pick it,
-             one line below the main download, so Windows 11 stays the obvious choice -->
-        <a class="composer-alt" href="/windows-${b.id}">
-          <span class="composer-alt-text">
-            <span class="composer-alt-title">${L(`Need Windows ${b.id}?`, `Нужна Windows ${b.id}?`)}</span>
-            <span class="composer-alt-sub">${L(`IoT LTSC ${b.version} · no longer updated, final build ${b.date.en}`, `IoT LTSC ${b.version} · больше не обновляется, финальная сборка — ${b.date.ru.toLowerCase()}`)}</span>
-          </span>
-          <span class="composer-alt-go">${L('Download', 'Скачать')} ${icon('d')}</span>
-        </a>`).join('\n        ')}
       </section>
+      <!-- Under the build, one quiet line: the builds are free, and where to ask -->
+      <div class="home-note">
+        ${supportNudge}
+        ${chatLink('home', `<span>${L('Have a question? Ask in the chat', 'Есть вопрос? Напишите в чат')}</span> ${icon('d')}`, 'details-link')}</a>
+        ${chatStats('home')}
+      </div>
+      <!-- The way into the build page: one large real screenshot (the desktop with About Windows); site.js swaps it
+           with the chosen image language -->
+      <a class="build-window" id="details-link" href="${image.path}">
+        <img src="/images/windows-${build.id}-${PAGE_LANG}/${WINDOW_SHOT}-1600.webp" srcset="/images/windows-${build.id}-${PAGE_LANG}/${WINDOW_SHOT}-960.webp 960w, /images/windows-${build.id}-${PAGE_LANG}/${WINDOW_SHOT}-1600.webp 1600w" sizes="(min-width: 721px) 1000px, 100vw" data-fan-shot="${WINDOW_SHOT}" data-fan-sizes="960,1600" alt="" width="${build.ratio[0]}" height="${build.ratio[1]}" decoding="async">
+        <span class="build-window-text">
+          <span class="build-window-title">${L('See the build', 'Посмотреть сборку')} ${icon('d')}</span>
+          <span class="build-window-sub">${L('6 screenshots, checksums, details', '6 скриншотов, хэши, описание')}</span>
+        </span>
+      </a>
 
       <noscript>
         ${solo ? '<style>.lang-field { display: none; }</style>' : ''}<!-- without scripts the switch cannot change the button: the links below do the job -->
@@ -453,6 +442,14 @@ function homePage() {
       </noscript>
 
       <nav class="more" ${attr('aria-label', 'More', 'Ещё')}>
+        ${retiredBuilds.map(b => `<!-- A build no longer updated but still taken: first in the row -->
+        <a class="more-card" href="/windows-${b.id}">
+          <span>
+            <span class="more-card-title">Windows ${b.id} IoT LTSC</span>
+            <span class="more-card-sub">${L(`${b.version} · final, ${b.date.en}`, `${b.version} · финальная, ${b.date.ru.toLowerCase()}`)}</span>
+          </span>
+          ${icon('d')}
+        </a>`).join('\n        ')}
         <a class="more-card" href="/ghost-spectre">
           <span>
             <span class="more-card-title">${L('Ghost Spectre builds', 'Сборки Ghost Spectre')}</span>
@@ -468,8 +465,6 @@ function homePage() {
           ${icon('d')}
         </a>
       </nav>
-      <!-- Telegram after the other sections: the download is the page's job, the channel is a follow-up -->
-      ${tgCard('home')}
       ${archiveOn() && archivedReleases('11').length ? `<a class="archive-link" href="${archiveHref()}">${L('Archive of previous versions', 'Архив предыдущих версий')} ${icon('d')}</a>` : ''}
     </div>
   </main>
@@ -494,8 +489,8 @@ const SHOT_ALT = {
 
 // The first screenshot is shown large: the desktop with the About Windows dialog reads best.
 const SHOT_ORDER = [5, 2, 3, 4, 1, 6];
-// Home: the fan of screenshots, back to front (Task Manager, Explorer, About Windows: all on the desktop wallpaper)
-const FAN_SHOTS = [4, 2, 5];
+// Home: the one large screenshot under the download (the desktop with About Windows)
+const WINDOW_SHOT = 5;
 
 // shown: the gallery of the image language the page opens with. Its large first shot is on the first screen of a
 // desktop, so it loads at once; everything else (and the hidden gallery of the other language) loads lazily.

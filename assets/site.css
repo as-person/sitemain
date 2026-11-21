@@ -466,47 +466,6 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 .details-link .icon { flex: none; width: 14px; height: 14px; transition: transform var(--ease); }
 .details-link:hover .icon { transform: translateX(2px); }
 
-/* Home: the fan of screenshots that leads to the build page. At rest the cards lie fanned; a hover spreads them
-   and lifts the front one. */
-.shot-fan { display: flex; align-items: center; gap: 16px; width: fit-content; max-width: 100%; margin-top: 12px; margin-bottom: 4px; }
-/* Windows 10: the "End of servicing" badge above gets some air before the fan */
-.result .meta:has(.badge:not([hidden])) + .shot-fan { margin-top: 18px; }
-.shot-fan-stack { position: relative; flex: none; width: 136px; height: 76px; }
-.shot-fan-card {
-  position: absolute;
-  top: 12px;
-  left: 17px;
-  width: 102px;
-  aspect-ratio: 1536 / 739;
-  overflow: hidden;
-  border: 1px solid var(--border-strong);
-  border-radius: 6px;
-  background: var(--raised);
-  box-shadow: 0 8px 18px -8px rgb(0 0 0 / .8);
-  transition: transform 280ms cubic-bezier(.2, .8, .2, 1), border-color var(--ease);
-}
-.shot-fan-card img { width: 100%; height: 100%; object-fit: cover; transition: filter var(--ease); }
-/* The two cards behind sit smaller and in shade, so the front one reads as the picture and they as depth */
-.shot-fan-card:nth-child(-n + 2) img { filter: brightness(.68) saturate(.85); }
-.shot-fan-card:nth-child(1) { transform: rotate(-9deg) translate(-12px, 2px) scale(.94); }
-.shot-fan-card:nth-child(2) { transform: rotate(7deg) translate(12px, 0) scale(.94); }
-.shot-fan-card:nth-child(3) { border-color: rgb(255 255 255 / .28); box-shadow: var(--edge-light), 0 10px 22px -8px rgb(0 0 0 / .85); }
-/* Hover, keyboard focus and a finger press spread the fan the same way */
-.shot-fan:is(:hover, :focus-visible, :active) .shot-fan-card:nth-child(-n + 2) img { filter: brightness(.9); }
-.shot-fan:is(:hover, :focus-visible, :active) .shot-fan-card:nth-child(1) { transform: rotate(-14deg) translate(-20px, 2px) scale(.96); }
-.shot-fan:is(:hover, :focus-visible, :active) .shot-fan-card:nth-child(2) { transform: rotate(12deg) translate(22px, 0) scale(.96); }
-.shot-fan:is(:hover, :focus-visible, :active) .shot-fan-card:nth-child(3) { transform: translateY(-4px) scale(1.04); border-color: rgb(255 255 255 / .38); }
-.shot-fan-text { display: grid; gap: 2px; min-width: 0; }
-.shot-fan-title { display: inline-flex; align-items: center; gap: 6px; font-size: var(--fs-sm); font-weight: 600; white-space: nowrap; }
-.shot-fan-title .icon { width: 14px; height: 14px; transition: transform var(--ease); }
-.shot-fan:is(:hover, :focus-visible) .shot-fan-title .icon { transform: translateX(3px); }
-.shot-fan-sub { color: var(--muted); font-size: var(--fs-xs); text-wrap: balance; } /* one line where it fits, else two even ones */
-.shot-fan:focus-visible { outline-offset: 6px; }
-@media (max-width: 720px) {
-  .shot-fan { gap: 14px; margin-top: 10px; }
-  .shot-fan-stack { width: 118px; height: 64px; }
-  .shot-fan-card { top: 10px; left: 16px; width: 88px; }
-}
 
 .dl-actions { display: grid; gap: 10px; }
 
@@ -541,14 +500,11 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 /* A caption to Torrent/Magnet: close under them */
 .dl-actions .hash-copy { justify-self: center; margin-top: -4px; }
 /* Home: the support line under the file */
-.card-note { margin-top: 16px; } /* after the actions: a step away from them */
 /* Home, wide screens: the download column spans both rows, the chat link takes the second row of the left column,
    right under the fan, so the two columns end level */
 .result { grid-template-rows: auto 1fr; } /* extra height of the download column goes to the second row: the chat link stays right under the fan */
 .result > :first-child { grid-column: 1; grid-row: 1; }
 .result > .dl-actions { grid-column: 2; grid-row: 1 / span 2; }
-.result-chat { grid-column: 1; grid-row: 2; align-self: end; } /* level with the last line of the download column */
-@media (pointer: fine) { .result-chat .details-link { min-height: 32px; } }
 
 .more { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
 .more-card {
@@ -677,9 +633,6 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
   transition: border-color var(--ease), background var(--ease);
 }
 .tg-card:hover { border-color: var(--border-strong); background: var(--raised); }
-.home .tg-card { margin-top: 12px; padding: 18px 20px; border-color: transparent; } /* under the two cards, with the same gap, padding and look */
-.home .tg-card:hover { border-color: var(--border); }
-@media (min-width: 721px) { .home .tg-title { font-size: var(--fs-md); } } /* phones keep the smaller size */
 .tg-title { text-wrap: balance; } /* when the title wraps (RU on phones), two even lines, no lone word */
 .tg-icon { display: grid; flex: none; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--raised-hover); color: var(--text); }
 .tg-icon .icon { width: 17px; height: 17px; }
@@ -1135,15 +1088,7 @@ html:not([data-image]) .img-ru { display: none !important; }
   /* Phones: one column in source order; the chat link is last, right under the support line, the same quiet size,
      so the two lines read as one note (the finger gets a taller invisible area instead of a tall row) */
   .result { grid-template-rows: none; }
-  /* Phones: no SHA-256 on the home page. Phones mostly choose and pass the link on; the ISO (84% of downloaders)
-     and its check are on a computer, where the hash stays. The build page (the fan says "checksums") has them all. */
-  .dl-actions #build-sha256 { display: none; }
-  /* With the hash gone, the support line and the chat link stand apart from the buttons as the card's quiet footer */
-  .dl-actions > .card-note { margin-top: 12px; }
-  .result > :first-child, .result > .dl-actions, .result-chat { grid-column: auto; grid-row: auto; }
-  .result-chat { justify-self: center; margin-top: -4px; } /* 12px under the support line: one quiet note, not glued */
-  .result-chat .details-link { position: relative; min-height: 0; margin-top: 0; font-size: var(--fs-xs); }
-  .result-chat .details-link::after { content: ""; position: absolute; inset: -7px 0 -10px; } /* -7px on top: clear of "support the project" above */
+  .result > :first-child, .result > .dl-actions { grid-column: auto; grid-row: auto; }
   /* One column: a line separates the build description from the download buttons */
   .result > .dl-actions { padding-top: 16px; border-top: 1px solid var(--border); }
   .more { grid-template-columns: 1fr; }
@@ -1392,29 +1337,6 @@ html:not([data-image]) .img-ru { display: none !important; }
 .archive-link .icon { width: 14px; height: 14px; transition: transform var(--ease); }
 .archive-link:hover .icon { transform: translateX(2px); }
 .meta-archive { white-space: nowrap; }
-/* Home card: the last line, a build no longer updated (Windows 10) for those who still want it */
-.composer-alt {
-  display: flex; align-items: center; justify-content: space-between; gap: 16px;
-  margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--border);
-}
-.composer-alt:hover .composer-alt-title { color: var(--text); }
-.composer-alt-title { display: block; font-weight: 600; }
-.composer-alt-sub { display: block; margin-top: 2px; color: var(--muted); font-size: var(--fs-sm); }
-.composer-alt-go { display: flex; align-items: center; gap: 4px; flex: none; color: var(--muted); font-size: var(--fs-sm); font-weight: 600; transition: color var(--ease); }
-.composer-alt-go .icon { width: 14px; height: 14px; transition: transform var(--ease); }
-.composer-alt:hover .composer-alt-go { color: var(--text); }
-.composer-alt:hover .composer-alt-go .icon { transform: translateX(2px); }
-.composer-alt:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 4px; border-radius: var(--r-sm); }
-@media (max-width: 720px) {
-  /* Phones: "Download" goes up next to the title, so the subtitle takes the full width (2 lines instead of 3) */
-  .composer-alt { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 4px 16px; margin-top: 16px; }
-  .composer-alt-text { display: contents; }
-  .composer-alt-title { grid-area: 1 / 1; }
-  .composer-alt-go { grid-area: 1 / 2; }
-  .composer-alt-sub { grid-area: 2 / 1 / 3 / -1; margin-top: 0; }
-  /* The Telegram card loses its round icon: the title fits one line, the card matches the two above it */
-  .home .tg-icon { display: none; }
-}
 /* One build on the home page: no picker row on top; the image language sits in the download column, above the button */
 .result.result-solo { margin-top: 0; padding-top: 0; border-top: 0; }
 /* The choice, then the action: the switch stands apart from Download (24px, against 10px inside the download group),
@@ -1944,7 +1866,7 @@ main, .footer { position: relative; z-index: 1; }
 .brand span { font-size: 1.0625rem; }
 .hero h1 { letter-spacing: -.032em; } /* the large size takes tighter tracking */
 /* Home: the build name and the cards' titles speak in the same voice, with the looser tracking of small sizes */
-.result h2, .home .more-card-title, .home .tg-title {
+.result h2, .home .more-card-title {
   font-family: "Wix Madefor Display", Inter, system-ui, sans-serif;
   font-weight: 700;
   letter-spacing: -.012em;
@@ -1968,3 +1890,167 @@ input, textarea { caret-color: var(--accent-text); }
 .hash-ico .icon { grid-area: 1 / 1; transition: opacity var(--ease), scale 220ms cubic-bezier(.2, .8, .2, 1); }
 .hash-ico .icon + .icon, .is-copied .hash-ico .icon:first-child { opacity: 0; scale: .5; }
 .is-copied .hash-ico .icon + .icon { opacity: 1; scale: 1; }
+
+/* ==========================================================================
+   Home without boxes (2026-11-22). The owner found the card cramped: the build and its download now lie on the
+   page ground, two columns under one hairline, everything on one 1000px left line (header and footer too).
+   Under them one quiet line (free + chat), one large screenshot as the way into the build page, then a row of
+   three links (Windows 10, Ghost Spectre, Settings). No SHA-256 here (the build page has it), no Telegram card
+   (header, footer and the line after a download keep it).
+   ========================================================================== */
+.home .composer { padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; }
+.hero-sub-phone { display: none; }
+.home .hero h1 { text-wrap: balance; }
+.home-note .support-nudge { margin: 0; text-align: left; font-size: var(--fs-sm); }
+.home-note .details-link { margin: 0; min-height: 0; color: var(--muted); font-size: var(--fs-sm); font-weight: 400; }
+.home-note .details-link:hover { color: var(--text); }
+.build-window { display: block; position: relative; overflow: hidden; }
+.build-window img { display: block; width: 100%; object-fit: cover; object-position: center 35%; transition: transform 600ms cubic-bezier(.2, .8, .2, 1); }
+.build-window:hover img { transform: scale(1.02); }
+.build-window-text { position: absolute; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.build-window-title { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--text); }
+.build-window-title .icon { width: 16px; height: 16px; transition: transform var(--ease); }
+.build-window:is(:hover, :focus-visible) .build-window-title .icon { transform: translateX(3px); }
+.build-window-sub { color: var(--muted); font-size: var(--fs-sm); }
+.build-window:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 4px; }
+/* the next steps: plain rows on the page ground, a hairline each */
+.home .more-card { border: 0; border-top: 1px solid var(--border); border-radius: 0; background: none; }
+.home .more-card:hover { background: none; border-color: var(--border); }
+.home .more-card-title { transition: color var(--ease); }
+.home .more-card:hover .more-card-title { color: var(--accent-text); }
+
+@media (min-width: 721px) {
+  .home .container-narrow, body:has(main.home) :is(.topbar, .footer) .container { max-width: 1000px; }
+  .home .hero { margin: 0 0 48px; text-align: left; }
+  .home .hero h1 { font-size: clamp(2.25rem, 2.6vw + 1rem, 3.25rem); } /* one size for both languages; the English line stays one line */
+  .result.result-solo { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 32px 64px; align-items: start; padding-top: 40px; border-top: 1px solid var(--border); }
+  .home .result h2 { font-size: 1.5rem; letter-spacing: -.015em; white-space: nowrap; }
+  .home .result .meta { margin-top: 12px; font-size: 1rem; }
+  .home .result-trust { margin-top: 14px; font-size: 1rem; }
+  .home .segmented label > span { min-height: 48px; font-size: .9375rem; }
+  .home .dl-actions { gap: 12px; }
+  .home #download-link { min-height: 58px; font-size: 1.0625rem; border-radius: 14px; }
+  .home .dl-alt .btn-secondary { min-height: 46px; font-size: .9375rem; }
+  .home-note { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 28px; margin-top: 36px; }
+  .build-window { margin-top: 56px; border-radius: 16px 16px 0 0; }
+  .build-window img { height: 340px; -webkit-mask-image: linear-gradient(#000 50%, transparent); mask-image: linear-gradient(#000 50%, transparent); }
+  .build-window-text { left: 32px; right: 32px; bottom: 28px; }
+  .build-window-title { font-size: 1.25rem; }
+  .home .more { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 40px; margin-top: 64px; }
+  .home .more-card { align-items: flex-start; padding: 24px 0; }
+  .home .more-card-title { font-size: var(--fs-md); }
+  .home .more-card-sub { margin-top: 6px; }
+  .home .archive-link { margin: 40px 0 0; }
+}
+@media (max-width: 720px) {
+  .home .hero { text-align: left; }
+  /* Phones: the same rhythm as on a computer, tight inside a group, air between groups: the statement, a hairline,
+     the build, the download, the quiet line, the picture, the links. Download still ends near the middle of the first screen */
+  .home { padding-block: 32px 56px; }
+  .home .hero { margin-bottom: 0; }
+  .home .hero h1 { font-size: 2rem; line-height: 1.08; }
+  .home .hero p { margin-top: 10px; font-size: 1rem; }
+  /* the build's main fact moves up into the subtitle (kept on short screens too); the build block keeps three lines */
+  .home .hero p { display: block; }
+  .home .hero-sub { display: none; }
+  .home .hero-sub-phone { display: inline; }
+  .home .result-trust { display: none; }
+  .home .result.result-solo { gap: 28px; margin-top: 28px; padding-top: 28px; border-top: 1px solid var(--border); }
+  .home .result > .dl-actions { padding-top: 0; border-top: 0; }
+  .home .result .meta { margin-top: 10px; }
+  .home .result-trust { margin-top: 12px; }
+  .home .dl-actions > .lang-field { margin-bottom: 8px; }
+  .home-note { display: grid; justify-items: start; gap: 10px; margin-top: 28px; }
+  .home-note .support-nudge, .home-note .details-link { font-size: var(--fs-xs); }
+  .home-note .details-link { position: relative; }
+  .home-note .details-link::after { content: ""; position: absolute; inset: -10px 0; } /* a finger-sized area for a quiet line */
+  .build-window { margin-top: 36px; border-radius: 14px; }
+  .build-window::after { content: ""; position: absolute; inset: auto 0 0; height: 65%; background: linear-gradient(transparent, rgb(10 12 16 / .88)); pointer-events: none; } /* the caption reads on the bright sea, the taskbar strip goes dark */
+  .build-window-text { z-index: 1; }
+  .build-window img { height: 220px; }
+  .build-window-text { left: 16px; right: 16px; bottom: 14px; display: grid; gap: 2px; }
+  .build-window-title { color: #fff; text-shadow: 0 1px 8px rgb(0 0 0 / .7); }
+  .build-window-sub { color: rgb(255 255 255 / .85); font-size: var(--fs-xs); text-shadow: 0 1px 8px rgb(0 0 0 / .7); }
+  .home .more { gap: 0; margin-top: 40px; }
+  .home .more-card { padding: 20px 2px; }
+  .home .more-card:last-child { border-bottom: 1px solid var(--border); }
+  .home .archive-link { margin: 24px 0 0; }
+}
+
+/* ==========================================================================
+   Build pages without boxes (2026-11-22), the same language as the home page: the text and the
+   lists lie on the page ground, hairlines and space do the grouping. The download panel and the controls keep their look.
+   ========================================================================== */
+/* the download panel stands apart by a vertical hairline between the columns, not by a box: it is where you act,
+   the page beside it is what you read */
+@media (min-width: 1024px) {
+  .build-panel { padding-left: 40px; border-left: 1px solid var(--border); }
+  .build-panel .panel { padding: 0; border: 0; border-radius: 0; background: none; }
+}
+.build-panel .tg-card { margin-top: 20px; padding: 20px 0 0; border: 0; border-top: 1px solid var(--border); border-radius: 0; background: none; }
+.build-panel .tg-card:hover { border-color: var(--border); background: none; }
+.build-panel .tg-card:hover .tg-title { color: var(--accent-text); }
+.build-panel .tg-title { transition: color var(--ease); }
+.build-panel .tg-icon { display: none; }
+.req, .sums { border: 0; border-radius: 0; border-top: 1px solid var(--border); }
+.req div { padding: 14px 0; }
+.req div + div, .sum-row + .sum-row { border-top-color: var(--border); }
+.req, .sums { border-bottom: 1px solid var(--border); }
+.sum-row { padding: 8px 0; }
+.retired-note { padding: 0; border: 0; border-radius: 0; }
+.build-body .section { margin-top: 64px; }
+.build-body .section > h2 { margin-bottom: 20px; }
+@media (max-width: 720px) {
+  .build-body .section { margin-top: 48px; }
+}
+
+/* Lists without boxes (2026-11-22): Ghost Spectre, the archive, Settings and the tweak pages. A list is read, so it
+   lies on the page ground between hairlines; a block where you act (a download panel, a payment card) keeps its frame */
+.page .rows { border: 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); border-radius: 0; background: none; overflow: visible; }
+.page .row, .page .item { padding-inline: 0; }
+.page .item { padding-block: 22px; }
+.page .row { padding-block: 20px; }
+.page .item:target { background: none; }
+.page .item:target .item-title { color: var(--accent-text); }
+.page .related { padding-inline: 0; }
+.page .related:hover { background: none; color: var(--accent-text); }
+.page .related .icon { transition: transform var(--ease), color var(--ease); }
+.page .related:hover .icon { transform: translateX(3px); color: var(--text); }
+.page .group + .group { margin-top: 56px; }
+.page .group-title { margin-bottom: 8px; }
+
+/* The tweak download block and the support options without boxes: hairlines above and below, the page ground inside */
+.page .tweak-card { padding: 24px 0; border: 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); border-radius: 0; background: none; }
+.page .support-grid { gap: 0 48px; border-bottom: 1px solid var(--border); }
+.page .support-card { padding: 28px 0; border: 0; border-top: 1px solid var(--border); border-radius: 0; background: none; }
+
+/* Phones and tablets: the download panel sits under the description as a full-width band of the surface tone,
+   edge to edge (no frame, no corners): a part of the page where you act, not a box */
+@media (max-width: 1023px) {
+  .build-panel { margin-block: 32px; margin-inline: calc(50% - 50vw); padding: 28px calc(50vw - 50%) 8px; background: var(--surface); border-block: 1px solid var(--border); }
+  .build-panel .panel { padding: 0; border: 0; border-radius: 0; background: none; }
+  .build-panel .tg-card { margin-top: 20px; padding: 16px 0 20px; border-top: 1px solid var(--border); }
+}
+/* the wallet address was a dark well inside the card; on the page ground it needs its own edge */
+.page .support-card .address { border: 1px solid var(--border); }
+/* Without the boxes around them the switches lost their track (the page ground is the track colour): a hairline gives it back */
+.segmented, .seg-links { border: 1px solid var(--border); }
+
+/* Lists, second pass: the group heading must not look like one more row. No line under it, more air between
+   groups, a larger heading; rows part by a slightly firmer hairline; a hover lights the row a touch wider than it */
+.page .rows { border-top: 0; }
+.page .row + .row, .page .item + .item, .page .related + .related { border-top-color: rgb(255 255 255 / .14); }
+.page .rows { border-bottom-color: rgb(255 255 255 / .14); }
+.page .group + .group { margin-top: 72px; }
+.page .group-title { margin-bottom: 4px; font-size: 1.5rem; letter-spacing: -.015em; }
+.page .row, .page .item, .page .related { position: relative; }
+.page .row::before, .page .item::before, .page .related::before { content: ""; position: absolute; inset: 0 -16px; z-index: -1; border-radius: 12px; background: var(--surface); opacity: 0; transition: opacity var(--ease); }
+.page :is(.row, .item, .related):hover::before { opacity: 1; }
+.page .rows { isolation: isolate; }
+@media (hover: none) { .page :is(.row, .item, .related)::before { display: none; } }
+
+/* Build pages, the same rule: no line under a section heading, firmer lines between rows, more air between sections */
+.req, .sums { border-top: 0; border-bottom-color: rgb(255 255 255 / .14); }
+.req div + div, .sum-row + .sum-row { border-top-color: rgb(255 255 255 / .14); }
+.build-body .section > h2 { font-size: 1.5rem; letter-spacing: -.015em; }
+@media (min-width: 721px) { .build-body .section { margin-top: 72px; } }

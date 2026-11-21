@@ -50,7 +50,7 @@ k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNo
 Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({owner:false})},2500)})]).then(function(d){if(d&&d.owner)return;
 ym(114172668,'init',{ssr:true,clickmap:true,referrer:document.referrer,url:location.href,accurateTrackBounce:true,trackLinks:true});});})();
 </script>
-  <link rel="stylesheet" href="/assets/site.css?v=99751165">
+  <link rel="stylesheet" href="/assets/site.css?v=e709dcf8">
 </head>
 <body>
   <noscript><div><img src="https://mc.yandex.ru/watch/114172668" style="position:absolute; left:-9999px;" alt=""></div></noscript>
@@ -85,7 +85,8 @@ ym(114172668,'init',{ssr:true,clickmap:true,referrer:document.referrer,url:locat
       <div class="hero">
         <!-- With one build on the page a statement, not a question: there is nothing left to choose between -->
         <h1><span class="lang-en">Windows 11 LTSC, without the bloat</span><span class="lang-ru">Windows 11 LTSC без лишнего</span></h1>
-        <p><span class="lang-en">Free builds by somov</span><span class="lang-ru">Бесплатные сборки от somov</span></p>
+        <!-- Phones swap the subtitle for the build's main fact, so the build block below keeps three lines -->
+        <p><span class="hero-sub"><span class="lang-en">Free builds by somov</span><span class="lang-ru">Бесплатные сборки от somov</span></span><span class="hero-sub-phone"><span class="lang-en">Free · no TPM, Secure Boot or OOBE checks</span><span class="lang-ru">Бесплатно · без проверок TPM, Secure Boot и OOBE</span></span></p>
       </div>
 
       <section class="composer" aria-labelledby="build-title">
@@ -105,15 +106,6 @@ ym(114172668,'init',{ssr:true,clickmap:true,referrer:document.referrer,url:locat
             </div>
             <!-- What was changed in the build, right by its name: a stranger from an ad sees it before the Download button -->
             <p class="result-trust"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg><span><span class="lang-en">TPM, Secure Boot and OOBE checks are disabled.</span><span class="lang-ru">Проверки TPM, Secure Boot и OOBE отключены.</span></span></p>
-            <!-- The way into the build page: three real screenshots fanned out (desktop shots only: the light windows would
-                 outshine the Download button), a hover spreads them. site.js swaps them with the chosen build. -->
-            <a class="shot-fan" id="details-link" href="/windows-11-en">
-              <span class="shot-fan-stack" aria-hidden="true"><span class="shot-fan-card"><img src="/images/windows-11-en/4-240.webp" srcset="/images/windows-11-en/4-240.webp 240w, /images/windows-11-en/4-480.webp 480w" sizes="104px" data-fan-shot="4" alt="" width="1536" height="739" decoding="async"></span><span class="shot-fan-card"><img src="/images/windows-11-en/2-240.webp" srcset="/images/windows-11-en/2-240.webp 240w, /images/windows-11-en/2-480.webp 480w" sizes="104px" data-fan-shot="2" alt="" width="1536" height="739" decoding="async"></span><span class="shot-fan-card"><img src="/images/windows-11-en/5-240.webp" srcset="/images/windows-11-en/5-240.webp 240w, /images/windows-11-en/5-480.webp 480w" sizes="104px" data-fan-shot="5" alt="" width="1536" height="739" decoding="async"></span></span>
-              <span class="shot-fan-text">
-                <span class="shot-fan-title"><span class="lang-en">See the build</span><span class="lang-ru">Посмотреть сборку</span> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>
-                <span class="shot-fan-sub"><span class="lang-en">6 screenshots, checksums, details</span><span class="lang-ru">6 скриншотов, хэши, описание</span></span>
-              </span>
-            </a>
           </div>
           <div class="dl-actions">
             <fieldset class="lang-field">
@@ -130,28 +122,25 @@ ym(114172668,'init',{ssr:true,clickmap:true,referrer:document.referrer,url:locat
               <a class="btn btn-secondary btn-sm" id="torrent-link" href="https://dl3.somov.org/en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9974_by_somov.iso.torrent">Torrent</a>
               <a class="btn btn-secondary btn-sm" id="magnet-link" href="magnet:?xt=urn:btih:5a7de00af8348bb109dacfe409daca8b096c1723&amp;dn=en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9974_by_somov.iso&amp;tr=udp%3A%2F%2Ftracker.torrent.eu.org%3A451%2Fannounce&amp;tr=udp%3A%2F%2Fopen.stealth.si%3A80%2Fannounce&amp;tr=udp%3A%2F%2Fopen.demonii.com%3A1337%2Fannounce&amp;tr=udp%3A%2F%2Ftracker.dler.org%3A6969%2Fannounce&amp;tr=udp%3A%2F%2Ftracker.theoks.net%3A6969%2Fannounce" data-count-file="en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9974_by_somov.iso" data-count-kind="magnet">Magnet</a>
             </div>
-            <!-- Right under the download: the image's SHA-256 (shortened; a press copies the whole one), the same control as in the archive -->
-            <button type="button" class="hash-copy" id="build-sha256" data-copy="4f13b1b0e24a82ce5583a2e130223b1b57f2456076a04c615b02345e0b4cbad8" title="Copy SHA-256" data-i18n="{&quot;title&quot;:{&quot;en&quot;:&quot;Copy SHA-256&quot;,&quot;ru&quot;:&quot;Скопировать SHA-256&quot;}}">SHA-256 <code>4f13b1b0…0b4cbad8</code> <span class="hash-ico"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg></span></button>
             <div class="stats-line" data-stats-file="en-us_windows_11_iot_enterprise_ltsc_2024_x64_26100.9974_by_somov.iso" data-stats-kinds="download,torrent,magnet" hidden></div>
-            <div class="card-note"><p class="support-nudge"><span class="lang-en">The builds are free. If they helped you, you can <a class="link" href="/support">support the project</a>.</span><span class="lang-ru">Сборки бесплатные. Если пригодились, можно <a class="link" href="/support">поддержать проект</a>.</span></p></div>
-          </div>
-          <!-- The way to the chat, one link for every screen: wide screens put it in the left column under the fan
-               (the columns stay even); phones put it last, right under the support line, as one quiet note -->
-          <div class="result-chat">
-            <a class="details-link" href="#chat" data-chat-open data-chat-placement="home"><span><span class="lang-en">Have a question? Ask in the chat</span><span class="lang-ru">Есть вопрос? Напишите в чат</span></span> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
-            <div class="stats-line chat-stats" data-chat-stats="home" hidden></div>
           </div>
         </div>
-        <!-- A build no longer updated but still taken: inside the card, where people used to pick it,
-             one line below the main download, so Windows 11 stays the obvious choice -->
-        <a class="composer-alt" href="/windows-10">
-          <span class="composer-alt-text">
-            <span class="composer-alt-title"><span class="lang-en">Need Windows 10?</span><span class="lang-ru">Нужна Windows 10?</span></span>
-            <span class="composer-alt-sub"><span class="lang-en">IoT LTSC 21H2 · no longer updated, final build October 2025</span><span class="lang-ru">IoT LTSC 21H2 · больше не обновляется, финальная сборка — октябрь 2025</span></span>
-          </span>
-          <span class="composer-alt-go"><span class="lang-en">Download</span><span class="lang-ru">Скачать</span> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>
-        </a>
       </section>
+      <!-- Under the build, one quiet line: the builds are free, and where to ask -->
+      <div class="home-note">
+        <p class="support-nudge"><span class="lang-en">The builds are free. If they helped you, you can <a class="link" href="/support">support the project</a>.</span><span class="lang-ru">Сборки бесплатные. Если пригодились, можно <a class="link" href="/support">поддержать проект</a>.</span></p>
+        <a class="details-link" href="#chat" data-chat-open data-chat-placement="home"><span><span class="lang-en">Have a question? Ask in the chat</span><span class="lang-ru">Есть вопрос? Напишите в чат</span></span> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+        <div class="stats-line chat-stats" data-chat-stats="home" hidden></div>
+      </div>
+      <!-- The way into the build page: one large real screenshot (the desktop with About Windows); site.js swaps it
+           with the chosen image language -->
+      <a class="build-window" id="details-link" href="/windows-11-en">
+        <img src="/images/windows-11-en/5-1600.webp" srcset="/images/windows-11-en/5-960.webp 960w, /images/windows-11-en/5-1600.webp 1600w" sizes="(min-width: 721px) 1000px, 100vw" data-fan-shot="5" data-fan-sizes="960,1600" alt="" width="1536" height="739" decoding="async">
+        <span class="build-window-text">
+          <span class="build-window-title"><span class="lang-en">See the build</span><span class="lang-ru">Посмотреть сборку</span> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>
+          <span class="build-window-sub"><span class="lang-en">6 screenshots, checksums, details</span><span class="lang-ru">6 скриншотов, хэши, описание</span></span>
+        </span>
+      </a>
 
       <noscript>
         <style>.lang-field { display: none; }</style><!-- without scripts the switch cannot change the button: the links below do the job -->
@@ -161,6 +150,14 @@ ym(114172668,'init',{ssr:true,clickmap:true,referrer:document.referrer,url:locat
       </noscript>
 
       <nav class="more" aria-label="More" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;More&quot;,&quot;ru&quot;:&quot;Ещё&quot;}}">
+        <!-- A build no longer updated but still taken: first in the row -->
+        <a class="more-card" href="/windows-10">
+          <span>
+            <span class="more-card-title">Windows 10 IoT LTSC</span>
+            <span class="more-card-sub"><span class="lang-en">21H2 · final, October 2025</span><span class="lang-ru">21H2 · финальная, октябрь 2025</span></span>
+          </span>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+        </a>
         <a class="more-card" href="/ghost-spectre">
           <span>
             <span class="more-card-title"><span class="lang-en">Ghost Spectre builds</span><span class="lang-ru">Сборки Ghost Spectre</span></span>
@@ -176,16 +173,6 @@ ym(114172668,'init',{ssr:true,clickmap:true,referrer:document.referrer,url:locat
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
         </a>
       </nav>
-      <!-- Telegram after the other sections: the download is the page's job, the channel is a follow-up -->
-      <a class="tg-card" href="https://t.me/+gmXk9-zXZ405YWY6" target="_blank" rel="noopener" data-tg-placement="home">
-          <span class="tg-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z"/></svg></span>
-          <span class="tg-text">
-            <span class="tg-title"><span class="lang-en">Be the first to know about new builds</span><span class="lang-ru">Узнавайте о новых сборках первыми</span></span>
-            <span class="tg-sub"><span class="lang-en">Updates, tweaks and answers to questions on Telegram</span><span class="lang-ru">Обновления, твики и ответы на вопросы — в Telegram</span></span>
-          </span>
-          <span class="tg-action" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>
-        </a>
-        <div class="stats-line tg-stats" data-tg-stats="home" hidden></div>
       <a class="archive-link" href="/archive"><span class="lang-en">Archive of previous versions</span><span class="lang-ru">Архив предыдущих версий</span> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
     </div>
   </main>
@@ -217,6 +204,6 @@ ym(114172668,'init',{ssr:true,clickmap:true,referrer:document.referrer,url:locat
     </div>
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="/assets/site.js?v=edead60f" defer></script>
+  <script src="/assets/site.js?v=bd0d20a5" defer></script>
 </body>
 </html>
