@@ -60,6 +60,14 @@
     if (parseFloat(cs.borderTopWidth) > 0 && cs.borderTopStyle !== 'none' && alpha(cs.borderTopColor) > 0.05) return true;
     return alpha(cs.backgroundColor) > 0.05 || cs.backgroundImage !== 'none';
   };
+  // A line drawn along the foot of a block
+  const visibleBottom = el => {
+    const cs = getComputedStyle(el);
+    return cs.visibility !== 'hidden' && parseFloat(cs.borderBottomWidth) > 0 && cs.borderBottomStyle !== 'none'
+      && alpha(cs.borderBottomColor) > 0.05;
+  };
+  // Blocks that end on a line (lists, bands): looked at for that line only
+  const LEDGES = '.rows, .req, .sums, .tweak-card, .support-grid, .archive-current';
   // A picture inside a frame that clips it: the frame is what you see, so its edge and its corners hold the snow
   const frameOf = el => {
     const parent = el.parentElement;
@@ -110,6 +118,11 @@
   // starts well above them)
   function boxOf(s) {
     const r = s.el.getBoundingClientRect();
+    // a ledge: the line along the block's foot
+    if (s.bottom) {
+      const y = r.bottom - (parseFloat(getComputedStyle(s.el).borderBottomWidth) || 1);
+      return { left: r.left, right: r.right, width: r.width, top: y, bottom: r.bottom };
+    }
     if (!s.word) return r;
     const cs = getComputedStyle(s.el);
     measurer.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
@@ -314,7 +327,7 @@
   }
 
   function findSurfaces() {
-    const keep = new Map(surfaces.map(s => [s.el, s]));
+    const keep = new Map(surfaces.filter(s => !s.bottom).map(s => [s.el, s])), keepBottom = new Map(surfaces.filter(s => s.bottom).map(s => [s.el, s]));
     // wide enough to hold a layer (a button is, a copy icon is not), and with a top edge you can see; of two things
     // whose tops meet (a frame and the picture right at its top) only the outer one, so no layer lies on a layer
     const blocks = [];
@@ -329,21 +342,36 @@
       if (blocks.some(b => b.contains(el) && Math.abs(b.getBoundingClientRect().top - r.top) < 3)) continue;
       blocks.push(el);
     }
+    // A line drawn under a block (the end of a list, the foot of a band) is a ledge too: snow lies on it, unless a
+    // line or edge that already holds snow runs at the same height (a row's foot is the next row's top)
+    const lines = blocks.map(el => { const t = el.getBoundingClientRect(); return { y: t.top, left: t.left, right: t.right }; });
+    const ledges = [];
+    for (const el of new Set(document.querySelectorAll(SURFACES + ', ' + LEDGES))) {
+      if (!visibleBottom(el) || el.closest('.dl-bar, .toast, .topbar')) continue;
+      const r = el.getBoundingClientRect();
+      if (r.width < 80) continue;
+      const y = r.bottom - (parseFloat(getComputedStyle(el).borderBottomWidth) || 1);
+      if (lines.some(t => Math.abs(t.y - y) < 4 && t.left < r.right && t.right > r.left)) continue;
+      lines.push({ y, left: r.left, right: r.right });
+      ledges.push(el);
+    }
     const words = [...document.querySelectorAll(WORDS)].filter(el => el.getBoundingClientRect().width > 20);   // the shown language
-    surfaces = [...blocks, ...words].map((el, index) => {
-      const word = index >= blocks.length;
+    const edges = blocks.length + ledges.length;
+    surfaces = [...blocks, ...ledges, ...words].map((el, index) => {
+      const word = index >= edges;
+      const bottom = !word && index >= blocks.length;
       const width = el.getBoundingClientRect().width;
       // only the straight part of the top edge: on a rounded corner snow would hang in the air
       // (and 2 px more, whatever the screen's scaling rounds), the layer a whole number of columns, in the middle
       let inset = 0, count = Math.max(1, Math.ceil(width / COL));
       if (!word) {
-        const edge = Math.ceil(cornerOf(el)) + 2;
+        const edge = Math.ceil(bottom ? parseFloat(getComputedStyle(el).borderBottomLeftRadius) || 0 : cornerOf(el)) + 2;
         count = Math.max(1, Math.floor((width - 2 * edge) / COL));
         inset = edge + (width - 2 * edge - count * COL) / 2;
       }
-      const was = keep.get(el);
+      const was = (bottom ? keepBottom : keep).get(el);
       // the footer's words are the same on every page: their snow goes along from page to page, like the drift
-      const key = word ? 'footer#' + (index - blocks.length) : location.pathname + '#' + index;
+      const key = word ? 'footer#' + (index - edges) : location.pathname + '#' + index;
       let p = was && was.pile.cols.length === count ? was.pile : null;
       // a block that sticks on the screen while the page scrolls (the download panel on a computer): its snow is
       // drawn on the screen layer, where the block is, not placed in the page
@@ -358,17 +386,17 @@
         p.cache.style.height = p.cache.height / dpr + 'px';
         if (!sticky) cardLayer.append(p.cache);
       }
-      const surface = { el, inset, rect: null, key, pile: p, sticky, word };
+      const surface = { el, inset, rect: null, key, pile: p, sticky, word, bottom };
       if (word) cutGaps(surface);
       return surface;
     });
     // a picture that is a link (the home screenshot, the build page's shots) shudders under the pointer
     for (const s of surfaces) {
-      if (s.word || hooked.has(s.el) || !s.el.closest('a') || !s.el.querySelector('img')) continue;
+      if (s.word || s.bottom || hooked.has(s.el) || !s.el.closest('a') || !s.el.querySelector('img')) continue;
       hooked.add(s.el);
       s.el.addEventListener('pointerenter', e => {
         if (e.pointerType !== 'mouse') return;
-        const cur = surfaces.find(x => x.el === s.el);
+        const cur = surfaces.find(x => x.el === s.el && !x.bottom);
         if (cur) shake(cur);
       });
     }
