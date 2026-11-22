@@ -1,6 +1,6 @@
 {
   "publish": true,
-  "_note": "Old Windows 11 releases, newest first. Files stay where they were published (dl3 root), so links never change.",
+  "_note": "Old releases of the builds by somov (Windows 11 and Windows 10), newest first within each build. Files stay where they were published (dl3 root), so links never change.",
   "releases": [
     {
       "build": "11",
@@ -22,6 +22,29 @@
           "size": 5697013760,
           "btih": "645d3d71d10b47236afa1a9336737a1916bf2876",
           "sha256": "091D95333881AC352F11012A752289753AFDDA307C4AA9B889C34CB71355EA98"
+        }
+      }
+    },
+    {
+      "build": "10",
+      "version": "21H2",
+      "number": "19044.6456",
+      "date": {
+        "en": "October 2025",
+        "ru": "Октябрь 2025"
+      },
+      "images": {
+        "en": {
+          "file": "en-us_windows_10_iot_enterprise_ltsc_2021_x64_19044.6456_by_somov.iso",
+          "size": 4796112896,
+          "btih": "6dd253aaaff2891e7ec188edbebefbab98cb414e",
+          "sha256": "069FA74FBD250A59AF688A647543B659BFC8F3EFB02E490E023601B21D085EAA"
+        },
+        "ru": {
+          "file": "ru-ru_windows_10_iot_enterprise_ltsc_2021_x64_19044.6456_by_somov.iso",
+          "size": 4755148800,
+          "btih": "7d5af2ae14566256f2c37a62c2e0458bcb460b50",
+          "sha256": "1475B8D76D716A7B6D0F9C77EA3FA932494C675CB64782E0A3324A11208272B0"
         }
       }
     }

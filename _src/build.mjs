@@ -372,7 +372,7 @@ function homePage() {
 
   const body = `<main class="home" id="content">
     <div class="container container-narrow">
-      <div class="hero">
+      <div class="hero${solo ? '' : ' hero-pick'}">
         <!-- With one build on the page a statement, not a question: there is nothing left to choose between -->
         <h1>${solo ? L(`Windows ${build.id} LTSC, without the bloat`, `Windows ${build.id} LTSC без лишнего`) : L('Which Windows do you want to install?', 'Какую Windows вы хотите установить?')}</h1>
         <!-- Phones swap the subtitle for the build's main fact, so the build block below keeps three lines -->
@@ -464,8 +464,15 @@ function homePage() {
           </span>
           ${icon('d')}
         </a>
+        ${archiveOn() && archive.releases.length ? `<!-- Older releases: the third card of the row -->
+        <a class="more-card" href="${archiveHref()}">
+          <span>
+            <span class="more-card-title">${L('Archive of previous versions', 'Архив предыдущих версий')}</span>
+            <span class="more-card-sub">${L('Older Windows 11 and 10 builds', 'Прошлые сборки Windows 11 и 10')}</span>
+          </span>
+          ${icon('d')}
+        </a>` : ''}
       </nav>
-      ${archiveOn() && archivedReleases('11').length ? `<a class="archive-link" href="${archiveHref()}">${L('Archive of previous versions', 'Архив предыдущих версий')} ${icon('d')}</a>` : ''}
     </div>
   </main>
   <script type="application/json" id="builds-data">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>`;
@@ -778,22 +785,25 @@ function archivePage() {
       </section>`;
   };
 
-  const latest = builds.find(b => b.id === '11');
+  // Builds in the site's order (Windows 11 first), each with its current version and then its older releases
+  const archived = builds.filter(b => archivedReleases(b.id).length);
+  const names = sep => archived.map(b => `Windows ${b.id}`).join(sep);
+  const currentCard = b => `<a class="more-card archive-current" href="/windows-${b.id}">
+        <span>
+          <span class="more-card-sub">${L('Current version', 'Актуальная версия')}</span>
+          <span class="more-card-title">${esc(b.title)} ${b.version} · <span class="mono">${b.number}</span> · ${T(b.date)}</span>
+        </span>
+        ${icon('d')}
+      </a>`;
   const body = `<main class="page" id="content">
     <div class="container container-narrow">
       <a href="/" class="back">${icon('back')} ${S.home}</a>
       <h1 class="page-title">${L('Build archive', 'Архив сборок')}</h1>
-      <p class="page-sub">${L('Previous versions of the Windows 11 builds by somov. Direct download, torrent and magnet.', 'Предыдущие версии сборок Windows 11 от somov. Прямая загрузка, торрент и magnet.')}</p>
-      <a class="more-card archive-current" href="/windows-11">
-        <span>
-          <span class="more-card-sub">${L('Current version', 'Актуальная версия')}</span>
-          <span class="more-card-title">${esc(latest.title)} ${latest.version} · <span class="mono">${latest.number}</span> · ${T(latest.date)}</span>
-        </span>
-        ${icon('d')}
-      </a>
+      <p class="page-sub">${L(`Previous versions of the ${names(' and ')} builds by somov. Direct download, torrent and magnet.`, `Предыдущие версии сборок ${names(' и ')} от somov. Прямая загрузка, торрент и magnet.`)}</p>
+      ${archived.map(currentCard).join('\n      ')}
       <p class="notice">${L('Old versions do not get fixes and updates. Use them if you need exactly this build.', 'Старые версии не получают исправлений и обновлений. Берите их, если нужна именно эта сборка.')}</p>
       <div class="section">
-        ${archive.releases.map(releaseHtml).join('\n      ')}
+        ${archived.flatMap(b => archivedReleases(b.id)).map(releaseHtml).join('\n      ')}
       </div>
       ${chatHelp('archive', L('Questions about old versions?', 'Есть вопрос по старым версиям?'), L('Ask in the chat', 'Спросите в чате'))}
     </div>
@@ -803,8 +813,8 @@ function archivePage() {
     path: '/archive',
     title: { en: 'Build archive - Windows by somov', ru: 'Архив сборок - Windows от somov' },
     description: {
-      en: 'Previous versions of the Windows 11 IoT Enterprise LTSC builds by somov: direct download, torrent, magnet and SHA-256.',
-      ru: 'Предыдущие версии сборок Windows 11 IoT Enterprise LTSC от somov: прямая загрузка, торрент, magnet и SHA-256.',
+      en: 'Previous versions of the Windows 11 and Windows 10 IoT Enterprise LTSC builds by somov: direct download, torrent, magnet and SHA-256.',
+      ru: 'Предыдущие версии сборок Windows 11 и Windows 10 IoT Enterprise LTSC от somov: прямая загрузка, торрент, magnet и SHA-256.',
     },
   }, 'builds', body);
   write('archive.html', html);

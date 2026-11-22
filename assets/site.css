@@ -1925,6 +1925,9 @@ input, textarea { caret-color: var(--accent-text); }
   .home .container-narrow, body:has(main.home) :is(.topbar, .footer) .container { max-width: 1000px; }
   .home .hero { margin: 0 0 48px; text-align: left; }
   .home .hero h1 { font-size: clamp(2.25rem, 2.6vw + 1rem, 3.25rem); } /* one size for both languages; the English line stays one line */
+  /* Two builds: the question is longer than the one-build statement; the size follows the column width so the Russian
+     line stays one line too (the text is ~19 font sizes wide), both languages the same size */
+  .home .hero-pick h1 { font-size: clamp(2rem, min(2.6vw + 1rem, (100vw - 64px) / 19.5), 3.125rem); }
   .result.result-solo { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 32px 64px; align-items: start; padding-top: 40px; border-top: 1px solid var(--border); }
   .home .result h2 { font-size: 1.5rem; letter-spacing: -.015em; white-space: nowrap; }
   .home .result .meta { margin-top: 12px; font-size: 1rem; }
@@ -2102,7 +2105,8 @@ p { text-wrap: pretty; }
 @media (max-width: 720px) {
   .crypto-variant { display: flex; flex-direction: column; }
   .crypto-variant .crypto-info { order: 1; }
-  .crypto-variant .qr-wrap { order: 2; width: 128px; }
+  .crypto-variant .qr-wrap { order: 2; align-self: flex-start; width: 136px; }
+  .crypto-variant .qr { width: 100%; height: auto; aspect-ratio: 1; }   /* square at the frame's width (the fixed 160px height stretched it) */
 }
 .page .support-card-yoomoney + .support-card-tribute,
 .page .support-card-tribute + .support-card-yoomoney { border-top: 0; }
@@ -2144,3 +2148,15 @@ p { text-wrap: pretty; }
    while one is open, that layer fades out, so no snow shows through the menu */
 .snow-front { transition: opacity 200ms ease; }
 html:has(.share-menu:not([hidden]), .dd-list:not([hidden])) .snow-front { opacity: 0; }
+/* Home with two builds (2026-11-23): the picker row, the build row and the note line under them share one grid,
+   so the right column (Image language, Download, the chat link) starts on one vertical line */
+@media (min-width: 721px) {
+  .home .selectors, .home .result:not(.result-solo), .home .composer:has(.selectors) + .home-note {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 40px;
+  }
+  .home .composer:has(.selectors) + .home-note { display: grid; align-items: baseline; }
+  .home .composer:has(.selectors) + .home-note .details-link { justify-self: start; }
+  .home .composer:has(.selectors) + .home-note .chat-stats { grid-column: 1 / -1; }
+}
+/* Archive with two builds: the two "Current version" rows read as one list, one hairline between them */
+.archive-current + .archive-current { margin-top: -1px; }

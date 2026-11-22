@@ -107,13 +107,12 @@
     "id": "10",
     "title": "Windows 10 IoT Enterprise LTSC",
     "version": "21H2",
-    "number": "19044.6456",
+    "number": "19044.7850",
     "date": {
-      "en": "October 2025",
-      "ru": "Октябрь 2025"
+      "en": "November 2026",
+      "ru": "Ноябрь 2026"
     },
-    "final": true,
-    "retired": true,
+    "final": false,
     "edition": "2021",
     "ratio": [
       1600,
@@ -121,12 +120,12 @@
     ],
     "changes": [
       {
-        "en": "Final build of this version.",
-        "ru": "Финальная сборка этой версии."
+        "en": "Updated to build 19044.7850 (November 2026).",
+        "ru": "Обновлено до сборки 19044.7850 (Ноябрь 2026)."
       },
       {
-        "en": "Updated to build 19044.6456 (October 2025).",
-        "ru": "Обновлено до сборки 19044.6456 (Октябрь 2025)."
+        "en": ".NET Framework 4.8.1 included.",
+        "ru": "Добавлен .NET Framework 4.8.1."
       }
     ],
     "lead": {
@@ -187,23 +186,23 @@
     ],
     "images": {
       "en": {
-        "file": "en-us_windows_10_iot_enterprise_ltsc_2021_x64_19044.6456_by_somov.iso",
-        "btih": "6dd253aaaff2891e7ec188edbebefbab98cb414e",
-        "size": 4796112896,
+        "file": "en-us_windows_10_iot_enterprise_ltsc_2021_x64_19044.7850_by_somov.iso",
+        "btih": "e4e87b1ae04657b6c4a068b49b9e464e97782336",
+        "size": 5206020096,
         "sums": {
-          "sha256": "069fa74fbd250a59af688a647543b659bfc8f3efb02e490e023601b21d085eaa",
-          "md5": "de9f40035211b55840d5a6bd42648940",
-          "sha1": "b36d009342e4c8a71ff777aa312464c588f9a9ea"
+          "sha256": "8bfea0f005d7cd4e2e3e144952d3fcfeb80991afb26f10a14c88c74e8160f5f5",
+          "md5": "38b44b5a4fdd4f90e1759a34343f27b7",
+          "sha1": "24215e8d0f2f048fae8619963fa4157198f5ddd2"
         }
       },
       "ru": {
-        "file": "ru-ru_windows_10_iot_enterprise_ltsc_2021_x64_19044.6456_by_somov.iso",
-        "btih": "7d5af2ae14566256f2c37a62c2e0458bcb460b50",
-        "size": 4755148800,
+        "file": "ru-ru_windows_10_iot_enterprise_ltsc_2021_x64_19044.7850_by_somov.iso",
+        "btih": "6ff0c63b365f72facead5173b260a307912b98b5",
+        "size": 5173319680,
         "sums": {
-          "sha256": "1475b8d76d716a7b6d0f9c77ea3fa932494c675cb64782e0a3324a11208272b0",
-          "md5": "84fc353e1ffc57822f82de53c8b85e8a",
-          "sha1": "4b323a3a76aea6a3e8ed4691ff8b1ce087d61dd4"
+          "sha256": "a88d2886eed9d67654033d2f22965817a2bfb5503abe0bbc5fdff6da9ceaab7f",
+          "md5": "4adcf711100abd24dfa22fe85fddc5c7",
+          "sha1": "bb7b49f7fb47d1bddb467a2331750695011944d4"
         }
       }
     }
