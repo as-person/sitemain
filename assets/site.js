@@ -347,7 +347,7 @@
   $$('[data-nav-menu]').forEach(menu => {
     const list = $('.nav-menu-list', menu);
     const place = () => {
-      if (!menu.open || !matchMedia('(max-width: 720px)').matches) {
+      if (!menu.open || !matchMedia('(max-width: 900px)').matches) {
         list.style.cssText = '';
         return;
       }
@@ -360,7 +360,7 @@
     menu.addEventListener('toggle', () => { if (menu.open) openedAt = Date.now(); place(); });
     addEventListener('resize', place);
     addEventListener('scroll', () => {
-      if (!menu.open || !matchMedia('(max-width: 720px)').matches) return;
+      if (!menu.open || !matchMedia('(max-width: 900px)').matches) return;
       if (Date.now() - openedAt < 500) place(); else menu.open = false;
     }, { passive: true });
     // Scrolling the nav row sideways keeps the menu under its button
@@ -411,11 +411,6 @@
       $('#torrent-link').href = image.url + '.torrent';
       $('#magnet-link').href = image.magnet;
       $('#magnet-link').dataset.countFile = image.file;
-      const sha = $('#build-sha256'); // the home page no longer shows it; the build page has the checksums
-      if (sha) {
-        sha.dataset.copy = image.sha256;
-        sha.querySelector('code').textContent = image.sha256.slice(0, 8) + '…' + image.sha256.slice(-8);
-      }
       $('.composer [data-stats-file]').dataset.statsFile = image.file;
       renderStats();
     }
@@ -424,7 +419,7 @@
     const calm = matchMedia('(prefers-reduced-motion: reduce)');
     function settle() {
       if (calm.matches || !Element.prototype.animate) return;
-      $$('.result h2, .result .meta, .build-window img, #download-link > span, #build-sha256 code').forEach(el => el.animate(
+      $$('.result h2, .result .meta, .build-window img, #download-link > span').forEach(el => el.animate(
         [{ opacity: .25, transform: 'translateY(3px)' }, { opacity: 1, transform: 'none' }],
         { duration: 240, easing: 'cubic-bezier(.2, .8, .2, 1)' }
       ));
@@ -435,13 +430,16 @@
     render();
     osInputs.concat(langInputs).forEach(input => input.addEventListener('change', () => { render(); settle(); }));
 
-    // The fan's pictures for the other choices load while the browser is idle, so a switch shows them at once
+    // The screenshot for the other image language loads while the browser is idle, so a switch shows them at once
     // (12 small files; the size the screen takes, as the browser would pick from srcset)
     const preloadFan = () => {
       if (navigator.connection && navigator.connection.saveData) return; // the visitor asked to save traffic
-      const size = devicePixelRatio > 1.2 ? 480 : 240;
-      Object.keys(builds).forEach(os => ['en', 'ru'].forEach(lang =>
-        $$('[data-fan-shot]').forEach(img => { new Image().src = `/images/windows-${os}-${lang}/${img.dataset.fanShot}-${size}.webp`; })));
+      // The screenshot of the other image language, at the width the browser chose, so a switch shows it at once
+      $$('[data-fan-shot]').forEach(img => {
+        const src = img.currentSrc || img.src;
+        const other = src.replace(/-(en|ru)\/(\d+)-/, (m, lang, n) => `-${lang === 'en' ? 'ru' : 'en'}/${n}-`);
+        if (other !== src) new Image().src = other;
+      });
     };
     addEventListener('load', () => (window.requestIdleCallback || setTimeout)(preloadFan), { once: true });
     languageListeners.push(lang => {
@@ -634,7 +632,7 @@
     const actions = link.closest('.dl-actions');
     const row = link.closest('.row');
     if (bar) bar.prepend(note);
-    else if (actions) actions.insertBefore(note, $(':scope > .card-note, :scope > .support-nudge', actions));
+    else if (actions) actions.insertBefore(note, $(':scope > .support-nudge', actions));
     else if (row) row.append(note);
     else return;
     tgShown = true;
@@ -1089,10 +1087,14 @@
 
     function applyFilter() {
       const words = search.value.toLowerCase().split(/\s+/).filter(Boolean);
+      // A Russian word of 5+ letters loses its ending (телеметрия, телеметрию -> телеметри), and every word must
+      // start a word in the text: "store" no longer finds "restore"
+      const stem = w => (/[а-яё]/.test(w) && w.length > 4 ? w.replace(/(ами|ями|ого|ему|ими|ыми|ой|ей|ий|ый|ая|яя|ое|ее|ов|ев|ам|ям|ах|ях|ом|ем|ы|и|а|я|у|ю|е|о|ь)$/, '') : w);
+      const patterns = words.map(w => new RegExp('(^|[^a-zа-яё0-9])' + stem(w).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
       let visible = 0;
       items.forEach(item => {
         const inCategory = category === 'all' || item.dataset.category === category;
-        const matches = words.every(word => item.dataset.search.includes(word));
+        const matches = patterns.every(re => re.test(item.dataset.search));
         item.hidden = !(inCategory && matches);
         if (!item.hidden) visible += 1;
       });

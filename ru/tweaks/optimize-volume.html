@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" class="lang-ru-active" data-title-en="Optimize drives with PowerShell - Windows tweaks by somov" data-title-ru="Оптимизация дисков через PowerShell - настройки Windows от somov" data-chat="/assets/chat.js?v=24bbba62" data-snow="/assets/snow.js?v=f92de820" data-snow-season="12-01..01-31" data-snow-owner="1">
+<html lang="ru" class="lang-ru-active" data-title-en="Optimize drives with PowerShell - Windows tweaks by somov" data-title-ru="Оптимизация дисков через PowerShell - настройки Windows от somov" data-chat="/assets/chat.js?v=24bbba62" data-snow="/assets/snow.js?v=66808fc4" data-snow-season="12-01..01-31" data-snow-owner="1">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -50,7 +50,7 @@ k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNo
 Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({owner:false})},2500)})]).then(function(d){if(d&&d.owner)return;
 ym(114172668,'init',{ssr:true,clickmap:true,referrer:document.referrer,url:location.href,accurateTrackBounce:true,trackLinks:true});});})();
 </script>
-  <link rel="stylesheet" href="/assets/site.css?v=e709dcf8">
+  <link rel="stylesheet" href="/assets/site.css?v=3d3a9d77">
 </head>
 <body>
   <noscript><div><img src="https://mc.yandex.ru/watch/114172668" style="position:absolute; left:-9999px;" alt=""></div></noscript>
@@ -111,14 +111,14 @@ ym(114172668,'init',{ssr:true,clickmap:true,referrer:document.referrer,url:locat
       
       <section class="tweak-card"><div class="commands"><div>
               <div class="command-label"><span class="lang-en">Optimize the C: drive (SSD)</span><span class="lang-ru">Оптимизация диска C: (SSD)</span></div>
-              <div class="command"><code>Optimize-Volume -DriveLetter C -ReTrim -Verbose</code><button type="button" class="icon-btn" data-copy="Optimize-Volume -DriveLetter C -ReTrim -Verbose" data-count-tweak="optimize-volume" data-count-kind="copy" aria-label="Copy command" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Copy command&quot;,&quot;ru&quot;:&quot;Скопировать команду&quot;}}"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button></div>
+              <div class="command"><code>Optimize-Volume <span class="nb">-DriveLetter</span> C <span class="nb">-ReTrim</span> <span class="nb">-Verbose</span></code><button type="button" class="icon-btn" data-copy="Optimize-Volume -DriveLetter C -ReTrim -Verbose" data-count-tweak="optimize-volume" data-count-kind="copy" aria-label="Copy command: Optimize the C: drive (SSD)" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Copy command: Optimize the C: drive (SSD)&quot;,&quot;ru&quot;:&quot;Скопировать команду: Оптимизация диска C: (SSD)&quot;}}"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button></div>
             </div><div>
               <div class="command-label"><span class="lang-en">Analyze the D: drive (HDD)</span><span class="lang-ru">Анализ диска D: (HDD)</span></div>
-              <div class="command"><code>Optimize-Volume -DriveLetter D -Analyze -Verbose</code><button type="button" class="icon-btn" data-copy="Optimize-Volume -DriveLetter D -Analyze -Verbose" data-count-tweak="optimize-volume" data-count-kind="copy" aria-label="Copy command" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Copy command&quot;,&quot;ru&quot;:&quot;Скопировать команду&quot;}}"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button></div>
+              <div class="command"><code>Optimize-Volume <span class="nb">-DriveLetter</span> D <span class="nb">-Analyze</span> <span class="nb">-Verbose</span></code><button type="button" class="icon-btn" data-copy="Optimize-Volume -DriveLetter D -Analyze -Verbose" data-count-tweak="optimize-volume" data-count-kind="copy" aria-label="Copy command: Analyze the D: drive (HDD)" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Copy command: Analyze the D: drive (HDD)&quot;,&quot;ru&quot;:&quot;Скопировать команду: Анализ диска D: (HDD)&quot;}}"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button></div>
             </div><div>
               <div class="command-label"><span class="lang-en">Defragment the D: drive (HDD)</span><span class="lang-ru">Дефрагментация диска D: (HDD)</span></div>
-              <div class="command"><code>Optimize-Volume -DriveLetter D -Defrag -Verbose</code><button type="button" class="icon-btn" data-copy="Optimize-Volume -DriveLetter D -Defrag -Verbose" data-count-tweak="optimize-volume" data-count-kind="copy" aria-label="Copy command" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Copy command&quot;,&quot;ru&quot;:&quot;Скопировать команду&quot;}}"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button></div>
-            </div></div></section>
+              <div class="command"><code>Optimize-Volume <span class="nb">-DriveLetter</span> D <span class="nb">-Defrag</span> <span class="nb">-Verbose</span></code><button type="button" class="icon-btn" data-copy="Optimize-Volume -DriveLetter D -Defrag -Verbose" data-count-tweak="optimize-volume" data-count-kind="copy" aria-label="Copy command: Defragment the D: drive (HDD)" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Copy command: Defragment the D: drive (HDD)&quot;,&quot;ru&quot;:&quot;Скопировать команду: Дефрагментация диска D: (HDD)&quot;}}"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button></div>
+            </div></div><p class="help-line"><span class="lang-en">Did not work?</span><span class="lang-ru">Не сработало?</span> <a class="link" href="#chat" data-chat-open data-chat-placement="tweak"><span class="lang-en">Ask in the chat</span><span class="lang-ru">Спросите в чате</span></a></p><div class="stats-line chat-stats" data-chat-stats="tweak" hidden></div></section>
       <section class="section">
         <h2><span class="lang-en">More in this category</span><span class="lang-ru">Ещё в этой категории</span></h2>
         <div class="rows">
@@ -156,6 +156,6 @@ ym(114172668,'init',{ssr:true,clickmap:true,referrer:document.referrer,url:locat
     </div>
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="/assets/site.js?v=bd0d20a5" defer></script>
+  <script src="/assets/site.js?v=cac7a7e8" defer></script>
 </body>
 </html>

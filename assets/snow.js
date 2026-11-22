@@ -37,8 +37,38 @@
   const back = backCanvas.getContext('2d'), ctx = canvas.getContext('2d');
 
   const COL = 3;                                  // width of one column of a snow pile, px
-  // Blocks snow settles on: every card-like block with its own background on the site's pages
-  const SURFACES = '.composer, .more-card, .tg-card, .panel, .tweak-card, .rows, .support-card, .shot';
+  // Things snow may settle on. Each one is kept only if its top edge can be seen (visibleTop below): a fill, a line
+  // across its top or a picture. So snow never lies in the air over a block that lost its box, and lies on every
+  // hairline, photo, button and field the page shows, whatever the design does next.
+  const SURFACES = [
+    '.result', '.more-card', '.tg-card', '.panel', '.build-panel', '.tweak-card', '.support-grid', '.support-card',   // blocks and their hairlines
+    '.row', '.item', '.related', '.req > div', '.sum-row', '.archive-current', '.empty',                              // rows of lists
+    '.build-window img', '.shot', '.qr',                                                                              // pictures
+    '.btn', '.segmented', '.seg-links', '.address', '.command', '.search input', '.dd-button', '.select-wrap select', // controls
+  ].join(', ');
+  // How visible a CSS colour is (0 .. 1): "rgba(255, 255, 255, 0.14)", "rgb(23 26 33 / .5)", "transparent"
+  const alpha = c => {
+    if (!c || c === 'transparent') return 0;
+    const m = c.match(/[\d.]+/g) || [];
+    return m.length > 3 ? parseFloat(m[3]) : 1;
+  };
+  // A top edge you can see: a picture, a filled block, or a line drawn across the top (a hairline between rows)
+  const visibleTop = el => {
+    const cs = getComputedStyle(el);
+    if (cs.visibility === 'hidden' || parseFloat(cs.opacity) < 0.2) return false;
+    if (el.tagName === 'IMG') return true;
+    if (parseFloat(cs.borderTopWidth) > 0 && cs.borderTopStyle !== 'none' && alpha(cs.borderTopColor) > 0.05) return true;
+    return alpha(cs.backgroundColor) > 0.05 || cs.backgroundImage !== 'none';
+  };
+  // The rounding of a top corner: a picture is rounded by the frame that clips it, not by itself
+  const cornerOf = el => {
+    let r = parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0;
+    const parent = el.parentElement;
+    if (el.tagName === 'IMG' && parent && getComputedStyle(parent).overflow !== 'visible') {
+      r = Math.max(r, parseFloat(getComputedStyle(parent).borderTopLeftRadius) || 0);
+    }
+    return r;
+  };
   // Words snow lies on: the "© somov.org" standing on its own in the footer's corner, a thinner layer right on the letters
   const WORDS = '.footer-copy';
   const measurer = document.createElement('canvas').getContext('2d');
@@ -288,7 +318,17 @@
 
   function findSurfaces() {
     const keep = new Map(surfaces.map(s => [s.el, s]));
-    const blocks = [...document.querySelectorAll(SURFACES)].filter(el => el.getBoundingClientRect().width > 120);
+    // wide enough to hold a layer (a button is, a copy icon is not), and with a top edge you can see; of two things
+    // whose tops meet (a frame and the picture right at its top) only the outer one, so no layer lies on a layer
+    const blocks = [];
+    for (const el of document.querySelectorAll(SURFACES)) {
+      const r = el.getBoundingClientRect();
+      if (r.width < 80 || r.height < 8 || !visibleTop(el)) continue;
+      // nothing in a bar fixed to the screen (the phone's download bar comes and goes as you scroll)
+      if (el.closest('.dl-bar, .toast, .topbar')) continue;
+      if (blocks.some(b => b.contains(el) && Math.abs(b.getBoundingClientRect().top - r.top) < 3)) continue;
+      blocks.push(el);
+    }
     const words = [...document.querySelectorAll(WORDS)].filter(el => el.getBoundingClientRect().width > 20);   // the shown language
     surfaces = [...blocks, ...words].map((el, index) => {
       const word = index >= blocks.length;
@@ -297,7 +337,7 @@
       // (and 2 px more, whatever the screen's scaling rounds), the layer a whole number of columns, in the middle
       let inset = 0, count = Math.max(1, Math.ceil(width / COL));
       if (!word) {
-        const edge = Math.ceil(parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0) + 2;
+        const edge = Math.ceil(cornerOf(el)) + 2;
         count = Math.max(1, Math.floor((width - 2 * edge) / COL));
         inset = edge + (width - 2 * edge - count * COL) / 2;
       }

@@ -427,7 +427,7 @@ function homePage() {
       <!-- The way into the build page: one large real screenshot (the desktop with About Windows); site.js swaps it
            with the chosen image language -->
       <a class="build-window" id="details-link" href="${image.path}">
-        <img src="/images/windows-${build.id}-${PAGE_LANG}/${WINDOW_SHOT}-1600.webp" srcset="/images/windows-${build.id}-${PAGE_LANG}/${WINDOW_SHOT}-960.webp 960w, /images/windows-${build.id}-${PAGE_LANG}/${WINDOW_SHOT}-1600.webp 1600w" sizes="(min-width: 721px) 1000px, 100vw" data-fan-shot="${WINDOW_SHOT}" data-fan-sizes="960,1600" alt="" width="${build.ratio[0]}" height="${build.ratio[1]}" decoding="async">
+        <img src="/images/windows-${build.id}-${PAGE_LANG}/${WINDOW_SHOT}-960.webp" srcset="/images/windows-${build.id}-${PAGE_LANG}/${WINDOW_SHOT}-480.webp 480w, /images/windows-${build.id}-${PAGE_LANG}/${WINDOW_SHOT}-960.webp 960w, /images/windows-${build.id}-${PAGE_LANG}/${WINDOW_SHOT}-1600.webp 1600w" sizes="(min-width: 721px) 960px, calc(100vw - 32px)" data-fan-shot="${WINDOW_SHOT}" data-fan-sizes="480,960,1600" alt="" width="${build.ratio[0]}" height="${build.ratio[1]}" decoding="async">
         <span class="build-window-text">
           <span class="build-window-title">${L('See the build', 'Посмотреть сборку')} ${icon('d')}</span>
           <span class="build-window-sub">${L('6 screenshots, checksums, details', '6 скриншотов, хэши, описание')}</span>
@@ -690,7 +690,7 @@ function ghostPage() {
             ${statsLine(item.file, 'download,torrent')}
           </div>
           <div class="row-actions">
-            <a class="btn btn-secondary btn-sm" href="${url}">${icon('download')} <span>${S.download}</span></a>
+            <a class="btn ${item.recommended ? 'btn-primary' : 'btn-secondary'} btn-sm" href="${url}">${icon('download')} <span>${S.download}</span></a>
             <a class="row-text-link" href="${url}.torrent">Torrent</a>
           </div>
         </article>`;
@@ -883,9 +883,11 @@ const tweakLinkHtml = (link, id) => {
     `<a class="link lang-${lang}" href="${esc(urlFor(lang))}" target="_blank" rel="noopener" ${tweakCount(id, 'link')}>${esc(labelFor(lang))}</a>`).join('');
 };
 
+// A command on screen never breaks inside a flag ("-Analyze"); the copy button copies the exact text from data-copy
+const codeHtml = code => esc(code).replace(/(^|\s)(-[\w:]+)/g, '$1<span class="nb">$2</span>');
 const tweakCommands = item => (item.commands ? `<div class="commands">${item.commands.map(c => `<div>
               <div class="command-label">${T(c.label)}</div>
-              <div class="command"><code>${esc(c.code)}</code><button type="button" class="icon-btn" data-copy="${esc(c.code)}" ${tweakCount(item.id, 'copy')} ${attr('aria-label', 'Copy command', 'Скопировать команду')}>${icon('copy')}</button></div>
+              <div class="command"><code>${codeHtml(c.code)}</code><button type="button" class="icon-btn" data-copy="${esc(c.code)}" ${tweakCount(item.id, 'copy')} ${attr('aria-label', `Copy command: ${textIn(c.label, 'en')}`, `Скопировать команду: ${textIn(c.label, 'ru')}`)}>${icon('copy')}</button></div>
             </div>`).join('')}</div>` : '');
 const tweakDownloads = item => (item.downloads ? `<div class="chip-links">${item.downloads.map(d => `<a class="btn btn-secondary btn-sm" href="${CDN}${d.file}">${icon('download')} ${esc(d.label)}</a>`).join('')}</div>` : '');
 const tweakKeys = item => (item.keys ? `<dl class="keys">${item.keys.map(k => `<div><dt>${T(k.combo)}</dt><dd>${T(k.desc)}</dd></div>`).join('')}</dl>` : '');
@@ -921,8 +923,17 @@ function settingsPage() {
   // Both languages are searchable, whichever one is on screen.
   const plain = value => (value && typeof value === 'object' ? Object.values(value) : [value]);
 
+  // Words people type that the texts do not contain (the category name is added for every item)
+  const SEARCH_EXTRA = {
+    store: ['магазин', 'магазин приложений', 'app store'],
+    browsers: ['хром', 'яндекс', 'браузер', 'chrome', 'yandex', 'firefox', 'opera'],
+    'turn-off-telemetry': ['слежка', 'tracking'],
+    donotspy11: ['слежка', 'телеметрия', 'telemetry', 'tracking'],
+  };
   const itemHtml = item => {
+    const categoryTitle = settings.categories.find(c => c.id === item.category)?.title;
     const searchText = [
+      ...plain(categoryTitle), ...(SEARCH_EXTRA[item.id] ?? []), ...(SEARCH_EXTRA[item.category] ?? []),
       ...plain(item.title), ...plain(item.desc), ...plain(item.warning), item.file ? decodeURIComponent(item.file) : '',
       ...(item.commands ?? []).flatMap(c => [...plain(c.label), c.code]),
       ...(item.downloads ?? []).map(d => d.label),
@@ -940,7 +951,7 @@ function settingsPage() {
             ${item.links?.length ? `<div class="item-links">${item.links.map(l => linkHtml(l, item.id)).join('')}</div>` : ''}
             ${item.commands ? `<div class="commands">${item.commands.map(c => `<div>
               <div class="command-label">${T(c.label)}</div>
-              <div class="command"><code>${esc(c.code)}</code><button type="button" class="icon-btn" data-copy="${esc(c.code)}" ${tweakCount(item.id, 'copy')} ${attr('aria-label', 'Copy command', 'Скопировать команду')}>${icon('copy')}</button></div>
+              <div class="command"><code>${codeHtml(c.code)}</code><button type="button" class="icon-btn" data-copy="${esc(c.code)}" ${tweakCount(item.id, 'copy')} ${attr('aria-label', `Copy command: ${textIn(c.label, 'en')}`, `Скопировать команду: ${textIn(c.label, 'ru')}`)}>${icon('copy')}</button></div>
             </div>`).join('')}</div>` : ''}
             ${item.downloads ? `<div class="chip-links">${item.downloads.map(d => `<a class="btn btn-secondary btn-sm" href="${CDN}${d.file}">${icon('download')} ${esc(d.label)}</a>`).join('')}</div>` : ''}
             ${item.keys ? `<dl class="keys">${item.keys.map(k => `<div><dt>${T(k.combo)}</dt><dd>${T(k.desc)}</dd></div>`).join('')}</dl>` : ''}
@@ -1093,7 +1104,7 @@ function tweakPage(item) {
       ${item.links?.length ? `<div class="item-links">${item.links.map(l => tweakLinkHtml(l, item.id)).join('')}</div>` : ''}
       ${tweakStats(item)}
       ${action}
-      ${extras ? `<section class="tweak-card">${extras}</section>` : ''}
+      ${extras ? `<section class="tweak-card">${extras}${item.file ? '' : chatHelp('tweak', L('Did not work?', 'Не сработало?'), L('Ask in the chat', 'Спросите в чате'))}</section>` : ''}
       ${related.length ? `<section class="section">
         <h2>${L('More in this category', 'Ещё в этой категории')}</h2>
         <div class="rows">
@@ -1117,7 +1128,7 @@ function tweakPage(item) {
 
 function notFoundPage() {
   write('404.html', `<!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-title-en="Page not found - Windows by somov" data-title-ru="Страница не найдена - Windows от somov">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1138,6 +1149,7 @@ function notFoundPage() {
   <link rel="stylesheet" href="${CSS_URL}">
 </head>
 <body>
+  ${header('')}
   <main class="not-found" id="content">
     <h1 class="not-found-code">404</h1>
     <p>${L('This page doesn’t exist.', 'Такой страницы не существует.')}</p>
@@ -1150,6 +1162,7 @@ function notFoundPage() {
       <a href="/settings-for-windows">${L('Settings for Windows', 'Настройки для Windows')}</a>
     </nav>
   </main>
+  ${footer()}
 </body>
 </html>
 `);
@@ -1225,13 +1238,19 @@ function supportPage() {
           <p>${L('Cards from any country, through Tribute.', 'Карты любых стран и СБП, через Tribute.')}</p>
           <a class="btn btn-secondary" href="${esc(DONATE.tribute)}" target="_blank" rel="noopener">${L('Support by card', 'Поддержать картой')} ${icon('external')}</a>
         </article>`,
-    cryptoCard(copyRow),
     `<article class="support-card support-card-yoomoney" id="yoomoney">
           <h2>${L('YooMoney', 'ЮMoney')}</h2>
           <p>${L('Russian bank cards and YooMoney wallet.', 'Российские карты и кошелёк ЮMoney.')}</p>
           <a class="btn btn-secondary" href="${esc(DONATE.yoomoney)}" target="_blank" rel="noopener">${L('Open YooMoney', 'Перейти в ЮMoney')} ${icon('external')}</a>
         </article>`,
+    cryptoCard(copyRow),
   ].filter(Boolean);
+  // Reading and Tab order match the screen: Russian visitors see YooMoney before the card payment
+  if (PAGE_LANG === 'ru') {
+    const yoo = cards.findIndex(c => c.includes('support-card-yoomoney'));
+    const card = cards.findIndex(c => c.includes('support-card-tribute'));
+    if (yoo > card && card >= 0) cards.splice(card, 0, cards.splice(yoo, 1)[0]);
+  }
 
   const body = `<main class="page" id="content">
     <div class="container container-narrow">

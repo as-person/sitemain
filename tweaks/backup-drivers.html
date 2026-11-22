@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-title-en="Back up and restore drivers - Windows tweaks by somov" data-title-ru="Резервная копия и восстановление драйверов - somov" data-chat="/assets/chat.js?v=24bbba62" data-snow="/assets/snow.js?v=f92de820" data-snow-season="12-01..01-31" data-snow-owner="1">
+<html lang="en" data-title-en="Back up and restore drivers - Windows tweaks by somov" data-title-ru="Резервная копия и восстановление драйверов - somov" data-chat="/assets/chat.js?v=24bbba62" data-snow="/assets/snow.js?v=66808fc4" data-snow-season="12-01..01-31" data-snow-owner="1">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -50,7 +50,7 @@ k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNo
 Promise.race([window.siteOwner,new Promise(function(r){setTimeout(function(){r({owner:false})},2500)})]).then(function(d){if(d&&d.owner)return;
 ym(114172668,'init',{ssr:true,clickmap:true,referrer:document.referrer,url:location.href,accurateTrackBounce:true,trackLinks:true});});})();
 </script>
-  <link rel="stylesheet" href="/assets/site.css?v=e709dcf8">
+  <link rel="stylesheet" href="/assets/site.css?v=3d3a9d77">
 </head>
 <body>
   <noscript><div><img src="https://mc.yandex.ru/watch/114172668" style="position:absolute; left:-9999px;" alt=""></div></noscript>
@@ -111,11 +111,11 @@ ym(114172668,'init',{ssr:true,clickmap:true,referrer:document.referrer,url:locat
       
       <section class="tweak-card"><div class="commands"><div>
               <div class="command-label"><span class="lang-en">Back up drivers from this PC (PowerShell)</span><span class="lang-ru">Резервное копирование драйверов (PowerShell)</span></div>
-              <div class="command"><code>Export-WindowsDriver -Online -Destination D:\your_folder</code><button type="button" class="icon-btn" data-copy="Export-WindowsDriver -Online -Destination D:\your_folder" data-count-tweak="backup-drivers" data-count-kind="copy" aria-label="Copy command" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Copy command&quot;,&quot;ru&quot;:&quot;Скопировать команду&quot;}}"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button></div>
+              <div class="command"><code>Export-WindowsDriver <span class="nb">-Online</span> <span class="nb">-Destination</span> D:\your_folder</code><button type="button" class="icon-btn" data-copy="Export-WindowsDriver -Online -Destination D:\your_folder" data-count-tweak="backup-drivers" data-count-kind="copy" aria-label="Copy command: Back up drivers from this PC (PowerShell)" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Copy command: Back up drivers from this PC (PowerShell)&quot;,&quot;ru&quot;:&quot;Скопировать команду: Резервное копирование драйверов (PowerShell)&quot;}}"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button></div>
             </div><div>
               <div class="command-label"><span class="lang-en">Restore drivers to this PC (cmd or PowerShell)</span><span class="lang-ru">Восстановление драйверов (cmd или PowerShell)</span></div>
-              <div class="command"><code>pnputil.exe /add-driver D:\your_folder\*.inf /subdirs /install</code><button type="button" class="icon-btn" data-copy="pnputil.exe /add-driver D:\your_folder\*.inf /subdirs /install" data-count-tweak="backup-drivers" data-count-kind="copy" aria-label="Copy command" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Copy command&quot;,&quot;ru&quot;:&quot;Скопировать команду&quot;}}"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button></div>
-            </div></div></section>
+              <div class="command"><code>pnputil.exe /add-driver D:\your_folder\*.inf /subdirs /install</code><button type="button" class="icon-btn" data-copy="pnputil.exe /add-driver D:\your_folder\*.inf /subdirs /install" data-count-tweak="backup-drivers" data-count-kind="copy" aria-label="Copy command: Restore drivers to this PC (cmd or PowerShell)" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Copy command: Restore drivers to this PC (cmd or PowerShell)&quot;,&quot;ru&quot;:&quot;Скопировать команду: Восстановление драйверов (cmd или PowerShell)&quot;}}"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button></div>
+            </div></div><p class="help-line"><span class="lang-en">Did not work?</span><span class="lang-ru">Не сработало?</span> <a class="link" href="#chat" data-chat-open data-chat-placement="tweak"><span class="lang-en">Ask in the chat</span><span class="lang-ru">Спросите в чате</span></a></p><div class="stats-line chat-stats" data-chat-stats="tweak" hidden></div></section>
       <section class="section">
         <h2><span class="lang-en">More in this category</span><span class="lang-ru">Ещё в этой категории</span></h2>
         <div class="rows">
@@ -153,6 +153,6 @@ ym(114172668,'init',{ssr:true,clickmap:true,referrer:document.referrer,url:locat
     </div>
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="/assets/site.js?v=bd0d20a5" defer></script>
+  <script src="/assets/site.js?v=cac7a7e8" defer></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-title-en="Page not found - Windows by somov" data-title-ru="Страница не найдена - Windows от somov">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,9 +19,35 @@
   <script>
 (function(){var r=document.documentElement,p=location.pathname,s;try{s=localStorage.getItem('siteLanguage')}catch(e){}if(/^\/ru(\/|$)/.test(p)){if(!s){s='ru';try{localStorage.setItem('siteLanguage','ru')}catch(e){}}history.replaceState(null,'',(p.replace(/^\/ru/,'')||'/')+location.search+location.hash)}var l=s==='ru'||s==='en'?s:(r.lang==='ru'||(navigator.language||'').toLowerCase().indexOf('ru')===0?'ru':'en');r.lang=l;r.classList.remove('lang-en-active','lang-ru-active');r.classList.add('lang-'+l+'-active');if(l==='ru'){if(r.dataset.titleRu)document.title=r.dataset.titleRu;var k=document.createElement('link');k.rel='preload';k.as='font';k.type='font/woff2';k.crossOrigin='';k.href='/assets/fonts/inter-cyrillic-wght-normal.woff2';document.head.appendChild(k);var k2=k.cloneNode();k2.href='/assets/fonts/wix-madefor-display-cyrillic-wght.woff2';document.head.appendChild(k2);}})();
 </script>
-  <link rel="stylesheet" href="/assets/site.css?v=e709dcf8">
+  <link rel="stylesheet" href="/assets/site.css?v=3d3a9d77">
 </head>
 <body>
+  <a class="skip-link" href="#content"><span class="lang-en">Skip to content</span><span class="lang-ru">Перейти к содержимому</span></a>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a href="/" class="brand">
+        <img src="/images/logo-mark.png" alt="" width="32" height="32">
+        <span>Windows by somov</span>
+      </a>
+      <nav class="site-nav" aria-label="Main" data-i18n="{&quot;aria-label&quot;:{&quot;en&quot;:&quot;Main&quot;,&quot;ru&quot;:&quot;Основная навигация&quot;}}">
+        <details class="nav-menu" data-nav-menu>
+          <summary><span class="lang-en">Builds</span><span class="lang-ru">Сборки</span> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+          <div class="nav-menu-list">
+            <a href="/windows-11">Windows 11 IoT LTSC <span>24H2</span></a>
+            <a href="/windows-10">Windows 10 IoT LTSC <span>21H2</span></a>
+            <a class="nav-menu-all" href="/"><span class="lang-en">All builds</span><span class="lang-ru">Все сборки</span></a>
+          </div>
+        </details>
+        <a href="/ghost-spectre">Ghost Spectre</a>
+        <a href="/settings-for-windows"><span class="lang-en">Settings</span><span class="lang-ru">Настройки</span></a>
+        <a class="nav-external" href="https://t.me/+gmXk9-zXZ405YWY6" target="_blank" rel="noopener" data-tg-placement="header" aria-label="Telegram"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z"/></svg><span>Telegram</span></a>
+      </nav>
+      <div class="lang-switch" role="group" aria-label="Site language / Язык сайта">
+        <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+        <button type="button" data-set-lang="ru" aria-pressed="false">RU</button>
+      </div>
+    </div>
+  </header>
   <main class="not-found" id="content">
     <h1 class="not-found-code">404</h1>
     <p><span class="lang-en">This page doesn’t exist.</span><span class="lang-ru">Такой страницы не существует.</span></p>
@@ -34,5 +60,33 @@
       <a href="/settings-for-windows"><span class="lang-en">Settings for Windows</span><span class="lang-ru">Настройки для Windows</span></a>
     </nav>
   </main>
+  <footer class="footer">
+    <div class="container footer-inner">
+      <section>
+        <h2><span class="lang-en">Support the project</span><span class="lang-ru">Поддержать проект</span></h2>
+        <div class="footer-links">
+          <a href="/support"><span class="lang-en">Ways to support</span><span class="lang-ru">Способы поддержки</span> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+        </div>
+      </section>
+      <section>
+        <h2><span class="lang-en">Builds</span><span class="lang-ru">Сборки</span></h2>
+        <div class="footer-links">
+          <a href="/archive"><span class="lang-en">Archive</span><span class="lang-ru">Архив</span> <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+        </div>
+      </section>
+      <section>
+        <h2><span class="lang-en">Contact</span><span class="lang-ru">Контакты</span></h2>
+        <div class="footer-links">
+          <a href="#chat" data-chat-open data-chat-placement="footer"><span class="lang-en">Website chat</span><span class="lang-ru">Чат на сайте</span><span class="chat-dot" hidden></span></a>
+          <a href="https://t.me/+gmXk9-zXZ405YWY6" target="_blank" rel="noopener" data-tg-placement="footer">Telegram</a>
+          <a href="mailto:me@somov.org">me@somov.org</a>
+        </div>
+        <div class="stats-line chat-stats" data-chat-stats="footer" hidden></div>
+      </section>
+      <div class="footer-end"><span class="footer-copy">&copy; somov.org</span></div>
+    </div>
+  </footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="/assets/site.js?v=cac7a7e8" defer></script>
 </body>
 </html>

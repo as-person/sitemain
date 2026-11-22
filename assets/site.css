@@ -42,6 +42,9 @@
   --raised-hover: #282d38;
   --border: rgb(255 255 255 / .11);
   --border-strong: rgb(255 255 255 / .22);
+  --hairline: rgb(255 255 255 / .14);   /* rows and sections without boxes */
+  --field-border: rgb(255 255 255 / .36); /* form fields: 3:1 on the page ground */
+  --scrim: rgb(10 12 16 / .88);
 
   --text: #f0f2f5;
   --muted: #a9b0bc;
@@ -370,8 +373,6 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 
 .hero { text-align: center; margin-bottom: 40px; }
 .hero h1 { font-size: clamp(2rem, 2.4vw + 1rem, 2.75rem); line-height: 1.08; }
-/* Wide screens: the question may run a little wider than the card, so it stays on one line in both languages */
-@media (min-width: 1024px) { .hero { margin-inline: -80px; } } /* tracking: see "The site's voice" */
 .hero p { margin-top: 12px; color: var(--muted); font-size: 1.125rem; }
 
 .composer {
@@ -702,12 +703,12 @@ html:not([data-image]) .img-ru { display: none !important; }
   font-weight: 600;
 }
 
-.req { display: grid; border: 1px solid var(--border); border-radius: var(--r-md); overflow: hidden; }
+.req { display: grid; }
 .req div { display: grid; grid-template-columns: 140px 1fr; gap: 16px; padding: 12px 16px; font-size: var(--fs-sm); }
 .req div + div { border-top: 1px solid var(--border); }
 .req dt { color: var(--muted); }
 
-.sums { display: grid; border: 1px solid var(--border); border-radius: var(--r-md); overflow: hidden; }
+.sums { display: grid; }
 .sum-row { display: grid; grid-template-columns: 64px minmax(0, 1fr) 40px; align-items: center; gap: 8px; padding: 6px 8px 6px 16px; }
 .sum-row + .sum-row { border-top: 1px solid var(--border); }
 .sum-label { color: var(--muted); font-size: var(--fs-xs); font-weight: 600; }
@@ -885,7 +886,7 @@ html:not([data-image]) .img-ru { display: none !important; }
 }
 .search input::placeholder { color: var(--muted); }
 /* No blue ring on the search field: a slightly lighter border, like the dropdowns on /support */
-.search input:focus, .search input:focus-visible { outline: none; border-color: rgb(255 255 255 / .32); box-shadow: 0 0 0 3px rgb(255 255 255 / .07); }
+.search input:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 2px; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
 .chips::-webkit-scrollbar { display: none; }
 .chip {
@@ -901,9 +902,9 @@ html:not([data-image]) .img-ru { display: none !important; }
   transition: color var(--ease), background var(--ease), border-color var(--ease);
 }
 .chip:hover { color: var(--text); border-color: var(--border-strong); }
-.chip[aria-pressed="true"] { background: var(--selected); border-color: var(--selected); color: var(--on-selected); }
+.chip[aria-pressed="true"] { background: var(--thumb); border-color: transparent; box-shadow: var(--thumb-shadow); color: var(--text); }
 .result-count { margin-top: 16px; min-height: 1.5em; min-height: 1lh; color: var(--muted); font-size: var(--fs-sm); } /* the line is filled by site.js: its place is kept so the list does not jump */
-.empty { margin-top: 32px; padding: 40px 20px; border: 1px dashed var(--border-strong); border-radius: var(--r-lg); color: var(--muted); text-align: center; }
+.empty { margin-top: 24px; padding: 24px 0; border-top: 1px solid var(--hairline); color: var(--muted); }
 
 .item {
   display: grid;
@@ -954,10 +955,11 @@ html:not([data-image]) .img-ru { display: none !important; }
   align-items: center;
   gap: 8px;
   padding: 4px 4px 4px 14px;
+  border: 1px solid var(--border);
   border-radius: var(--r-sm);
-  background: var(--bg);
+  background: var(--surface);
 }
-.command code { font-size: var(--fs-xs); overflow-wrap: anywhere; }
+.command code { font-size: var(--fs-xs); overflow-wrap: break-word; word-break: normal; hyphens: none; }
 
 .chip-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 
@@ -1121,7 +1123,7 @@ html:not([data-image]) .img-ru { display: none !important; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { transition: none !important; animation: none !important; }
+  *, *::before, *::after { animation: none !important; transition-property: opacity, color, background-color, border-color !important; transition-duration: 120ms !important; }
 }
 
 /* -- Support ------------------------------------------------------------- */
@@ -1198,7 +1200,7 @@ html:not([data-image]) .img-ru { display: none !important; }
   transition: border-color var(--ease), box-shadow var(--ease);
 }
 .dd-button:hover, .is-open .dd-button { border-color: rgb(255 255 255 / .32); }
-.dd-button:focus-visible { outline: none; border-color: rgb(255 255 255 / .32); box-shadow: 0 0 0 3px rgb(255 255 255 / .07); border-radius: var(--r-md); }
+.dd-button:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 2px; border-radius: var(--r-md); }
 .is-open .select-chevron { rotate: 180deg; }
 .dd-name { font-weight: 600; white-space: nowrap; }
 .dd-sub { overflow: hidden; color: var(--muted); text-overflow: ellipsis; white-space: nowrap; }
@@ -1453,7 +1455,7 @@ html:not([data-image]) .img-ru { display: none !important; }
   --chat-accent: #5ea6e8;
   --chat-strong: #fff;
   --chat-soft: #9cc8f2;
-  --chat-meta-out: #8fc1f0;
+  --chat-meta-out: #a9d0f5;
   --chat-failed: #5c2b33;
   --chat-field: #1a2633;
   --chat-online: #4fae4e;
@@ -1695,8 +1697,8 @@ html:not([data-image]) .img-ru { display: none !important; }
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--chat-accent);
-  color: var(--on-accent);
+  background: #2f7fd0;
+  color: #fff;
   transition: filter var(--ease), transform var(--ease);
 }
 .chat-send:hover { filter: brightness(1.1); }
@@ -1978,79 +1980,163 @@ input, textarea { caret-color: var(--accent-text); }
 }
 
 /* ==========================================================================
-   Build pages without boxes (2026-11-22), the same language as the home page: the text and the
-   lists lie on the page ground, hairlines and space do the grouping. The download panel and the controls keep their look.
+   The rest of the site without boxes (2026-11-22, cleaned up 2026-11-23 after the deep review). Text and lists lie
+   on the page ground; hairlines and space do the grouping. Controls (buttons, fields, switches, code wells) keep
+   their own edge. Group and section headings have no line under them, so they never read as one more row.
    ========================================================================== */
-/* the download panel stands apart by a vertical hairline between the columns, not by a box: it is where you act,
-   the page beside it is what you read */
-@media (min-width: 1024px) {
-  .build-panel { padding-left: 40px; border-left: 1px solid var(--border); }
-  .build-panel .panel { padding: 0; border: 0; border-radius: 0; background: none; }
+
+/* Header and footer share one width on every page; between 721 and 900px the header takes the two-row phone
+   layout (the one-row header ran off the screen there) */
+:is(.topbar, .footer) .container { max-width: 1000px; }
+@media (min-width: 721px) and (max-width: 900px) {
+  .topbar-inner { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; padding-block: 10px 6px; min-height: 0; }
+  .site-nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    margin-inline: calc(var(--gutter) * -1);
+    padding-inline: calc(var(--gutter) - 12px) var(--gutter);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .site-nav::-webkit-scrollbar { display: none; }
+  .site-nav .nav-external { margin-left: 0; }
 }
-.build-panel .tg-card { margin-top: 20px; padding: 20px 0 0; border: 0; border-top: 1px solid var(--border); border-radius: 0; background: none; }
-.build-panel .tg-card:hover { border-color: var(--border); background: none; }
+.brand { flex: none; }
+/* Nothing may scroll the page sideways (a full-width band once did, with a Windows scrollbar) */
+main { overflow-x: clip; }
+/* No lone word on the last line of a paragraph */
+p { text-wrap: pretty; }
+
+/* -- Build pages --------------------------------------------------------- */
+.container.build { max-width: 1000px; }
+.build { grid-template-columns: minmax(0, 1fr) 300px; }
+.build-panel .panel { padding: 0; border: 0; border-radius: 0; background: none; }
+.build-panel .panel-title { display: none; } /* the page's own title says the same right beside it */
+.build-panel .panel-label { margin-top: 0; }
+.build-panel .hash-copy { justify-self: start; }
+.build-panel .support-nudge { text-align: left; }
+.build-panel .tg-card { margin-top: 20px; padding: 20px 0 0; border: 0; border-top: 1px solid var(--hairline); border-radius: 0; background: none; }
+.build-panel .tg-card:hover { background: none; }
 .build-panel .tg-card:hover .tg-title { color: var(--accent-text); }
 .build-panel .tg-title { transition: color var(--ease); }
 .build-panel .tg-icon { display: none; }
-.req, .sums { border: 0; border-radius: 0; border-top: 1px solid var(--border); }
+/* Wide screens: reading on the left, acting on the right, parted by one hairline that runs the full height */
+@media (min-width: 1024px) {
+  .build { position: relative; }
+  .build::after { content: ""; position: absolute; top: 0; bottom: 0; right: calc(300px + var(--gutter)); border-left: 1px solid var(--hairline); pointer-events: none; }
+  .build-panel { padding-left: 40px; }
+}
+/* Phones and tablets: the panel is a full-width band of the surface tone under the description, edge to edge
+   (no frame, no corners); on a tablet its controls keep a phone-like width instead of stretching */
+@media (max-width: 1023px) {
+  .build-panel { margin: 32px calc(var(--gutter) * -1); padding: 28px var(--gutter) 20px; background: var(--surface); border-block: 1px solid var(--hairline); }
+  .build-panel > * { max-width: 520px; }
+  .build-panel .tg-card { padding-bottom: 0; }
+}
+.req, .sums { border-bottom: 1px solid var(--hairline); }
+.req div + div, .sum-row + .sum-row { border-top: 1px solid var(--hairline); }
 .req div { padding: 14px 0; }
-.req div + div, .sum-row + .sum-row { border-top-color: var(--border); }
-.req, .sums { border-bottom: 1px solid var(--border); }
 .sum-row { padding: 8px 0; }
 .retired-note { padding: 0; border: 0; border-radius: 0; }
-.build-body .section { margin-top: 64px; }
-.build-body .section > h2 { margin-bottom: 20px; }
+.build-body .section > h2 { margin-bottom: 20px; font-size: 1.5rem; letter-spacing: -.015em; }
+.build-body .section { margin-top: 72px; }
 @media (max-width: 720px) {
   .build-body .section { margin-top: 48px; }
+  .build-body .section > h2 { font-size: 1.25rem; }
 }
 
-/* Lists without boxes (2026-11-22): Ghost Spectre, the archive, Settings and the tweak pages. A list is read, so it
-   lies on the page ground between hairlines; a block where you act (a download panel, a payment card) keeps its frame */
-.page .rows { border: 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); border-radius: 0; background: none; overflow: visible; }
-.page .row, .page .item { padding-inline: 0; }
+/* -- Lists: Ghost Spectre, the archive, Settings, tweak pages ------------- */
+.page .rows { border: 0; border-bottom: 1px solid var(--hairline); border-radius: 0; background: none; overflow: visible; isolation: isolate; }
+.page :is(.row, .item, .related) { position: relative; padding-inline: 0; }
+.page :is(.row, .item, .related) + :is(.row, .item, .related) { border-top: 1px solid var(--hairline); }
 .page .item { padding-block: 22px; }
 .page .row { padding-block: 20px; }
-.page .item:target { background: none; }
-.page .item:target .item-title { color: var(--accent-text); }
-.page .related { padding-inline: 0; }
+.page .group + .group { margin-top: 72px; }
+.page .group-title { margin-bottom: 4px; font-size: 1.5rem; letter-spacing: -.015em; }
+/* a soft fill a touch wider than the row: on hover, when a control inside has the keyboard focus, and on arrival
+   by a link to the row (#recommended, #featured) */
+.page :is(.row, .item, .related)::before { content: ""; position: absolute; inset: 0 -16px; z-index: -1; border-radius: 12px; background: var(--surface); opacity: 0; transition: opacity var(--ease); }
+.page :is(.row, .item, .related):is(:hover, :focus-within, :target)::before { opacity: 1; }
+@media (hover: none) { .page :is(.row, .item, .related):not(:target)::before { display: none; } }
+.page :is(.row, .item) { scroll-margin-top: 140px; }
 .page .related:hover { background: none; color: var(--accent-text); }
 .page .related .icon { transition: transform var(--ease), color var(--ease); }
 .page .related:hover .icon { transform: translateX(3px); color: var(--text); }
-.page .group + .group { margin-top: 56px; }
-.page .group-title { margin-bottom: 8px; }
+.page .item:target { background: none; }
+.page .item:target .item-title { color: var(--accent-text); }
 
-/* The tweak download block and the support options without boxes: hairlines above and below, the page ground inside */
-.page .tweak-card { padding: 24px 0; border: 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); border-radius: 0; background: none; }
-.page .support-grid { gap: 0 48px; border-bottom: 1px solid var(--border); }
-.page .support-card { padding: 28px 0; border: 0; border-top: 1px solid var(--border); border-radius: 0; background: none; }
-
-/* Phones and tablets: the download panel sits under the description as a full-width band of the surface tone,
-   edge to edge (no frame, no corners): a part of the page where you act, not a box */
-@media (max-width: 1023px) {
-  .build-panel { margin-block: 32px; margin-inline: calc(50% - 50vw); padding: 28px calc(50vw - 50%) 8px; background: var(--surface); border-block: 1px solid var(--border); }
-  .build-panel .panel { padding: 0; border: 0; border-radius: 0; background: none; }
-  .build-panel .tg-card { margin-top: 20px; padding: 16px 0 20px; border-top: 1px solid var(--border); }
+/* Ghost Spectre: a build past its end of servicing steps back, badge and button too; the recommended build
+   carries the page's one blue button (build.mjs) */
+.row-muted .badge { color: var(--muted); border-color: var(--border); }
+.row-muted .btn-secondary { color: var(--muted); border-color: var(--border); }
+.row-muted .btn-secondary:hover { color: var(--text); border-color: var(--border-strong); }
+/* Phones: compact buttons, not six full-width bars (the recommended one stays wide) */
+@media (max-width: 720px) {
+  .page .row-actions .btn { flex: 0 0 auto; }
+  .page #recommended .row-actions .btn { flex: 1; }
 }
-/* the wallet address was a dark well inside the card; on the page ground it needs its own edge */
+
+/* Settings rows: the title leads; flags and related links step back to quiet metadata; a hover on the row
+   shows that its title opens the tweak page */
+.page .item-tags .badge { color: var(--muted); border-color: var(--border); }
+.page .item-links .link { color: var(--muted); text-decoration-color: var(--border-strong); }
+.page .item-links .link:hover { color: var(--accent-text); text-decoration-color: currentColor; }
+.page .item:hover .item-title a { color: var(--accent-text); }
+.chip-links .btn-secondary { border-color: var(--border); }
+.item-full .item-desc { max-width: 70ch; }
+
+/* The archive: the current version is a row between hairlines, not a box */
+.archive-current { padding: 18px 0; border: 0; border-block: 1px solid var(--hairline); border-radius: 0; background: none; }
+.archive-current:hover { background: none; border-color: var(--hairline); }
+.archive-current:hover .more-card-title { color: var(--accent-text); }
+
+/* -- Tweak pages and Support --------------------------------------------- */
+.page .tweak-card { padding: 24px 0; border: 0; border-block: 1px solid var(--hairline); border-radius: 0; background: none; }
+.page .support-grid { gap: 0 48px; border-block: 1px solid var(--hairline); }
+.page .support-card { padding: 28px 0; border: 0; border-radius: 0; background: none; }
+.page .support-card.crypto { border-top: 1px solid var(--hairline); }
 .page .support-card .address { border: 1px solid var(--border); }
-/* Without the boxes around them the switches lost their track (the page ground is the track colour): a hairline gives it back */
+.address code { font-size: .875rem; letter-spacing: .02em; }
+.qr-save { border-color: var(--bg); }
+/* Phones: you cannot scan your own screen, so the warning and the address come first and the QR after them */
+@media (max-width: 720px) {
+  .crypto-variant { display: flex; flex-direction: column; }
+  .crypto-variant .crypto-info { order: 1; }
+  .crypto-variant .qr-wrap { order: 2; width: 128px; }
+}
+.page .support-card-yoomoney + .support-card-tribute,
+.page .support-card-tribute + .support-card-yoomoney { border-top: 0; }
+
+/* -- 404 with the site's header and footer -------------------------------- */
+.not-found { padding-block: 72px 96px; }
+.not-found-code { font-family: "Wix Madefor Display", Inter, system-ui, sans-serif; font-weight: 700; }
+.not-found-links { max-width: 24rem; }
+
+/* -- Switches, fields, touch ---------------------------------------------- */
+/* Without the boxes around them the switches lost their track (the page ground is the track colour) */
 .segmented, .seg-links { border: 1px solid var(--border); }
+.search input, .dd-button, .select-wrap select { border-color: var(--field-border); }
+/* Touch screens: 44px for every small control */
+@media (pointer: coarse) {
+  .btn-sm, .row-text-link, .chip, .site-nav a, .nav-menu summary, .segmented label > span { min-height: 44px; }
+  .icon-btn { min-width: 44px; min-height: 44px; }
+}
 
-/* Lists, second pass: the group heading must not look like one more row. No line under it, more air between
-   groups, a larger heading; rows part by a slightly firmer hairline; a hover lights the row a touch wider than it */
-.page .rows { border-top: 0; }
-.page .row + .row, .page .item + .item, .page .related + .related { border-top-color: rgb(255 255 255 / .14); }
-.page .rows { border-bottom-color: rgb(255 255 255 / .14); }
-.page .group + .group { margin-top: 72px; }
-.page .group-title { margin-bottom: 4px; font-size: 1.5rem; letter-spacing: -.015em; }
-.page .row, .page .item, .page .related { position: relative; }
-.page .row::before, .page .item::before, .page .related::before { content: ""; position: absolute; inset: 0 -16px; z-index: -1; border-radius: 12px; background: var(--surface); opacity: 0; transition: opacity var(--ease); }
-.page :is(.row, .item, .related):hover::before { opacity: 1; }
-.page .rows { isolation: isolate; }
-@media (hover: none) { .page :is(.row, .item, .related)::before { display: none; } }
-
-/* Build pages, the same rule: no line under a section heading, firmer lines between rows, more air between sections */
-.req, .sums { border-top: 0; border-bottom-color: rgb(255 255 255 / .14); }
-.req div + div, .sum-row + .sum-row { border-top-color: rgb(255 255 255 / .14); }
-.build-body .section > h2 { font-size: 1.5rem; letter-spacing: -.015em; }
-@media (min-width: 721px) { .build-body .section { margin-top: 72px; } }
+/* -- Home: the caption on the screenshot reads on the bright sea at every width -- */
+@media (min-width: 721px) {
+  .build-window::after { content: ""; position: absolute; inset: auto 0 0; height: 55%; background: linear-gradient(transparent, var(--scrim)); pointer-events: none; }
+  .build-window-text { z-index: 1; }
+  .build-window img { object-position: center 55%; }
+}
+@media (min-width: 721px) and (max-width: 900px) {
+  .home .result h2 { white-space: normal; text-wrap: balance; }
+}
+.command code .nb { white-space: nowrap; }
+/* 721-900px: the two home columns share the width evenly, so the Download label stays on one line */
+@media (min-width: 721px) and (max-width: 900px) {
+  .home .result.result-solo { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px 40px; }
+  .home #download-link { font-size: 1rem; white-space: nowrap; }
+}
+/* Home: the build name is a link to its page; it answers a hover the way list titles do in Settings */
+.home .result h2 a { transition: color var(--ease); }
+.home .result h2 a:hover { color: var(--accent-text); }
