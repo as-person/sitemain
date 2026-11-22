@@ -60,11 +60,15 @@
     if (parseFloat(cs.borderTopWidth) > 0 && cs.borderTopStyle !== 'none' && alpha(cs.borderTopColor) > 0.05) return true;
     return alpha(cs.backgroundColor) > 0.05 || cs.backgroundImage !== 'none';
   };
-  // A line drawn along the foot of a block
+  // A line drawn along the foot of an open block (the end of a list, the foot of a table): only a line on its own.
+  // A framed or filled thing (a button, a field, a switch) has its bottom edge inside its frame: snow lies on its top only
   const visibleBottom = el => {
     const cs = getComputedStyle(el);
-    return cs.visibility !== 'hidden' && parseFloat(cs.borderBottomWidth) > 0 && cs.borderBottomStyle !== 'none'
-      && alpha(cs.borderBottomColor) > 0.05;
+    if (cs.visibility === 'hidden' || !(parseFloat(cs.borderBottomWidth) > 0) || cs.borderBottomStyle === 'none'
+      || alpha(cs.borderBottomColor) <= 0.05) return false;
+    const framed = parseFloat(cs.borderLeftWidth) > 0 || parseFloat(cs.borderRightWidth) > 0;
+    const filled = alpha(cs.backgroundColor) > 0.05 || cs.backgroundImage !== 'none';
+    return !framed && !filled;
   };
   // Blocks that end on a line (lists, bands): looked at for that line only
   const LEDGES = '.rows, .req, .sums, .tweak-card, .support-grid, .archive-current';
