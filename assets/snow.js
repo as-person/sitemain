@@ -60,15 +60,12 @@
     if (parseFloat(cs.borderTopWidth) > 0 && cs.borderTopStyle !== 'none' && alpha(cs.borderTopColor) > 0.05) return true;
     return alpha(cs.backgroundColor) > 0.05 || cs.backgroundImage !== 'none';
   };
-  // The rounding of a top corner: a picture is rounded by the frame that clips it, not by itself
-  const cornerOf = el => {
-    let r = parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0;
+  // A picture inside a frame that clips it: the frame is what you see, so its edge and its corners hold the snow
+  const frameOf = el => {
     const parent = el.parentElement;
-    if (el.tagName === 'IMG' && parent && getComputedStyle(parent).overflow !== 'visible') {
-      r = Math.max(r, parseFloat(getComputedStyle(parent).borderTopLeftRadius) || 0);
-    }
-    return r;
+    return el.tagName === 'IMG' && parent && getComputedStyle(parent).overflow !== 'visible' ? parent : el;
   };
+  const cornerOf = el => parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0;
   // Words snow lies on: the "© somov.org" standing on its own in the footer's corner, a thinner layer right on the letters
   const WORDS = '.footer-copy';
   const measurer = document.createElement('canvas').getContext('2d');
@@ -321,9 +318,12 @@
     // wide enough to hold a layer (a button is, a copy icon is not), and with a top edge you can see; of two things
     // whose tops meet (a frame and the picture right at its top) only the outer one, so no layer lies on a layer
     const blocks = [];
-    for (const el of document.querySelectorAll(SURFACES)) {
+    for (const found of document.querySelectorAll(SURFACES)) {
+      if (!visibleTop(found)) continue;
+      // a picture clipped by its frame lies on the frame's edge: the picture may zoom on a hover, the frame stays
+      const el = frameOf(found);
       const r = el.getBoundingClientRect();
-      if (r.width < 80 || r.height < 8 || !visibleTop(el)) continue;
+      if (r.width < 80 || r.height < 8) continue;
       // nothing in a bar fixed to the screen (the phone's download bar comes and goes as you scroll)
       if (el.closest('.dl-bar, .toast, .topbar')) continue;
       if (blocks.some(b => b.contains(el) && Math.abs(b.getBoundingClientRect().top - r.top) < 3)) continue;
@@ -362,6 +362,16 @@
       if (word) cutGaps(surface);
       return surface;
     });
+    // a picture that is a link (the home screenshot, the build page's shots) shudders under the pointer
+    for (const s of surfaces) {
+      if (s.word || hooked.has(s.el) || !s.el.closest('a') || !s.el.querySelector('img')) continue;
+      hooked.add(s.el);
+      s.el.addEventListener('pointerenter', e => {
+        if (e.pointerType !== 'mouse') return;
+        const cur = surfaces.find(x => x.el === s.el);
+        if (cur) shake(cur);
+      });
+    }
     const now = new Set(surfaces.map(s => s.pile.cache));   // cards gone from the page take their snow along
     for (const c of [...cardLayer.children]) if (!now.has(c)) c.remove();
     measure();
@@ -483,6 +493,36 @@
       });
       if (Math.random() < 0.5) puff(x0 + k * COL, baseY - cols[i] - 2, move * 0.15, 1);
     }
+  }
+
+  // A linked picture shudders when the pointer comes onto it: a few lumps break off its top edge and drop, a little
+  // powder lifts, the rest of the layer settles. At most once in 1.5 s per picture; never with animations off.
+  const shaken = new WeakMap(), hooked = new WeakSet();
+  function shake(s) {
+    if (still || thaw || !s.pile) return;
+    const now = performance.now();
+    if (now - (shaken.get(s.el) || 0) < 1500) return;
+    shaken.set(s.el, now);
+    const p = s.pile, r = s.rect || boxOf(s), n = p.cols.length;
+    const lumps = Math.min(9, 3 + Math.floor(n / 60));
+    for (let c = 0; c < lumps && bits.length < (phone ? 70 : 140); c++) {
+      const i = Math.floor(Math.random() * n);
+      const take = Math.min(p.cols[i] * 0.4, 2.4);
+      if (take < 0.5) continue;
+      for (let k = -2; k <= 2; k++) {
+        const j = i + k;
+        if (j >= 0 && j < n) p.cols[j] = Math.max(0, p.cols[j] - take * (1 - Math.abs(k) / 3));
+      }
+      const x = r.left + s.inset + i * COL + COL / 2, y = r.top - p.cols[i] - 1;
+      bits.push({
+        clump: true, x, y, vx: (Math.random() - 0.5) * 1.2, vy: -(0.5 + Math.random() * 0.9),
+        r: 1.1 + Math.random() * 1.1, amount: take,
+        ox: (Math.random() - 0.5) * 1.6, oy: (Math.random() - 0.5) * 1.6, or: 0.5 + Math.random() * 0.4,
+      });
+      puff(x, y - 1, (Math.random() - 0.5) * 0.4, 2);
+    }
+    p.dirty = true;
+    p.settling = 14;
   }
 
   // Powder: a few faint specks that drift up a little, spread and melt away in about half a second
