@@ -164,7 +164,7 @@ html:not(.lang-ru-active) .lang-ru { display: none; }
 .topbar {
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: 48;   /* over the snow's front layer (45), so its Builds menu is never under snow; under the toast (50) and the chat (55, 60) */
   border-bottom: 1px solid var(--border);
   background: color-mix(in srgb, var(--bg) 82%, transparent);
   backdrop-filter: blur(14px);
@@ -1853,7 +1853,7 @@ main, .footer { position: relative; z-index: 1; }
   0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 color-mix(in srgb, var(--frost) 0%, transparent); }
   45% { transform: scale(1.16); box-shadow: 0 0 0 7px color-mix(in srgb, var(--frost) 20%, transparent); color: var(--frost-light); border-color: color-mix(in srgb, var(--frost) 60%, transparent); }
 }
-@media (max-width: 720px) {
+@media (max-width: 900px) {
   .topbar-inner:has(.snow-switch) { grid-template-columns: 1fr auto auto; }
   .snow-switch { margin-right: -4px; }
 }
@@ -2140,3 +2140,7 @@ p { text-wrap: pretty; }
 /* Home: the build name is a link to its page; it answers a hover the way list titles do in Settings */
 .home .result h2 a { transition: color var(--ease); }
 .home .result h2 a:hover { color: var(--accent-text); }
+/* A menu opened inside the page (Share, the coin and network lists) cannot rise over the snow's front layer:
+   while one is open, that layer fades out, so no snow shows through the menu */
+.snow-front { transition: opacity 200ms ease; }
+html:has(.share-menu:not([hidden]), .dd-list:not([hidden])) .snow-front { opacity: 0; }
