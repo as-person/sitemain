@@ -204,7 +204,7 @@ function head({ path, title, description, imageDefault }) {
 <html lang="${lang}"${lang === 'ru' ? ' class="lang-ru-active"' : ''}${staticImage ? ` data-image="${staticImage}"` : ''} data-title-en="${esc(title.en)}" data-title-ru="${esc(title.ru)}" data-chat="${CHAT_URL}"${snow.mode === 'off' ? '' : ` data-snow="${SNOW_URL}" data-snow-season="${snow.mode === 'on' ? 'always' : `${snow.from}..${snow.to}`}"${snow.owner_preview ? ' data-snow-owner="1"' : ''}`}>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
   <title>${esc(title[lang])}</title>
   <meta name="description" content="${esc(description[lang])}">
   <link rel="canonical" href="${canonical}">
@@ -1131,7 +1131,7 @@ function notFoundPage() {
 <html lang="en" data-title-en="Page not found - Windows by somov" data-title-ru="Страница не найдена - Windows от somov">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
   <title>404 - Windows by somov</title>
   <meta name="robots" content="noindex">
   <meta name="theme-color" content="#0f1115">

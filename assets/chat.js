@@ -692,10 +692,19 @@
       panel.style.bottom = 'auto';
       if (nearBottom) list.scrollTop = list.scrollHeight;
     }
+    // The keyboard slides in over a few frames, and a browser may send its last size before it stops: the chat
+    // checks the size again once the keyboard is still, so no strip of the page is left between it and the keyboard
+    let refit = 0;
+    const fitSoon = () => {
+      fitViewport();
+      clearTimeout(refit);
+      refit = setTimeout(() => { fitViewport(); refit = setTimeout(fitViewport, 300); }, 150);
+    };
     if (window.visualViewport) {
-      visualViewport.addEventListener('resize', fitViewport);
+      visualViewport.addEventListener('resize', fitSoon);
       visualViewport.addEventListener('scroll', fitViewport);
     }
+    addEventListener('resize', fitSoon);
 
     // The cross and Esc go "back" too, so the chat's history step does not stay behind; "Back" itself lands in
     // the popstate listener below. Both end in closeNow().
