@@ -6,6 +6,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { writeToolboxFeed } from './toolbox.mjs';
 
 const SRC = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(SRC, '..');
@@ -15,6 +16,7 @@ const builds = readJson('builds.json');
 const ghost = readJson('ghost-spectre.json');
 const settings = readJson('settings.json');
 const snow = readJson('snow.json'); // winter snow: node _src/snow.mjs auto|on|off
+const toolbox = readJson('toolbox.json'); // somov Toolbox on the site: publish false hides the Settings card
 const featured = readJson('featured.json'); // the card at the top of /settings-for-windows
 const archive = readJson('archive.json'); // old builds; "publish": false builds the page into _preview/ only
 
@@ -1020,6 +1022,16 @@ function settingsPage() {
       <h1 class="page-title">${L('Settings for Windows', 'Настройки для Windows')}</h1>
       <p class="page-sub">${L('Tools, tweaks and guides', 'Утилиты, твики и инструкции')}</p>
 
+      ${toolbox.publish ? `      <!-- somov Toolbox: everything on this page in one window on the user's PC (toolbox/, built from settings.json) -->
+      <section class="toolbox-card" ${attr('aria-label', 'somov Toolbox', 'somov Toolbox')}>
+        <div>
+          <h2 class="toolbox-card-title">somov Toolbox</h2>
+          <p class="toolbox-card-desc">${L('Everything on this page in one window: tick what you need and press Apply. For Windows 10 and 11.', 'Всё с этой страницы в одном окне: отметьте нужное и нажмите «Применить». Для Windows 10 и 11.')}</p>
+          <p class="toolbox-card-note">${L('Unpack the zip and run <b>Start somov Toolbox.cmd</b>. In builds by somov it is already on the desktop.', 'Распакуйте архив и запустите <b>Start somov Toolbox.cmd</b>. В сборках от somov он уже на рабочем столе.')}</p>
+        </div>
+        <a class="btn btn-secondary btn-sm toolbox-card-btn" href="/toolbox/somov-toolbox.zip" download ${countAttr('somov-toolbox.zip', 'download')}>${icon('download')} <span>${S.download}</span> <span class="file-type">.zip</span></a>
+      </section>` : ''}
+
       <div class="toolbar">
         <label class="search">
           <span class="sr-only">${L('Search', 'Поиск')}</span>
@@ -1369,4 +1381,6 @@ PAGE_LANG = 'en';
 notFoundPage();
 sitemap();
 counterKeys();
+// somov Toolbox: the Settings items for the toolbox window (toolbox/items.json, served at somov.org/toolbox/)
+writeToolboxFeed(ROOT, settings, { cdn: CDN, site: SITE });
 console.log('Site built.');

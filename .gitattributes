@@ -1,0 +1,4 @@
+# somov Toolbox: published byte for byte, version.json carries the SHA-256 of the script
+toolbox/*.ps1 -text
+toolbox/*.cmd -text
+toolbox/*.zip binary

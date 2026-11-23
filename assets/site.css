@@ -2160,3 +2160,14 @@ html:has(.share-menu:not([hidden]), .dd-list:not([hidden])) .snow-front { opacit
 }
 /* Archive with two builds: the two "Current version" rows read as one list, one hairline between them */
 .archive-current + .archive-current { margin-top: -1px; }
+/* somov Toolbox on /settings-for-windows (2026-11-23): boxless like the lists, hairlines above and below,
+   the download on the right like an item's action; one column on phones */
+.toolbox-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px 32px; align-items: start; margin: 28px 0 36px; padding: 22px 0; border-block: 1px solid var(--hairline); }
+.toolbox-card-title { font-size: 1.375rem; letter-spacing: -.015em; }
+.toolbox-card-desc { margin-top: 8px; color: var(--text); font-size: 1rem; }
+.toolbox-card-note { margin-top: 6px; color: var(--muted); font-size: var(--fs-sm); }
+.toolbox-card-note b { font-weight: 600; color: var(--text); }
+@media (max-width: 720px) {
+  .toolbox-card { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .toolbox-card-btn { justify-self: start; }
+}

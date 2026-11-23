@@ -1,0 +1,4 @@
+{
+  "publish": false,
+  "_note": "somov Toolbox on the site. false: the card on /settings-for-windows is hidden and toolbox/ is git-ignored (files are still built locally for the Windows builds). Launch together with the December 2026 build: set true AND remove the toolbox/ line from .gitignore, then node _src/build.mjs + GitPush BEFORE the ISOs go public (installed toolboxes read somov.org/toolbox/)."
+}

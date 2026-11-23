@@ -9,19 +9,19 @@
   ],
   "items": [
     {
-      "id": "drag-and-drop", "category": "tweaks",
+      "id": "drag-and-drop", "category": "tweaks", "os": "11",
       "title": { "en": "Fix Drag & Drop under Administrator", "ru": "Исправить Drag & Drop под Администратором" },
       "desc": { "en": "In Windows 11, Drag & Drop doesn’t work under the Administrator account. This .reg file fixes it.", "ru": "В Windows 11 под учётной записью Администратор не работает Drag & Drop. Этот .reg файл решает проблему." },
       "file": "enable_dragdrop.reg", "tags": ["reboot"]
     },
     {
-      "id": "explorer-tabs", "category": "tweaks",
+      "id": "explorer-tabs", "category": "tweaks", "os": "11",
       "title": { "en": "Disable tabs in File Explorer", "ru": "Отключить вкладки в Проводнике" },
       "desc": { "en": "For Windows 11. Relevant for old or low-performance computers.", "ru": "Для Windows 11. Актуально для старых и слабых компьютеров." },
       "file": "DisableExplorersTabs.reg", "tags": ["reboot"]
     },
     {
-      "id": "old-context-menu", "category": "tweaks",
+      "id": "old-context-menu", "category": "tweaks", "os": "11",
       "title": { "en": "Old context menu", "ru": "Старое контекстное меню" },
       "desc": { "en": "For Windows 11. Brings back the context menu from Windows 10.", "ru": "Для Windows 11. Возвращает контекстное меню, как в Windows 10." },
       "file": "OldContextMenu.reg", "tags": ["reboot"]
@@ -57,7 +57,7 @@
       "file": "Russification.bat"
     },
     {
-      "id": "remove-edge", "category": "tweaks",
+      "id": "remove-edge", "category": "tweaks", "advanced": true,
       "title": { "en": "Remove Microsoft Edge", "ru": "Удалить Microsoft Edge" },
       "desc": { "en": "Remove Edge by ShadowWhisperer removes Microsoft Edge.", "ru": "Remove Edge от ShadowWhisperer удаляет Microsoft Edge." },
       "warning": { "en": "Removing Edge may cause an update failure loop. Install Edge, install all Windows updates, then remove Edge.", "ru": "Удаление Edge может зациклить установку обновлений Windows. Сначала установите Edge, затем все обновления Windows и только потом удаляйте Edge." },
@@ -69,7 +69,7 @@
       ]
     },
     {
-      "id": "turn-off-telemetry", "category": "privacy",
+      "id": "turn-off-telemetry", "category": "privacy", "os": "10",
       "title": { "en": "Turn off telemetry in Windows 10", "ru": "Выключить телеметрию в Windows 10" },
       "desc": { "en": "A script that turns off telemetry in Windows 10.", "ru": "Скрипт, который выключает телеметрию в Windows 10." },
       "file": "Turn%20Off%20Telemetry%20in%20Windows%2010.cmd"
@@ -85,7 +85,7 @@
       ]
     },
     {
-      "id": "pause-updates", "category": "privacy",
+      "id": "pause-updates", "category": "privacy", "advanced": true,
       "title": { "en": "Pause Windows Updates for 100 years", "ru": "Пауза обновлений Windows на 100 лет" },
       "desc": { "en": "After applying the file: Settings → Update & Security → Pause updates for 7 days → Advanced Options → scroll “Pause until” to the date you wish.", "ru": "После применения файла: Настройки → Обновление и безопасность → Приостановить обновления на 7 дн. → Дополнительные параметры → в «Приостановить до» выберите нужную дату." },
       "file": "PauseUpdate100Years.reg"
@@ -97,7 +97,7 @@
       "file": "Disable_security_warning.bat", "tags": ["admin", "reboot"]
     },
     {
-      "id": "defender-remover", "category": "privacy",
+      "id": "defender-remover", "category": "privacy", "advanced": true,
       "title": { "en": "Turn off Windows Defender completely", "ru": "Полностью отключить Защитник Windows" },
       "desc": { "en": "Defender Remover turns off Windows Defender completely.", "ru": "Defender Remover полностью отключает Защитник Windows." },
       "file": "Defender.Remover.13.exe",
@@ -173,7 +173,7 @@
       "file": "WinRAR.v7.23.exe"
     },
     {
-      "id": "acrobat-reader", "category": "apps",
+      "id": "acrobat-reader", "category": "apps", "run": "INSTALLx64.cmd",
       "title": { "en": "Adobe Acrobat Reader", "ru": "Adobe Acrobat Reader" },
       "desc": { "en": "For reading, printing and commenting on PDF files.", "ru": "Для чтения, печати и рецензирования файлов PDF." },
       "file": "Adobe.Acrobat.Reader.v2026.003.22075x64.zip"
@@ -201,7 +201,7 @@
       ]
     },
     {
-      "id": "vcpp-runtimes", "category": "drivers",
+      "id": "vcpp-runtimes", "category": "drivers", "run": "install_all.bat",
       "title": { "en": "Visual C++ Redistributable Runtime All-in-One", "ru": "Visual C++ Redistributable Runtime All-in-One" },
       "desc": { "en": "Libraries required to run programs built with Visual C++. Helps prevent errors caused by missing components.", "ru": "Библиотеки для запуска программ, созданных на Visual C++. Помогают избежать ошибок из-за отсутствующих компонентов." },
       "file": "Visual-C-Runtimes-All-in-One-Jun-2026.zip"

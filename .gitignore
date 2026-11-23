@@ -10,3 +10,6 @@ DESIGN.md
 
 # graphify (knowledge graph): local only, must not be published
 graphify-out/
+
+# somov Toolbox: not on the site until the December 2026 build (see _src/data/toolbox.json)
+toolbox/
