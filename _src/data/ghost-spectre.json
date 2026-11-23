@@ -6,8 +6,8 @@
       "title": "Windows 11",
       "items": [
         { "name": "Windows 11 Pro", "version": "25H2", "number": "26200.9974", "date": { "en": "November 2026", "ru": "Ноябрь 2026" }, "file": "WIN11.PRO.25H2.U13.X64.(WPE).ISO", "size": 6068324352, "sha256": "8cb320fd4596c12945f468e998a2724d5f3e82b3779dfec7dc362e29bd671fd4", "recommended": true },
-        { "name": "Windows 11 Pro", "version": "24H2", "number": "26100.9711", "date": { "en": "October 2026", "ru": "Октябрь 2026" }, "file": "WIN11.PRO.24H2.U32.X64.(WPE).ISO", "size": 5962469376, "sha256": "a8e920565653ee66dccefc92f4108e21af5684fceb5fbeb323ef6ae90d06ac9f" },
-        { "name": "Windows 11 IoT Enterprise LTSC", "version": "24H2", "number": "26100.9711", "date": { "en": "October 2026", "ru": "Октябрь 2026" }, "file": "WIN11.LTSC.24H2.U32.X64.(WPE).ISO", "size": 5939574784, "sha256": "1fede2a02603a2adbb3a0abdcb15e80295ca397da96a7dfa4076ae1eec947e8a" },
+        { "name": "Windows 11 Pro", "version": "24H2", "number": "26100.9974", "date": { "en": "November 2026", "ru": "Ноябрь 2026" }, "file": "WIN11.PRO.24H2.U33.X64.(WPE).ISO", "size": 6027341824, "sha256": "6ff525ecfdb52bf679f39e47c676b3d120477d6d7e5bb44e7fe2e4e9457589e5" },
+        { "name": "Windows 11 IoT Enterprise LTSC", "version": "24H2", "number": "26100.9974", "date": { "en": "November 2026", "ru": "Ноябрь 2026" }, "file": "WIN11.LTSC.24H2.U33.X64.(WPE).ISO", "size": 6006130688, "sha256": "d94f2dc15bdc0ff0a8fc0f15f5abc39726ba01eab118e3c05574ff1383559b84" },
         { "name": "Windows 11 Pro", "version": "23H2", "number": "22631.7584", "date": { "en": "September 2026", "ru": "Сентябрь 2026" }, "file": "WIN11.PRO.23H2.U34.X64.(WPE).ISO", "size": 5984708608, "sha256": "71ee3a83709a329b5b2e7f1e6999bc04fdf2f8acf6dce00c1a817fe255bad34e" },
         { "name": "Windows 11 Pro", "version": "22H2", "number": "22621.6060", "date": { "en": "March 2026", "ru": "Март 2026" }, "file": "WIN11.PRO.22H2.U33-2.X64.(WPE).ISO", "size": 5821300736, "sha256": "3f6566e07a613546a67c4f75b6450aa963557029eb567188223589d3c0061f36", "status": { "en": "End of Servicing", "ru": "Окончание срока поддержки" }, "muted": true }
       ]
