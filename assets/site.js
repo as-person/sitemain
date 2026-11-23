@@ -829,7 +829,7 @@
     });
 
     // Gestures on the screenshot, not the page. Touch: swipe left or right to browse, up or down to close,
-    // pinch or double-tap to zoom, drag to move a zoomed screenshot. Mouse: wheel or double-click to zoom, drag to move.
+    // pinch or double-tap to zoom, drag to move a zoomed screenshot. Mouse: click or wheel to zoom, drag to move.
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const EASE = '220ms cubic-bezier(.2, 0, 0, 1)';
     const MAX_ZOOM = 4;
@@ -1043,9 +1043,10 @@
     lightbox.addEventListener('pointerup', endPointer);
     lightbox.addEventListener('pointercancel', endPointer);
 
-    // Mouse: double-click zooms in at the cursor and back out; the wheel zooms smoothly.
-    image.addEventListener('dblclick', event => {
-      if (lastPointerType === 'mouse') toggleZoom(event.clientX, event.clientY);
+    // Mouse: a click zooms in at the cursor and the next click back out; the wheel zooms smoothly.
+    // A drag of a zoomed screenshot is not a click: the capture listener below swallows it.
+    image.addEventListener('click', event => {
+      if ((event.pointerType || lastPointerType) === 'mouse') toggleZoom(event.clientX, event.clientY);
     });
     lightbox.addEventListener('wheel', event => {
       event.preventDefault();
