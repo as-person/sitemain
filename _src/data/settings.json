@@ -164,7 +164,7 @@
       "id": "qbittorrent", "category": "apps",
       "title": { "en": "qBittorrent", "ru": "qBittorrent" },
       "desc": { "en": "A fast, cross-platform BitTorrent client, similar to uTorrent but without the ad clutter.", "ru": "Быстрый кроссплатформенный BitTorrent-клиент, похожий на uTorrent, но без навязчивой рекламы." },
-      "file": "qbittorrent_5.3.0_x64_setup.exe"
+      "file": "qbittorrent_5.3.1_x64_setup.exe"
     },
     {
       "id": "winrar", "category": "apps",
