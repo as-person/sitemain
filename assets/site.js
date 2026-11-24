@@ -239,7 +239,9 @@
       ranking.hidden = false;
     }
   }
-  if ($('[data-stats-file], [data-tweak-stats], [data-tg-stats], [data-chat-stats], [data-share-stats]')) {
+  // node _src/owner-stats.mjs off puts data-owner-stats="off" on <html>: no stat lines and no views bar, for the owner too
+  const showOwnerStats = root.dataset.ownerStats !== 'off';
+  if (showOwnerStats && $('[data-stats-file], [data-tweak-stats], [data-tg-stats], [data-chat-stats], [data-share-stats]')) {
     languageListeners.push(renderStats);
     // The page asks the counter once, in <head>; see `analytics` in _src/build.mjs.
     (window.siteOwner || fetch(withOwner(COUNTER + '/stats')).then(response => response.json()))
@@ -283,7 +285,7 @@
       (window.siteOwner || fetch(withOwner(COUNTER + '/stats')).then(response => response.json()))
         .then(data => {
           const topbar = $('.topbar');
-          if (!data.owner || !topbar) return;
+          if (!data.owner || !topbar || !showOwnerStats) return;
           const views = data.counts['page:' + pagePath] || {};
           const bar = document.createElement('div');
           bar.className = 'page-views';

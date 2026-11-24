@@ -16,6 +16,7 @@ const builds = readJson('builds.json');
 const ghost = readJson('ghost-spectre.json');
 const settings = readJson('settings.json');
 const snow = readJson('snow.json'); // winter snow: node _src/snow.mjs auto|on|off
+const ownerStats = readJson('owner-stats.json'); // the owner's stat lines: node _src/owner-stats.mjs on|off
 const toolbox = readJson('toolbox.json'); // somov Toolbox on the site: publish false hides the Settings card
 const featured = readJson('featured.json'); // the card at the top of /settings-for-windows
 const archive = readJson('archive.json'); // old builds; "publish": false builds the page into _preview/ only
@@ -203,7 +204,7 @@ function head({ path, title, description, imageDefault }) {
   const canonical = `${SITE}${langPath(lang, path)}`;
   const staticImage = imageDefault === undefined ? '' : (imageDefault || (lang === 'ru' ? 'ru' : ''));
   return `<!DOCTYPE html>
-<html lang="${lang}"${lang === 'ru' ? ' class="lang-ru-active"' : ''}${staticImage ? ` data-image="${staticImage}"` : ''} data-title-en="${esc(title.en)}" data-title-ru="${esc(title.ru)}" data-chat="${CHAT_URL}"${snow.mode === 'off' ? '' : ` data-snow="${SNOW_URL}" data-snow-season="${snow.mode === 'on' ? 'always' : `${snow.from}..${snow.to}`}"${snow.owner_preview ? ' data-snow-owner="1"' : ''}`}>
+<html lang="${lang}"${lang === 'ru' ? ' class="lang-ru-active"' : ''}${staticImage ? ` data-image="${staticImage}"` : ''} data-title-en="${esc(title.en)}" data-title-ru="${esc(title.ru)}" data-chat="${CHAT_URL}"${ownerStats.show ? '' : ' data-owner-stats="off"'}${snow.mode === 'off' ? '' : ` data-snow="${SNOW_URL}" data-snow-season="${snow.mode === 'on' ? 'always' : `${snow.from}..${snow.to}`}"${snow.owner_preview ? ' data-snow-owner="1"' : ''}`}>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">

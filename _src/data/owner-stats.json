@@ -1,0 +1,4 @@
+{
+  "show": false,
+  "_note": "The owner's stat lines on the site (download clicks, views bar under the header, tweak/Telegram/chat/share lines, tweak ranking). They are seen only by the owner anyway; show false hides them for the owner too (counting goes on, the full stats stay at https://dl3.somov.org/stats/). Switch with: node _src/owner-stats.mjs on|off, then GitPush."
+}
