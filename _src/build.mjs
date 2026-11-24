@@ -436,6 +436,9 @@ function homePage() {
           <span class="build-window-sub">${L('6 screenshots, checksums, details', '6 скриншотов, хэши, описание')}</span>
         </span>
       </a>
+      <!-- The image language follows the site language before the first paint (site.js is deferred, so without this
+           the page showed the ${PAGE_LANG} build for a moment and the switch jumped) -->
+      <script>(function(){var r=document.documentElement,l=r.lang==='ru'?'ru':'en',p='${PAGE_LANG}';if(l===p)return;var i=document.querySelector('input[name="image-lang"][value="'+l+'"]');if(i)i.checked=true;document.querySelectorAll('[data-dl-label]').forEach(function(e){e.hidden=e.getAttribute('data-dl-label')!==l});var m=document.querySelector('#details-link img');if(m){m.srcset=m.srcset.split('-'+p+'/').join('-'+l+'/');m.src=m.getAttribute('src').split('-'+p+'/').join('-'+l+'/')}})();</script>
 
       <noscript>
         ${solo ? '<style>.lang-field { display: none; }</style>' : ''}<!-- without scripts the switch cannot change the button: the links below do the job -->
