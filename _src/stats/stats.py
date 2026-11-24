@@ -3,7 +3,8 @@
 
 Reads the nginx access logs of dl3 (they keep a year): every file download and every report the site sends to the
 counter (page views with the source and language, Telegram and chat clicks, tweak actions, Share menu, magnets).
-Every 5 minutes it turns them into daily numbers in stats.db; on the first start it goes through all the logs.
+Every minute it turns them into daily numbers in stats.db; on the first start it goes through all the logs.
+"Online now" (/stats/online): who did anything in the last 30 minutes, kept in memory as country, device and actions only.
 
 The rules are those of the counter (somov-counter): a person is counted once a day per thing ("unique"), every
 action also goes to "total"; the owner (IPs and device keys from /etc/somov-counter.env, the IPs removed with
@@ -44,6 +45,8 @@ SESSION_GAP, BURST_FILES, BURST_WINDOW = 1800, 10, 10
 # lines are not counted, so the page and the counter tell the same numbers
 COUNT_FROM = datetime(2026, 11, 6, 22, 44, 23, tzinfo=timezone(timedelta(hours=3))).timestamp()
 REFRESH = 60   # the site's owner lines take their numbers from here (see /internal/counts)
+ONLINE_WINDOW = 30 * 60   # "online now": anyone who did something on the site or with its files in the last 30 minutes
+online = {'t': 0, 'people': []}   # kept in memory only, without addresses (see refresh)
 
 
 def log(*parts):
@@ -276,7 +279,7 @@ def events_of(lines, days, excluded, robots):
         stamp = int(t.timestamp())
         if method == 'POST' and url.path == '/api/count' and status == 204:
             p = {k: v[0] for k, v in parse_qs(url.query).items()}
-            if p.get('owner') in OWNER_TOKENS:
+            if p.get('owner') in OWNER_TOKENS or p.get('owner') == 'device':  # nginx logs a valid key as owner=device
                 continue
             kind = p.get('kind', '')
             if p.get('page') and kind == 'view':
@@ -429,7 +432,16 @@ def aggregate(day, events, tweak_files, clouds=frozenset()):
             rows[('lang', person_lang[ip])][0].add(ip)
     out = [(day, metric, key, len(ips), max(total, len(ips))) for (metric, key), (ips, total) in rows.items() if ips or total]
     feed_rows = [(day, t, countries.get(ip, '??'), what, key) for t, ip, what, key in feed[-300:]]
-    return out, feed_rows
+    # "Online now": who was active in the last ONLINE_WINDOW (robots and the owner already left out above)
+    cut = time.time() - ONLINE_WINDOW
+    live = {}
+    for t, ip, what, key in feed:
+        if t >= cut:
+            p = live.setdefault(ip, {'first': t, 'ua': person_ua.get(ip, ''), 'cc': countries.get(ip, '??'),
+                                     'src': first_source.get(ip, ''), 'acts': []})
+            p['last'] = t
+            p['acts'].append({'t': t, 'what': what, 'key': key})
+    return out, feed_rows, live
 
 
 def refresh(full=False):
@@ -463,14 +475,28 @@ def refresh(full=False):
                 cached.append(line)
         lines = cached
     by_day, clouds = events_of(lines, days, excluded, set())
+    live = {}
     for day in sorted(days):
-        rows, feed_rows = aggregate(day, by_day.get(day, []), tweak_files, clouds)
+        rows, feed_rows, day_live = aggregate(day, by_day.get(day, []), tweak_files, clouds)
+        for ip, p in day_live.items():   # around midnight one person can be in yesterday and today
+            if ip in live:
+                live[ip]['acts'] += p['acts']
+                live[ip]['last'] = p['last']
+                live[ip]['src'] = live[ip]['src'] or p['src']
+            else:
+                live[ip] = p
         with lock:
             db.execute('DELETE FROM agg WHERE day = ?', (day,))
             db.executemany('INSERT INTO agg (day, metric, key, uniq, total) VALUES (?, ?, ?, ?, ?)', rows)
             db.execute('DELETE FROM feed WHERE day = ?', (day,))
             db.executemany('INSERT INTO feed (day, t, cc, what, key) VALUES (?, ?, ?, ?, ?)', feed_rows)
             db.commit()
+    people = []
+    for p in live.values():   # the addresses stop here: the page gets country, device and what was done
+        system, browser, device = device_of(p['ua'])
+        people.append({'cc': p['cc'], 'first': p['first'], 'last': p['last'], 'src': p['src'],
+                       'os': system, 'browser': browser, 'device': device, 'acts': p['acts'][-12:]})
+    online.update(t=int(time.time()), people=sorted(people, key=lambda x: -x['last']))
     with lock:   # the feed is only for the last days
         db.execute('DELETE FROM feed WHERE day < ?', ((today - timedelta(days=7)).isoformat(),))
         db.commit()
@@ -642,6 +668,11 @@ class Handler(BaseHTTPRequestHandler):
             return self.send(302, '', extra=(('Location', '/stats/'), ('Set-Cookie', cookie)))
         if not self.owner():
             return self.send(404, NO_ACCESS)
+        if url.path == '/stats/online':
+            cut = time.time() - ONLINE_WINDOW
+            people = [p for p in online['people'] if p['last'] >= cut]
+            return self.send(200, json.dumps({'t': online['t'], 'window': ONLINE_WINDOW, 'people': people}, ensure_ascii=False),
+                             'application/json; charset=utf-8')
         if url.path == '/stats/data':
             period = params.get('period', '7')
             if period not in ('today', '7', '30', '90', 'all'):

@@ -74,7 +74,47 @@ h1 { font-size: 24px; font-weight: 700; letter-spacing: -.01em; }
 .feed time { color: var(--faint); font-variant-numeric: tabular-nums; }
 .feed span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-@media (max-width: 900px) { .kpis { grid-template-columns: repeat(3, 1fr); } .grid2 { grid-template-columns: 1fr; } }
+.online { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 14px; margin-bottom: 14px; }
+.cap { color: var(--muted); font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+.online-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.online-n { margin: 2px 0 14px; font-size: 44px; font-weight: 700; line-height: 1.1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.minutes { position: relative; height: 90px; margin: 8px 0 4px; }
+.minutes svg { display: block; width: 100%; height: 100%; }
+.minutes .bar { fill: var(--accent); }
+.minutes .base { stroke: rgb(255 255 255 / .12); }
+.minutes .hit { fill: transparent; }
+.minutes .seg { fill: var(--accent); transition: opacity .15s, fill .15s; }
+.minutes .seg.is-hot { fill: #93c5fd; }
+.minutes .seg.is-dim { opacity: .22; }
+.minutes .col.is-hover .hit { fill: rgb(255 255 255 / .05); }
+.minutes-tip { position: absolute; pointer-events: none; padding: 4px 8px; border: 1px solid var(--border); border-radius: 8px; background: var(--raised); font-size: 12px; white-space: nowrap; transform: translate(-50%, -100%); }
+.person, .ctable tr { transition: opacity .15s, background-color .15s; }
+.person.is-dim, .ctable tr.is-dim { opacity: .35; }
+.person.is-hot { background: var(--accent-soft); border-radius: 8px; }
+.ctable tr.is-hot td { background: var(--accent-soft); }
+.person .acts .is-hot { color: var(--text); background: rgb(59 130 246 / .28); border-radius: 4px; padding: 0 3px; }
+.person, .ctable tbody tr { cursor: default; }
+.minutes-axis { display: flex; justify-content: space-between; color: var(--faint); font-size: 11px; margin-bottom: 14px; }
+.ctable { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.ctable th { padding: 6px 8px; border-bottom: 1px solid var(--border); color: var(--muted); font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; text-align: left; }
+.ctable th:last-child, .ctable td:last-child { text-align: right; }
+.ctable td { padding: 6px 8px; border-bottom: 1px solid var(--border); }
+.ctable td:last-child { font-weight: 600; font-variant-numeric: tabular-nums; }
+.ctable tr:last-child td { border-bottom: 0; }
+.ctable td.empty { text-align: center; font-weight: 400; color: var(--faint); }
+.live-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--up); box-shadow: 0 0 0 0 rgb(126 226 168 / .6); animation: live 2s infinite; flex: none; }
+.live-dot.idle { background: var(--faint); animation: none; }
+@keyframes live { 70% { box-shadow: 0 0 0 8px rgb(126 226 168 / 0); } 100% { box-shadow: 0 0 0 0 rgb(126 226 168 / 0); } }
+@media (prefers-reduced-motion: reduce) { .live-dot { animation: none; } }
+.people { display: grid; gap: 0; }
+.person { display: grid; grid-template-columns: 1.6em minmax(0, 1fr) auto; gap: 4px 10px; padding: 8px; border-bottom: 1px solid var(--border); font-size: 13.5px; }
+.person:last-child { border-bottom: 0; }
+.person .who { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.person .who small { color: var(--faint); font-size: 12.5px; margin-left: 6px; }
+.person time { color: var(--faint); font-size: 12.5px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.person .acts { grid-column: 2 / -1; color: var(--muted); font-size: 12.5px; }
+
+@media (max-width: 900px) { .online { grid-template-columns: 1fr; } .kpis { grid-template-columns: repeat(3, 1fr); } .grid2 { grid-template-columns: 1fr; } }
 @media (max-width: 560px) {
   .wrap { padding: 20px 14px 40px; }
   .kpis { grid-template-columns: repeat(2, 1fr); }
@@ -95,6 +135,18 @@ h1 { font-size: 24px; font-weight: 700; letter-spacing: -.01em; }
       <button data-p="today">Сегодня</button><button data-p="7">7 дней</button><button data-p="30">30 дней</button><button data-p="90">90 дней</button><button data-p="all">Всё время</button>
     </nav>
   </header>
+
+  <div class="online">
+    <section class="card" aria-live="polite">
+      <div class="online-top"><span class="cap">Активных за последние 30 мин</span><span class="live-dot" id="live-dot" title="Обновляется каждые 30 секунд"></span></div>
+      <div class="online-n" id="online-n">—</div>
+      <div class="cap">Активных в минуту</div>
+      <div class="minutes" id="minutes"></div>
+      <div class="minutes-axis"><span>−30 мин</span><span>−15 мин</span><span>сейчас</span></div>
+      <table class="ctable"><thead><tr><th>Страна</th><th>Активные</th></tr></thead><tbody id="online-countries"></tbody></table>
+    </section>
+    <section class="card"><h2>Кто сейчас на сайте <small>последние действия</small></h2><div class="people" id="online-people"></div><p class="hint" id="online-note"></p></section>
+  </div>
 
   <section class="kpis" id="kpis"></section>
 
@@ -292,6 +344,136 @@ h1 { font-size: 24px; font-weight: 700; letter-spacing: -.01em; }
     list('clicks', clicks, r => r.label, { percent: false });
   }
 
+  /* One action in plain words */
+  function describe(f) {
+    if (f.what === 'view') return 'открыл ' + pageName(f.key);
+    if (f.what === 'dl') { const [file, kind] = f.key.split('|'); return 'скачал ' + buildName(file) + ' (' + (KINDS[kind] || kind) + ')'; }
+    if (f.what === 'file') return 'скачал файл ' + f.key.split('|')[0].replace(/^tweak:/, '');
+    if (f.what === 'tg') return 'перешёл в Telegram (' + (PLACES[f.key] || f.key) + ')';
+    if (f.what === 'chat') return 'открыл чат (' + (PLACES[f.key] || f.key) + ')';
+    return f.key;
+  }
+
+  /* Online now: everyone active in the last 30 minutes, with country, device, where they came from and what they did */
+  const ago = t => { const m = Math.floor((Date.now() / 1000 - t) / 60); return m < 1 ? 'только что' : m + ' мин назад'; };
+  function paintOnline(o) {
+    const people = o.people || [];
+    $('online-n').textContent = nf.format(people.length);
+    document.title = (people.length ? '(' + people.length + ') ' : '') + 'Статистика · somov.org';
+    $('live-dot').classList.toggle('idle', !people.length);
+    const byCountry = {};
+    people.forEach(p => { byCountry[p.cc] = (byCountry[p.cc] || 0) + 1; });
+    const tbody = $('online-countries');
+    tbody.textContent = '';
+    const countries = Object.entries(byCountry).sort((a, b) => b[1] - a[1]);
+    if (!countries.length) { const tr = el('tr'); const td = el('td', 'empty', 'Нет данных'); td.colSpan = 2; tr.append(td); tbody.append(tr); }
+    countries.forEach(([cc, n]) => {
+      const tr = el('tr');
+      tr.dataset.cc = cc;
+      const name = el('td');
+      name.append(el('span', 'flag', flag(cc)), countryName(cc));
+      tr.append(name, el('td', '', nf.format(n)));
+      tbody.append(tr);
+    });
+    minutes(people, o.window || 1800);
+    onlinePeople = people;
+    const box = $('online-people');
+    box.textContent = '';
+    if (!people.length) box.append(el('div', 'empty', 'Сейчас никого'));
+    people.forEach((p, i) => {
+      const row = el('div', 'person');
+      row.dataset.who = i;
+      const who = el('span', 'who', countryName(p.cc));
+      const from = p.src && p.src !== 'site' ? (SOURCES[p.src] || (p.src.startsWith('ref:') ? 'сайт ' + p.src.slice(4) : p.src)) : '';
+      who.append(el('small', '', [p.device, p.os, p.browser].join(' · ') + (from ? ' · пришёл: ' + from : '')));
+      const time = el('time', '', ago(p.last));
+      time.title = 'на сайте с ' + new Date(p.first * 1000).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Ho_Chi_Minh' }) + ' (Вьетнам)';
+      const acts = el('span', 'acts');
+      p.acts.slice(-4).forEach((a, k) => {
+        if (k) acts.append(' → ');
+        const act = el('span', '', describe(a));
+        act.dataset.min = Math.floor(a.t / 60);
+        act.title = new Date(a.t * 1000).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Ho_Chi_Minh' });
+        acts.append(act);
+      });
+      if (p.acts.length > 4) acts.append(` (и ещё ${p.acts.length - 4} раньше)`);
+      row.append(el('span', 'flag', flag(p.cc)), who, time, acts);
+      box.append(row);
+    });
+    box.onmouseover = e => { const r = e.target.closest('.person'); focus(r ? [+r.dataset.who] : null); };
+    box.onmouseleave = () => focus(null);
+    tbody.onmouseover = e => { const r = e.target.closest('tr[data-cc]'); focus(r ? people.map((p, i) => (p.cc === r.dataset.cc ? i : -1)).filter(i => i >= 0) : null); };
+    tbody.onmouseleave = () => focus(null);
+    $('online-note').textContent = o.t ? 'Логи читаются раз в минуту, последнее чтение в '
+      + new Date(o.t * 1000).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
+      + '. Онлайн — кто открыл страницу, скачал файл или нажал ссылку за последние 30 минут.' : '';
+  }
+  /* Active people per minute over the window: someone counts in every minute in which they did something */
+  function minutes(people, windowSec) {
+    const box = $('minutes');
+    box.textContent = '';
+    const n = Math.round(windowSec / 60), nowMin = Math.floor(Date.now() / 60000);
+    const sets = Array.from({ length: n }, () => new Set());
+    people.forEach((p, who) => p.acts.forEach(a => {
+      const i = n - 1 - (nowMin - Math.floor(a.t / 60));
+      if (i >= 0 && i < n) sets[i].add(who);
+    }));
+    const values = sets.map(s => s.size);
+    const max = Math.max(1, ...values);
+    const tip = el('div', 'minutes-tip');
+    tip.hidden = true;
+    const W = 300, H = 90, slot = W / n, barW = slot * .7;
+    const ns = 'http://www.w3.org/2000/svg';
+    const make = (tag, attrs) => { const e = document.createElementNS(ns, tag); Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v)); return e; };
+    const svg = make('svg', { viewBox: '0 0 ' + W + ' ' + H, preserveAspectRatio: 'none' });
+    svg.append(make('line', { x1: 0, x2: W, y1: H - .5, y2: H - .5, class: 'base' }));
+    const segH = (H - 2) / max;
+    values.forEach((v, i) => {
+      const g = make('g', { class: 'col' });
+      const back = n - 1 - i;
+      g.append(make('rect', { x: i * slot, y: 0, width: slot, height: H, class: 'hit' }));
+      [...sets[i]].sort((a, b) => a - b).forEach((who, k) => {
+        const gap = v > 1 ? 1 : 0;
+        g.append(make('rect', { x: i * slot + (slot - barW) / 2, y: H - segH * (k + 1) + gap / 2, width: barW, height: Math.max(1, segH - gap), rx: 1.5, class: 'seg', 'data-who': who }));
+      });
+      g.addEventListener('mouseenter', () => {
+        g.classList.add('is-hover');
+        focus([...sets[i]], nowMin - back);
+        tip.hidden = false;
+        tip.textContent = (v ? v + ' ' + (v === 1 ? 'человек' : 'человека') : 'никого') + ' · ' + (back ? back + ' мин назад' : 'эта минута');
+        tip.style.left = ((i + .5) * slot / W * 100) + '%';
+        tip.style.top = '0';
+      });
+      g.addEventListener('mouseleave', () => { g.classList.remove('is-hover'); tip.hidden = true; focus(null); });
+      svg.append(g);
+    });
+    box.append(svg, tip);
+  }
+  /* One highlight for the whole online block: these people (indexes), and if a minute is given, their actions in it */
+  let onlinePeople = [];
+  function focus(whos, minute) {
+    const on = whos ? new Set(whos) : null;
+    document.querySelectorAll('#minutes .seg').forEach(s => {
+      const who = +s.getAttribute('data-who');
+      s.classList.toggle('is-hot', !!on && on.has(who));
+      s.classList.toggle('is-dim', !!on && !on.has(who));
+    });
+    document.querySelectorAll('#online-people .person').forEach(r => {
+      const who = +r.dataset.who;
+      r.classList.toggle('is-hot', !!on && on.has(who));
+      r.classList.toggle('is-dim', !!on && !on.has(who));
+      r.querySelectorAll('.acts [data-min]').forEach(a => a.classList.toggle('is-hot', minute != null && on && on.has(who) && +a.dataset.min === minute));
+    });
+    const ccs = on ? new Set([...on].map(i => (onlinePeople[i] || {}).cc)) : null;
+    document.querySelectorAll('#online-countries tr[data-cc]').forEach(r => {
+      r.classList.toggle('is-hot', !!ccs && ccs.has(r.dataset.cc));
+      r.classList.toggle('is-dim', !!ccs && !ccs.has(r.dataset.cc));
+    });
+  }
+  function loadOnline() {
+    fetch('/stats/online', { cache: 'no-store' }).then(r => r.json()).then(paintOnline).catch(() => {});
+  }
+
   /* What happened last: time, country, action in plain words */
   function feed() {
     const box = $('feed');
@@ -302,13 +484,7 @@ h1 { font-size: 24px; font-weight: 700; letter-spacing: -.01em; }
       const t = new Date(f.t * 1000);
       const time = el('time', '', t.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Ho_Chi_Minh' }));
       time.title = t.toLocaleString('ru-RU', { timeZone: 'Asia/Ho_Chi_Minh' });
-      let text = f.key;
-      if (f.what === 'view') text = 'открыл ' + pageName(f.key);
-      else if (f.what === 'dl') { const [file, kind] = f.key.split('|'); text = 'скачал ' + buildName(file) + ' (' + (KINDS[kind] || kind) + ')'; }
-      else if (f.what === 'file') text = 'скачал файл ' + f.key.split('|')[0].replace(/^tweak:/, '');
-      else if (f.what === 'tg') text = 'перешёл в Telegram (' + (PLACES[f.key] || f.key) + ')';
-      else if (f.what === 'chat') text = 'открыл чат (' + (PLACES[f.key] || f.key) + ')';
-      row.append(time, el('span', 'flag', flag(f.cc)), el('span', '', text));
+      row.append(time, el('span', 'flag', flag(f.cc)), el('span', '', describe(f)));
       row.title = countryName(f.cc);
       box.append(row);
     });
@@ -342,6 +518,9 @@ h1 { font-size: 24px; font-weight: 700; letter-spacing: -.01em; }
   window.addEventListener('resize', () => { clearTimeout(resize); resize = setTimeout(() => data && chart(), 150); });
   load();
   setInterval(load, 120000);
+  loadOnline();
+  setInterval(() => { if (!document.hidden) loadOnline(); }, 30000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) loadOnline(); });
 })();
 </script>
 </body>
