@@ -1767,7 +1767,7 @@ html:not([data-image]) .img-ru { display: none !important; }
 .chat.is-drop .chat-list { outline: 2px dashed var(--chat-accent); outline-offset: -8px; }
 
 @media (max-width: 720px) {
-  .chat { inset: 0; width: auto; height: 100dvh; border: 0; border-radius: 0; }
+  .chat { inset: 0; width: auto; height: 100svh; border: 0; border-radius: 0; }   /* svh: the height with the browser bars shown, so nothing goes under them before chat.js fits it */
   .chat-open, .chat-open body { overflow: hidden; }
   .chat-input { font-size: 1rem; }   /* iPhone zooms into smaller inputs */
 }

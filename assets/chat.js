@@ -687,8 +687,18 @@
       }
       const list = $('.chat-list', panel);
       const nearBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 80;
+      // Chrome with its toolbar at the bottom (Home / + / tabs / menu) may report a visible area that runs under
+      // that toolbar, and the message field went under it: the chat takes the smallest height the browser reports
+      // (the visible area, the window, the page's own box), so its bottom edge is always above the toolbar
+      const page = document.documentElement.clientHeight || Infinity;
+      const height = Math.min(vv.height, innerHeight, page);
       panel.style.top = vv.offsetTop + 'px';
-      panel.style.height = vv.height + 'px';
+      panel.style.height = height + 'px';
+      // somov.org/?chatdebug: the sizes the browser reports, in the chat header, to see a new browser's behaviour
+      if (/[?&]chatdebug\b/.test(location.search)) {
+        const sub = $('.chat-sub', panel) || $('.chat-head', panel);
+        if (sub) sub.textContent = `vv ${Math.round(vv.height)}+${Math.round(vv.offsetTop)} · in ${innerHeight} · ch ${page} · scr ${screen.height} · used ${Math.round(height)}`;
+      }
       panel.style.bottom = 'auto';
       if (nearBottom) list.scrollTop = list.scrollHeight;
     }
