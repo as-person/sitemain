@@ -687,20 +687,33 @@
       }
       const list = $('.chat-list', panel);
       const nearBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 80;
-      // Chrome with its toolbar at the bottom (Home / + / tabs / menu) may report a visible area that runs under
-      // that toolbar, and the message field went under it: the chat takes the smallest height the browser reports
-      // (the visible area, the window, the page's own box), so its bottom edge is always above the toolbar
+      // Chrome with its toolbar at the bottom (Home / + / tabs / menu) draws that toolbar over the page, and the
+      // visible area, the window and the page's box all leave it out (a Chromium bug), so the message field went
+      // under it. The chat takes the smallest of them and of 100svh (the height with every browser bar shown)
       const page = document.documentElement.clientHeight || Infinity;
-      const height = Math.min(vv.height, innerHeight, page);
+      const svh = viewportUnit('svh'), lvh = viewportUnit('lvh');
+      const height = Math.min(vv.height, innerHeight, page, svh || Infinity);
       panel.style.top = vv.offsetTop + 'px';
       panel.style.height = height + 'px';
+      panel.style.bottom = 'auto';
+      if (nearBottom) list.scrollTop = list.scrollHeight;
       // somov.org/?chatdebug: the sizes the browser reports, in the chat header, to see a new browser's behaviour
       if (/[?&]chatdebug\b/.test(location.search)) {
         const sub = $('.chat-sub', panel) || $('.chat-head', panel);
-        if (sub) sub.textContent = `vv ${Math.round(vv.height)}+${Math.round(vv.offsetTop)} · in ${innerHeight} · ch ${page} · scr ${screen.height} · used ${Math.round(height)}`;
+        if (sub) sub.textContent = `used ${Math.round(height)} · vv ${Math.round(vv.height)}+${Math.round(vv.offsetTop)} · in ${innerHeight} · ch ${page} · svh ${Math.round(svh)} · lvh ${Math.round(lvh)} · scr ${screen.height}`;
       }
-      panel.style.bottom = 'auto';
-      if (nearBottom) list.scrollTop = list.scrollHeight;
+    }
+    // The height of 100svh / 100lvh in pixels (0 where the browser does not know the unit)
+    let probe = null;
+    function viewportUnit(unit) {
+      if (!CSS.supports('height', '100' + unit)) return 0;
+      if (!probe) {
+        probe = document.createElement('div');
+        probe.style.cssText = 'position:fixed;top:0;left:0;width:0;visibility:hidden;pointer-events:none';
+        document.body.append(probe);
+      }
+      probe.style.height = '100' + unit;
+      return probe.getBoundingClientRect().height;
     }
     // The keyboard slides in over a few frames, and a browser may send its last size before it stops: the chat
     // checks the size again once the keyboard is still, so no strip of the page is left between it and the keyboard
