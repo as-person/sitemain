@@ -687,21 +687,18 @@
       }
       const list = $('.chat-list', panel);
       const nearBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 80;
-      // Chrome with its toolbar at the bottom (Home / + / tabs / menu) draws that toolbar over the page, and the
-      // visible area, the window and the page's box all leave it out (a Chromium bug), so the message field went
-      // under it. The chat takes the smallest of them and of 100svh (the height with every browser bar shown)
-      const page = document.documentElement.clientHeight || Infinity;
+      // Chrome with its toolbar at the bottom (Home / + / tabs / menu): the bars show and hide together, but right
+      // after a page loads Chrome may count only the top one, and the bottom toolbar covered the message field
+      // (a Chromium bug). The window then sits between 100svh (every bar shown) and 100lvh (every bar hidden):
+      // the bars are really shown, so the chat takes 100svh. Bars hidden (window = lvh) or shown and counted
+      // (window = svh), the visible area is right.
+      let height = Math.min(vv.height, innerHeight);
       const svh = viewportUnit('svh'), lvh = viewportUnit('lvh');
-      const height = Math.min(vv.height, innerHeight, page, svh || Infinity);
+      if (svh && lvh && innerHeight > svh + 2 && innerHeight < lvh - 2) height = Math.min(height, svh);
       panel.style.top = vv.offsetTop + 'px';
       panel.style.height = height + 'px';
       panel.style.bottom = 'auto';
       if (nearBottom) list.scrollTop = list.scrollHeight;
-      // somov.org/?chatdebug: the sizes the browser reports, in the chat header, to see a new browser's behaviour
-      if (/[?&]chatdebug\b/.test(location.search)) {
-        const sub = $('.chat-sub', panel) || $('.chat-head', panel);
-        if (sub) sub.textContent = `used ${Math.round(height)} · vv ${Math.round(vv.height)}+${Math.round(vv.offsetTop)} · in ${innerHeight} · ch ${page} · svh ${Math.round(svh)} · lvh ${Math.round(lvh)} · scr ${screen.height}`;
-      }
     }
     // The height of 100svh / 100lvh in pixels (0 where the browser does not know the unit)
     let probe = null;
