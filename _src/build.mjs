@@ -30,7 +30,6 @@ const TELEGRAM = 'https://t.me/+gmXk9-zXZ405YWY6'; // an invite link of the publ
 const DONATE = {
   patreon: '', // the Patreon page URL; the card appears on /support once it is set
   yoomoney: 'https://yoomoney.ru/to/4100118200965581',
-  tribute: 'https://web.tribute.tg/d/TNH', // donations by bank card from any country; '' hides the card
 };
 // Crypto on /support. The first network of a coin is its default. `qr` names images/qr-<qr>.svg from _src/qr.py.
 const EVM = '0x2842428a11e5c7e7b990e80adf019d7b40e57b9b';
@@ -1259,11 +1258,6 @@ function supportPage() {
           <p>${L('Any bank card, one-time or monthly.', 'Любая банковская карта, разово или ежемесячно.')}</p>
           <a class="btn btn-primary" href="${esc(DONATE.patreon)}" target="_blank" rel="noopener">${L('Support on Patreon', 'Поддержать на Patreon')}</a>
         </article>`,
-    DONATE.tribute && `<article class="support-card support-card-tribute" id="tribute">
-          <h2>${L('Bank card', 'Банковская карта')}</h2>
-          <p>${L('Cards from any country, through Tribute.', 'Карты любых стран и СБП, через Tribute.')}</p>
-          <a class="btn btn-secondary" href="${esc(DONATE.tribute)}" target="_blank" rel="noopener">${L('Support by card', 'Поддержать картой')} ${icon('external')}</a>
-        </article>`,
     `<article class="support-card support-card-yoomoney" id="yoomoney">
           <h2>${L('YooMoney', 'ЮMoney')}</h2>
           <p>${L('Russian bank cards and YooMoney wallet.', 'Российские карты и кошелёк ЮMoney.')}</p>
@@ -1271,12 +1265,6 @@ function supportPage() {
         </article>`,
     cryptoCard(copyRow),
   ].filter(Boolean);
-  // Reading and Tab order match the screen: Russian visitors see YooMoney before the card payment
-  if (PAGE_LANG === 'ru') {
-    const yoo = cards.findIndex(c => c.includes('support-card-yoomoney'));
-    const card = cards.findIndex(c => c.includes('support-card-tribute'));
-    if (yoo > card && card >= 0) cards.splice(card, 0, cards.splice(yoo, 1)[0]);
-  }
 
   const body = `<main class="page" id="content">
     <div class="container container-narrow">
@@ -1293,8 +1281,8 @@ function supportPage() {
     path: '/support',
     title: { en: 'Support the project - Windows by somov', ru: 'Поддержать проект - Windows от somov' },
     description: {
-      en: 'Ways to support Windows by somov: bank card, crypto (USDT, USDC, BTC, ETH, LTC, DOGE) and YooMoney.',
-      ru: 'Как поддержать Windows by somov: банковская карта, криптовалюта (USDT, USDC, BTC, ETH, LTC, DOGE) и ЮMoney.',
+      en: 'Ways to support Windows by somov: YooMoney (Russian bank cards) and crypto (USDT, USDC, BTC, ETH, LTC, DOGE).',
+      ru: 'Как поддержать Windows by somov: ЮMoney (российские карты) и криптовалюта (USDT, USDC, BTC, ETH, LTC, DOGE).',
     },
   }, '', body));
 }
